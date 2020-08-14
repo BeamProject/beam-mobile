@@ -1,0 +1,9 @@
+{
+  "@@last_modified": "2020-08-14T20:39:25.528039",
+  "title": "Beam Project",
+  "@title": {
+    "description": "Title for the Beam Project",
+    "type": "text",
+    "placeholders": {}
+  }
+}
