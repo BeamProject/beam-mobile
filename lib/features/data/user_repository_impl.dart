@@ -44,6 +44,8 @@ class UserRepositoryImpl implements UserRepository {
     final user = await _localDataSource.getUser();
     if (user?.authToken != null) {
       _userStatusStreamController.sink.add(UserMapper.mapToUser(user));
+    } else {
+      _userStatusStreamController.sink.add(null);
     }
   }
 

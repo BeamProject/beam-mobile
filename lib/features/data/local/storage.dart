@@ -11,7 +11,13 @@ class Storage implements UserLocalDataSource {
   @override
   Future<User> getUser() async {
     final all = await _storage.readAll();
-    return User(id: int.parse(all['id']), username: all['current_username'], authToken: all['auth_token']);
+    final id = all['id'];
+    final username = all['current_username'];
+    final authToken = all['auth_token'];
+    if (id == null || username == null || authToken == null) {
+      return null;
+    }
+    return User(id: int.parse(id), username: username, authToken: authToken);
   }
 
   @override
