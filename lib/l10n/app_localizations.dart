@@ -1,3 +1,4 @@
+import 'package:beam/features/presentation/onboarding/habits_page.dart';
 import 'package:beam/l10n/messages_all.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
@@ -25,6 +26,24 @@ class AppLocalizations {
       'Beam Project',
       name: 'title',
       desc: 'Title for the Beam Project',
+      locale: localeName,
+    );
+  }
+
+  String get donationsContent {
+    return Intl.message(
+      'Donate to charities as you develop good habits',
+      name: 'donationsContent',
+      desc: 'Description of donating to charities',
+      locale: localeName,
+    );
+  }
+
+  String get habitsContent {
+    return Intl.message(
+      'Develop good habits while reducing the bad ones',
+      name: 'habitsContent',
+      desc: 'Description of developing habits',
       locale: localeName,
     );
   }

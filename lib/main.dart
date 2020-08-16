@@ -17,6 +17,7 @@ import 'features/presentation/auth/auth_event.dart';
 import 'features/presentation/auth/auth_state.dart';
 import 'features/presentation/login/bloc/login_bloc.dart';
 import 'features/presentation/login/page/login_page.dart';
+import 'features/presentation/onboarding/onboarding_screen.dart';
 import 'l10n/app_localizations.dart';
 
 void main() {
@@ -82,12 +83,12 @@ class _AppViewState extends State<AppView> {
                       MyHomePage.route(), (route) => false);
                 } else {
                   _navigator.pushAndRemoveUntil<void>(
-                      LoginPage.route(), (route) => false);
+                      OnboardingScreen.route(), (route) => false);
                 }
               },
               child: child);
         },
-        onGenerateRoute: (_) => SplashPage.route());
+        onGenerateRoute: (_) => OnboardingScreen.route());
   }
 }
 
