@@ -7,6 +7,7 @@ class HabitsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
         child: Text(AppLocalizations.of(context).habitsContent,
+            textAlign: TextAlign.center,
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 32,

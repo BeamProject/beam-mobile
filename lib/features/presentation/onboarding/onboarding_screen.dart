@@ -59,20 +59,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ],
             onPageChanged: onPageChanged,
           ),
-          Positioned(
-              bottom: 60,
-              left: 150,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: buildIndicators(),
-              )),
-          Positioned(
-              bottom: 0,
-              left: 150,
-              child: RaisedButton(
-                  color: Color(0xFF6EC496),
-                  child: const Text('Login', style: TextStyle(color: Colors.white)),
-                  onPressed: () => onLoginPressed(context)))
+          Positioned.fill(
+              child: Padding(
+                  padding: EdgeInsets.only(bottom: 60.0),
+                  child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: buildIndicators(),
+                      )))),
+          Positioned.fill(
+              child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: ButtonTheme(
+                      minWidth: 100.0,
+                      child: RaisedButton(
+                          color: Color(0xFF6EC496),
+                          child: const Text('Login',
+                              style: TextStyle(color: Colors.white)),
+                          onPressed: () => onLoginPressed(context)))))
         ],
       ),
     );
