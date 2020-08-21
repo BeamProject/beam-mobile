@@ -32,7 +32,7 @@ class AuthBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
   @override
   Stream<AuthenticationState> mapEventToState(event) async* {
     if (event is AuthenticationStatusChanged) {
-      yield await _mapAuthenticationStatusChangedToState(event);
+      yield _mapAuthenticationStatusChangedToState(event);
     } else if (event is AuthenticationLogOutRequested) {
       _logOut();
     } else if (event is AuthenticationAutoLogInRequested) {
@@ -40,8 +40,8 @@ class AuthBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
     }
   }
 
-  Future<AuthenticationState> _mapAuthenticationStatusChangedToState(
-      AuthenticationStatusChanged event) async {
+  AuthenticationState _mapAuthenticationStatusChangedToState(
+      AuthenticationStatusChanged event) {
     if (event.user != null) {
       return AuthenticationState.authenticated(event.user);
     } else {

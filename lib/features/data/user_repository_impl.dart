@@ -4,6 +4,7 @@ import 'package:beam/features/data/datasources/user_local_data_source.dart';
 import 'package:beam/features/data/datasources/user_remote_data_source.dart';
 import 'package:beam/features/domain/entities/user.dart';
 import 'package:beam/features/domain/repositories/user_repository.dart';
+import 'package:rxdart/rxdart.dart';
 
 import 'model/user_mapper.dart';
 
@@ -11,7 +12,7 @@ class UserRepositoryImpl implements UserRepository {
   final UserLocalDataSource _localDataSource;
   final UserRemoteDataSource _remoteDataSource;
 
-  final _userStatusStreamController = StreamController<User>();
+  final _userStatusStreamController = BehaviorSubject<User>();
 
   UserRepositoryImpl(this._localDataSource, this._remoteDataSource);
 

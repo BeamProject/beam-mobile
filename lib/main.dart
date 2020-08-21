@@ -1,5 +1,6 @@
 import 'package:beam/features/data/local/storage.dart';
 import 'package:beam/features/data/user_repository_impl.dart';
+import 'package:beam/features/presentation/dashboard/bloc/dashboard_bloc.dart';
 import 'package:beam/features/presentation/splash/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +16,7 @@ import 'features/domain/usecases/log_out.dart';
 import 'features/presentation/auth/auth_bloc.dart';
 import 'features/presentation/auth/auth_event.dart';
 import 'features/presentation/auth/auth_state.dart';
+import 'features/presentation/dashboard/dashboard_page.dart';
 import 'features/presentation/login/bloc/login_bloc.dart';
 import 'features/presentation/login/page/login_page.dart';
 import 'features/presentation/onboarding/onboarding_screen.dart';
@@ -38,6 +40,9 @@ void main() {
     BlocProvider(
       create: (_) => LoginBloc(logIn),
     ),
+    BlocProvider(
+      create: (_) => DashboardBloc(getCurrentUser)
+    )
   ], child: MyApp()));
 }
 
@@ -80,7 +85,7 @@ class _AppViewState extends State<AppView> {
               listener: (context, state) {
                 if (state.user != null) {
                   _navigator.pushAndRemoveUntil<void>(
-                      MyHomePage.route(), (route) => false);
+                      DashboardPage.route(), (route) => false);
                 } else {
                   _navigator.pushAndRemoveUntil<void>(
                       OnboardingScreen.route(), (route) => false);
@@ -88,60 +93,7 @@ class _AppViewState extends State<AppView> {
               },
               child: child);
         },
-        onGenerateRoute: (_) => OnboardingScreen.route());
+        onGenerateRoute: (_) => SplashPage.route());
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  static Route route() {
-    return MaterialPageRoute<void>(
-        builder: (_) => MyHomePage(
-              title: "Beam",
-            ));
-  }
-
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ),
-    );
-  }
-}

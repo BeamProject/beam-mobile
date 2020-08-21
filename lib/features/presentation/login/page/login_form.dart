@@ -1,4 +1,3 @@
-
 import 'package:beam/features/presentation/login/bloc/login_bloc.dart';
 import 'package:beam/features/presentation/login/bloc/login_event.dart';
 import 'package:beam/features/presentation/login/bloc/login_state.dart';
@@ -40,13 +39,19 @@ class _UsernameInput extends StatelessWidget {
       buildWhen: (previous, current) => previous.username != current.username,
       builder: (context, state) {
         return TextField(
+            style: TextStyle(color: Colors.white),
             onChanged: (username) =>
                 context.bloc<LoginBloc>().add(LoginUsernameChanged(username)),
             decoration: InputDecoration(
-                labelText: 'Username',
-                errorText: state.formStatus == FormStatus.invalid
-                    ? 'username invalid'
-                    : null));
+              labelText: 'Username',
+              labelStyle: new TextStyle(color: Colors.white),
+              errorText: state.formStatus == FormStatus.invalid
+                  ? 'username invalid'
+                  : null,
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white),
+              ),
+            ));
       },
     );
   }
@@ -59,13 +64,20 @@ class _PasswordInput extends StatelessWidget {
       buildWhen: (previous, current) => previous.password != current.password,
       builder: (context, state) {
         return TextField(
+            style: TextStyle(color: Colors.white),
+            obscureText: true,
             onChanged: (password) =>
                 context.bloc<LoginBloc>().add(LoginPasswordChanged(password)),
             decoration: InputDecoration(
-                labelText: 'Password',
-                errorText: state.formStatus == FormStatus.invalid
-                    ? 'password invalid'
-                    : null));
+              labelText: 'Password',
+              labelStyle: new TextStyle(color: Colors.white),
+              errorText: state.formStatus == FormStatus.invalid
+                  ? 'password invalid'
+                  : null,
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.white),
+              ),
+            ));
       },
     );
   }
@@ -84,11 +96,13 @@ class _LoginButton extends StatelessWidget {
                 child: const Text('Login'),
                 onPressed: (state.formStatus == FormStatus.valid)
                     ? () {
-                      print('state valid');
+                        print('state valid');
                         context.bloc<LoginBloc>().add(LoginDetailsSubmitted());
                       }
-                    : (){
-                      print('state invalid: ' + state.formStatus.toString());  return null;});
+                    : () {
+                        print('state invalid: ' + state.formStatus.toString());
+                        return null;
+                      });
       },
     );
   }

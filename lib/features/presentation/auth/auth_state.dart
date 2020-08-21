@@ -13,7 +13,7 @@ class AuthenticationState extends Equatable {
       : this._(user: null);
 
   const AuthenticationState.authenticated(User user)
-      : this._( user: user);
+      : this._(user: user);
 
   @override
   List<Object> get props => [user];
