@@ -1,5 +1,3 @@
-
-
 import 'package:beam/features/domain/entities/user.dart';
 import 'package:beam/features/domain/repositories/user_repository.dart';
 

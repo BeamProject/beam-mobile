@@ -1,0 +1,5 @@
+enum LoginResult {
+  SUCCESS,
+  CREDENTIALS_ERROR,
+  TIMEOUT
+}

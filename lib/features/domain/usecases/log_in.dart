@@ -1,4 +1,5 @@
 
+import 'package:beam/features/domain/entities/login_result.dart';
 import 'package:beam/features/domain/repositories/user_repository.dart';
 
 class LogIn {
@@ -6,7 +7,7 @@ class LogIn {
 
   LogIn(this._userRepository);
 
-  Future<void> call(String username, String password) {
+  Future<LoginResult> call(String username, String password) {
     return _userRepository.logInWithEmailAndPassword(username, password);
   }
 }

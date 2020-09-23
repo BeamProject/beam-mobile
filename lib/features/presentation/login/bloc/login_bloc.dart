@@ -1,4 +1,5 @@
 
+import 'package:beam/features/domain/entities/login_result.dart';
 import 'package:beam/features/domain/usecases/log_in.dart';
 import 'package:bloc/bloc.dart';
 
@@ -19,8 +20,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     } else if (event is LoginDetailsSubmitted) {
       try {
         yield state.copy(formStatus: FormStatus.submissionInProgress);
-        await _logIn(state.username, state.password);
-        yield state.copy(formStatus: FormStatus.submissionSuccess);
+        final loginResult = await _logIn(state.username, state.password);
+        if (loginResult == LoginResult.SUCCESS) {
+          yield state.copy(formStatus: FormStatus.submissionSuccess);
+        } else {
+          yield state.copy(formStatus: FormStatus.submissionFailure);
+        }
       } on Exception {
         yield state.copy(formStatus: FormStatus.submissionFailure);
       }
