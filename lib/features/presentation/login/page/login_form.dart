@@ -96,11 +96,9 @@ class _LoginButton extends StatelessWidget {
                 child: const Text('Login'),
                 onPressed: (state.formStatus == FormStatus.valid)
                     ? () {
-                        print('state valid');
                         context.bloc<LoginBloc>().add(LoginDetailsSubmitted());
                       }
                     : () {
-                        print('state invalid: ' + state.formStatus.toString());
                         return null;
                       });
       },

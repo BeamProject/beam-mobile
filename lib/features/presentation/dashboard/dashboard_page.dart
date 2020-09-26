@@ -1,3 +1,5 @@
+import 'package:beam/features/presentation/auth/auth_bloc.dart';
+import 'package:beam/features/presentation/auth/auth_event.dart';
 import 'package:beam/features/presentation/dashboard/bloc/dashboard_bloc.dart';
 import 'package:beam/features/presentation/dashboard/bloc/dashboard_state.dart';
 import 'package:flutter/cupertino.dart';
@@ -28,15 +30,27 @@ class _DashboardPageState extends State<DashboardPage> {
           title: Text(widget.title),
         ),
         backgroundColor: Color(0xFF2C2D2D),
-        body: Center(child: BlocBuilder<DashboardBloc, DashboardState>(
-          builder: (context, state) {
-            return Text("Hello ${state.username}",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 50,
-                    color: Colors.white));
-          },
-        )));
+        body: Center(
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+              BlocBuilder<DashboardBloc, DashboardState>(
+                builder: (context, state) {
+                  return Text("Hello ${state.username ?? ""}",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 50,
+                          color: Colors.white));
+                },
+              ),
+              const Padding(padding: EdgeInsets.all(12)),
+              RaisedButton(
+                  child: const Text('Logout'),
+                  onPressed: () => context
+                      .bloc<AuthBloc>()
+                      .add(AuthenticationLogOutRequested()))
+            ])));
   }
 }
