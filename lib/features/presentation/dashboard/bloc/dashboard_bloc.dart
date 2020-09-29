@@ -7,11 +7,11 @@ import 'package:beam/features/presentation/dashboard/bloc/dashboard_state.dart';
 import 'package:bloc/bloc.dart';
 
 class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
-  final GetCurrentUser _getCurrentUser;
+  final ObserveUser _observeUser;
   StreamSubscription<User> _userDataSubscription;
 
-  DashboardBloc(this._getCurrentUser) : super(DashboardState.empty()) {
-    _userDataSubscription = _getCurrentUser().listen((user) {
+  DashboardBloc(this._observeUser) : super(DashboardState.empty()) {
+    _userDataSubscription = _observeUser().listen((user) {
       add(UserDataChanged(user));
     });
   }
@@ -24,7 +24,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   }
 
   DashboardState _mapUserDataChangedToState(UserDataChanged event) {
-    return DashboardState(event?.user?.username);
+    return DashboardState(event?.user);
   }
 
   @override

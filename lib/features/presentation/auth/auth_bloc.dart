@@ -11,20 +11,20 @@ import 'auth_event.dart';
 import 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
-  final GetCurrentUser _getCurrentUser;
+  final ObserveUser _observeUser;
   final LogOut _logOut;
   final AutoLogIn _autoLogIn;
   StreamSubscription<User> _authenticationStatusSubscription;
 
   AuthBloc(
-      {@required GetCurrentUser getCurrentUser,
+      {@required ObserveUser getCurrentUser,
       @required LogOut logOut,
       @required AutoLogIn autoLogIn})
-      : _getCurrentUser = getCurrentUser,
+      : _observeUser = getCurrentUser,
         _logOut = logOut,
         _autoLogIn = autoLogIn,
         super(const AuthenticationState.unknown()) {
-    _authenticationStatusSubscription = _getCurrentUser().listen((user) {
+    _authenticationStatusSubscription = _observeUser().listen((user) {
       add(AuthenticationStatusChanged(user));
     });
   }

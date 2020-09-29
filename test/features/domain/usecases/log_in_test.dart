@@ -8,7 +8,7 @@ class FakeUserRepository extends Fake implements UserRepository {
   LoginResult _loginResult = LoginResult.SUCCESS;
 
   @override
-  Future<LoginResult> logInWithEmailAndPassword(
+  Future<LoginResult> logIn(
       String username, String password) {
     return Future.value(_loginResult);
   }
@@ -27,10 +27,10 @@ void main() {
   });
 
   test("Credential error", () {
-    userRepository.setExpectedLoginResult(LoginResult.CREDENTIALS_ERROR);
+    userRepository.setExpectedLoginResult(LoginResult.ERROR);
     final logIn = LogIn(userRepository);
     expect(logIn("John", "password"),
-        completion(equals(LoginResult.CREDENTIALS_ERROR)));
+        completion(equals(LoginResult.ERROR)));
   });
 
   test("Timeout", () {

@@ -37,7 +37,8 @@ class _DashboardPageState extends State<DashboardPage> {
                 children: <Widget>[
               BlocBuilder<DashboardBloc, DashboardState>(
                 builder: (context, state) {
-                  return Text("Hello ${state.username ?? ""}",
+                  return Text(
+                      "Hello ${state.user?.firstName ?? ""} ${state.user?.lastName ?? ""}",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           fontWeight: FontWeight.bold,

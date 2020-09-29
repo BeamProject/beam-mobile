@@ -21,17 +21,18 @@ void main() {
     });
 
     group('remote source returns the user', () {
-      const testUser = const User(id: 1, username: 'john@', authToken: 'token');
+      const testUser = const User(id: "1", firstName: 'john@');
       setUp(() {
-        when(userRemoteDataSource.logInWithEmailAndPassword('John', 'pass'))
-            .thenAnswer((_) async => testUser);
+        when(userRemoteDataSource.logIn('John', 'pass'))
+            .thenAnswer((_) async => LoginResult.SUCCESS);
+        when(userRemoteDataSource.getUser()).thenAnswer((_) async => testUser);
       });
 
       test('return SUCCESS', () {
         final userRepository =
             UserRepositoryImpl(userLocalDataSource, userRemoteDataSource);
 
-        expect(userRepository.logInWithEmailAndPassword('John', 'pass'),
+        expect(userRepository.logIn('John', 'pass'),
             completion(equals(LoginResult.SUCCESS)));
       });
 
@@ -39,7 +40,7 @@ void main() {
         final userRepository =
             UserRepositoryImpl(userLocalDataSource, userRemoteDataSource);
 
-        await userRepository.logInWithEmailAndPassword('John', 'pass');
+        await userRepository.logIn('John', 'pass');
 
         verify(userLocalDataSource.updateUser(testUser));
       });
@@ -48,9 +49,10 @@ void main() {
         final userRepository =
             UserRepositoryImpl(userLocalDataSource, userRemoteDataSource);
 
-        await userRepository.logInWithEmailAndPassword('John', 'pass');
+        await userRepository.logIn('John', 'pass');
 
-        expect(userRepository.observeUser(), emits(UserMapper.mapToUser(testUser)));
+        expect(userRepository.observeUser(),
+            emits(UserMapper.mapToUser(testUser)));
       });
     });
   });
