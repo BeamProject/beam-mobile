@@ -1,4 +1,6 @@
-class Credentials {
+import 'package:equatable/equatable.dart';
+
+class Credentials extends Equatable {
   static const AUTH_TOKEN_KEY = "token";
   static const REFRESH_TOKEN_KEY = "refresh_token";
   static const EXPIRATION_KEY = "expiration";
@@ -21,4 +23,7 @@ class Credentials {
         refreshToken: json[REFRESH_TOKEN_KEY],
         expiration: expiration);
   }
+
+  @override
+  List<Object> get props => [authToken, refreshToken, expiration];
 }

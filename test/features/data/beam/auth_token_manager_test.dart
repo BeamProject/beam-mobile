@@ -23,7 +23,7 @@ void main() {
         Credentials(authToken: "token", refreshToken: "", expiration: null));
     expect(authTokenManager.getAuthToken(), completion("token"));
   });
-  
+
   test('get token without cache', () async {
     await authTokenManager.saveCredentials(
         Credentials(authToken: "token", refreshToken: "", expiration: null));
