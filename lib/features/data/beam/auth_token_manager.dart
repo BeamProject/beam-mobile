@@ -1,5 +1,4 @@
 import 'package:beam/features/data/beam/auth_storage.dart';
-import 'package:beam/features/data/beam/beam_service.dart';
 import 'package:beam/features/data/beam/credentials.dart';
 
 class AuthTokenManager {

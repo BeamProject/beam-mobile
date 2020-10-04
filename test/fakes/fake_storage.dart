@@ -17,7 +17,7 @@ class FakeStorage implements FlutterSecureStorage {
 
   @override
   Future<void> deleteAll({IOSOptions iOptions, AndroidOptions aOptions}) {
-    throw UnimplementedError();
+    _cacheStorage.clear();
   }
 
   @override
