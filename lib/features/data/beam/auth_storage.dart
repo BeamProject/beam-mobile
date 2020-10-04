@@ -27,7 +27,6 @@ class AuthStorage {
     var futures = <Future>[];
     futures
         .add(_storage.write(key: AUTH_TOKEN_KEY, value: credentials.authToken));
-    print(credentials.refreshToken);
     futures.add(_storage.write(
         key: REFRESH_TOKEN_KEY, value: credentials.refreshToken));
     futures.add(_storage.write(

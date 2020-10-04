@@ -3,6 +3,7 @@ import 'package:beam/features/data/beam/beam_service.dart';
 import 'package:beam/features/data/beam/credentials.dart';
 
 class AuthTokenManager {
+  static const _AUTH_HEADER_PREFIX = "JWT";
   final AuthStorage _authStorage;
   Credentials _cachedCredentials;
 
@@ -21,7 +22,7 @@ class AuthTokenManager {
 
   Future<String> getAuthHeader() async {
     final token = await getAuthToken();
-    return 'JWT ' + token;
+    return '$_AUTH_HEADER_PREFIX ' + token;
   }
 
   Future<void> saveCredentials(Credentials credentials) {

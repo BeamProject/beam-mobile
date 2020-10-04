@@ -30,7 +30,6 @@ class BeamUserRepository implements UserRemoteDataSource {
         await _authTokenManager.saveCredentials(credentials);
         return LoginResult.SUCCESS;
       }
-      return LoginResult.ERROR;
     }
     return LoginResult.ERROR;
   }

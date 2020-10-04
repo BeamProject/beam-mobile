@@ -1,4 +1,8 @@
 class Credentials {
+  static const AUTH_TOKEN_KEY = "token";
+  static const REFRESH_TOKEN_KEY = "refresh_token";
+  static const EXPIRATION_KEY = "expiration";
+
   final String authToken;
   final String refreshToken;
   final DateTime expiration;
@@ -9,12 +13,12 @@ class Credentials {
   Credentials({this.authToken, this.refreshToken, this.expiration});
 
   factory Credentials.fromJson(Map<String, dynamic> json) {
-    DateTime expiration = (json['expiration'] is int)
-        ? DateTime.fromMillisecondsSinceEpoch(json['expiration'])
+    DateTime expiration = (json[EXPIRATION_KEY] is int)
+        ? DateTime.fromMillisecondsSinceEpoch(json[EXPIRATION_KEY])
         : null;
     return Credentials(
-        authToken: json['token'],
-        refreshToken: json['refresh_token'],
+        authToken: json[AUTH_TOKEN_KEY],
+        refreshToken: json[REFRESH_TOKEN_KEY],
         expiration: expiration);
   }
 }
