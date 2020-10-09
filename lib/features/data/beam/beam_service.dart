@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 class BeamService {
   static const BEAM_ENDPOINT = "https://api.beamproject.co";
-  static const HEADERS = <String, String> {
+  static const HEADERS = <String, String>{
     'Content-Type': 'application/json',
   };
 
@@ -13,9 +13,9 @@ class BeamService {
   }
 
   Future<http.Response> post(String api,
-      {Map<String, String> headers, dynamic body, Encoding encoding}) {
+      {Map<String, String> headers, dynamic body}) {
+    headers.addAll(HEADERS);
     return http.post(BEAM_ENDPOINT + api,
-        headers: HEADERS,
-        body: jsonEncode(body));
+        headers: headers, body: jsonEncode(body));
   }
 }
