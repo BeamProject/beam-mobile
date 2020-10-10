@@ -3,11 +3,13 @@ import 'dart:convert';
 import 'package:beam/features/data/beam/auth_token_manager.dart';
 import 'package:beam/features/data/beam/beam_service_auth_wrapper.dart';
 import 'package:beam/features/data/beam/credentials.dart';
+import 'package:beam/features/data/beam/model/user.dart' as beam;
 import 'package:beam/features/data/datasources/user_remote_data_source.dart';
-import 'package:beam/features/data/model/user.dart';
 import 'package:beam/features/domain/entities/login_result.dart';
+import 'package:beam/features/domain/entities/user.dart';
 
 import 'beam_service.dart';
+import 'model/user_mapper.dart';
 
 class BeamUserRepository implements UserRemoteDataSource {
   static const GET_USER_API = '/user/me';
@@ -38,7 +40,8 @@ class BeamUserRepository implements UserRemoteDataSource {
   Future<User> getUser() async {
     final response = await _beamServiceAuthWrapper.get(GET_USER_API);
     if (response.statusCode == 200) {
-      return User.fromJson(json.decode(response.body));
+      return UserMapper.mapFromBeamUser(
+          beam.User.fromJson(json.decode(response.body)));
     }
     return null;
   }

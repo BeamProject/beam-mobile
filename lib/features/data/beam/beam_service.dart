@@ -8,14 +8,14 @@ class BeamService {
   };
 
   Future<http.Response> get(String api, {Map<String, String> headers}) {
-    headers.addAll(HEADERS);
-    return http.get(BEAM_ENDPOINT + api, headers: headers);
+    headers?.addAll(HEADERS);
+    return http.get(BEAM_ENDPOINT + api, headers: headers ?? HEADERS);
   }
 
   Future<http.Response> post(String api,
       {Map<String, String> headers, dynamic body}) {
-    headers.addAll(HEADERS);
+    headers?.addAll(HEADERS);
     return http.post(BEAM_ENDPOINT + api,
-        headers: headers, body: jsonEncode(body));
+        headers: headers ?? HEADERS, body: jsonEncode(body));
   }
 }

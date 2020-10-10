@@ -1,5 +1,5 @@
-import 'package:beam/features/data/model/user.dart';
 import 'package:beam/features/domain/entities/login_result.dart';
+import 'package:beam/features/domain/entities/user.dart';
 
 abstract class UserRemoteDataSource {
   Future<LoginResult> logIn(

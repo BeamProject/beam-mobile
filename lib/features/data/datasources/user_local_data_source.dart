@@ -1,4 +1,4 @@
-import 'package:beam/features/data/model/user.dart';
+import 'package:beam/features/domain/entities/user.dart';
 
 abstract class UserLocalDataSource {
   Future<User> getUser();
