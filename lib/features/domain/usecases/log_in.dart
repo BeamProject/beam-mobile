@@ -8,6 +8,6 @@ class LogIn {
   LogIn(this._userRepository);
 
   Future<LoginResult> call(String username, String password) {
-    return _userRepository.logInWithEmailAndPassword(username, password);
+    return _userRepository.logIn(username, password);
   }
 }

@@ -4,7 +4,7 @@ import 'package:beam/features/domain/usecases/get_current_user.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
-final testUser = User(id: 1, username: 'John Doe');
+final testUser = User(id: "1", firstName: 'John Doe');
 
 class FakeUserRepository extends Fake implements UserRepository {
   @override
@@ -15,7 +15,7 @@ class FakeUserRepository extends Fake implements UserRepository {
 
 void main() {
   test("Emits correct user data", () {
-    final getCurrentUser = GetCurrentUser(FakeUserRepository());
+    final getCurrentUser = ObserveUser(FakeUserRepository());
 
     expect(getCurrentUser(), emitsInOrder([
       null,

@@ -86,6 +86,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
 class Indicator extends StatelessWidget {
   final bool _isActive;
+
   Indicator(this._isActive);
 
   @override

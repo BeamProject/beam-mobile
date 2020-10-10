@@ -1,5 +1,5 @@
 enum LoginResult {
   SUCCESS,
-  CREDENTIALS_ERROR,
+  ERROR,
   TIMEOUT
 }

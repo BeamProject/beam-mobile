@@ -2,9 +2,10 @@ import 'package:beam/features/domain/entities/login_result.dart';
 import 'package:beam/features/domain/entities/user.dart';
 
 abstract class UserRepository {
-  Stream<User> observeUser();
+  Future<LoginResult> logIn(
+      String username, String password);
 
-  Future<LoginResult> logInWithEmailAndPassword(String username, String password);
+  Stream<User> observeUser();
 
   Future<void> logOut();
 
