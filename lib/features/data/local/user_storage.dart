@@ -1,5 +1,5 @@
 import 'package:beam/features/data/datasources/user_local_data_source.dart';
-import 'package:beam/features/data/model/user.dart';
+import 'package:beam/features/domain/entities/user.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class UserStorage implements UserLocalDataSource {

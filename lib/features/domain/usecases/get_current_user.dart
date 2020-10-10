@@ -7,6 +7,15 @@ class ObserveUser {
   ObserveUser(this._userRepository);
 
   Stream<User> call() {
-    return _userRepository.observeUser();
+    return _userRepository
+        .observeUser()
+        .map((user) => _isValidUser(user) ? user : null);
+  }
+
+  bool _isValidUser(User user) {
+    return user != null &&
+        user.id != null &&
+        user.firstName != null &&
+        user.lastName != null;
   }
 }

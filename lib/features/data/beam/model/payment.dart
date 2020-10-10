@@ -9,7 +9,7 @@ class Payment extends Equatable {
 
   Map<String, dynamic> toJson() {
     return {
-      "userId": userId,
+      "_id": userId,
       "amount": amount
     };
   }
