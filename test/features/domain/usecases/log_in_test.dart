@@ -19,8 +19,12 @@ class FakeUserRepository extends Fake implements UserRepository {
 }
 
 void main() {
-  final userRepository = FakeUserRepository();
-
+  FakeUserRepository userRepository;
+  
+  setUp(() {
+    userRepository = FakeUserRepository();
+  });
+  
   test("Logs in successfully", () {
     final logIn = LogIn(userRepository);
     expect(logIn("John", "password"), completion(equals(LoginResult.SUCCESS)));
