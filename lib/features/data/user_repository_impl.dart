@@ -7,8 +7,6 @@ import 'package:beam/features/domain/entities/user.dart';
 import 'package:beam/features/domain/repositories/user_repository.dart';
 import 'package:rxdart/rxdart.dart';
 
-import 'model/user_mapper.dart';
-
 class UserRepositoryImpl implements UserRepository {
   static const LOGIN_TIMEOUT = const Duration(seconds: 5);
   final UserLocalDataSource _localDataSource;
@@ -32,7 +30,7 @@ class UserRepositoryImpl implements UserRepository {
     if (loginResult == LoginResult.SUCCESS) {
       final user = await _remoteDataSource.getUser();
       await _localDataSource.updateUser(user);
-      _userStatusStreamController.sink.add(UserMapper.mapToUser(user));
+      _userStatusStreamController.sink.add(user);
     }
     return loginResult;
   }
@@ -46,11 +44,7 @@ class UserRepositoryImpl implements UserRepository {
   @override
   void restoreSession() async {
     var user = await _localDataSource.getUser();
-    if (user != null) {
-      _userStatusStreamController.sink.add(UserMapper.mapToUser(user));
-    } else {
-      _userStatusStreamController.sink.add(null);
-    }
+    _userStatusStreamController.sink.add(user);
   }
 
   void dispose() {

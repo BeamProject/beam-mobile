@@ -3,7 +3,9 @@ import 'package:beam/features/data/beam/auth_token_manager.dart';
 import 'package:beam/features/data/beam/beam_service.dart';
 import 'package:beam/features/data/beam/beam_service_auth_wrapper.dart';
 import 'package:beam/features/data/local/user_storage.dart';
+import 'package:beam/features/data/payment_repository_impl.dart';
 import 'package:beam/features/data/user_repository_impl.dart';
+import 'package:beam/features/domain/usecases/make_delayed_payment.dart';
 import 'package:beam/features/presentation/dashboard/bloc/dashboard_bloc.dart';
 import 'package:beam/features/presentation/splash/splash_page.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +14,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'features/data/beam/beam_payment_repository.dart';
 import 'features/data/beam/beam_user_repository.dart';
 import 'features/domain/usecases/auto_log_in.dart';
 import 'features/domain/usecases/get_current_user.dart';
@@ -36,6 +39,9 @@ void main() {
   final beamUserRepository =
       BeamUserRepository(beamServiceAuthWrapper, beamService, authTokenManager);
   final userRepository = UserRepositoryImpl(userStorage, beamUserRepository);
+  final beamPaymentRepository = BeamPaymentRepository(beamServiceAuthWrapper);
+  final paymentRepository = PaymentRepositoryImpl(beamPaymentRepository);
+  final makeDelayedPayment = MakeDelayedPayment(paymentRepository, userRepository);
 
   final logIn = LogIn(userRepository);
   final observeUser = ObserveUser(userRepository);

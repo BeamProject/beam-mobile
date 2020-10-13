@@ -21,6 +21,9 @@ class AuthTokenManager {
 
   Future<String> getAuthHeader() async {
     final token = await getAuthToken();
+    if (token == null) {
+      return null;
+    }
     return '$_AUTH_HEADER_PREFIX ' + token;
   }
 

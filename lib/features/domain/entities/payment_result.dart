@@ -1,0 +1,5 @@
+enum PaymentResult {
+  SUCCESS,
+  ERROR_INVALID_USER,
+  ERROR_UNKNOWN
+}

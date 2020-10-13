@@ -1,9 +1,8 @@
 import 'package:beam/features/data/datasources/user_local_data_source.dart';
 import 'package:beam/features/data/datasources/user_remote_data_source.dart';
-import 'package:beam/features/data/model/user.dart';
-import 'package:beam/features/data/model/user_mapper.dart';
 import 'package:beam/features/data/user_repository_impl.dart';
 import 'package:beam/features/domain/entities/login_result.dart';
+import 'package:beam/features/domain/entities/user.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -51,8 +50,7 @@ void main() {
 
         await userRepository.logIn('John', 'pass');
 
-        expect(userRepository.observeUser(),
-            emits(UserMapper.mapToUser(testUser)));
+        expect(userRepository.observeUser(), emits(testUser));
       });
     });
   });
