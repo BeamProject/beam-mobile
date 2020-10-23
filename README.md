@@ -1,3 +1,3 @@
 # Beam
 
-Beam Mobile Application for donating to clean energy via good habits
+Beam Mobile Application for supporting clean energy through good habits
