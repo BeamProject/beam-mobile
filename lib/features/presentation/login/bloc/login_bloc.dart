@@ -2,10 +2,12 @@
 import 'package:beam/features/domain/entities/login_result.dart';
 import 'package:beam/features/domain/usecases/log_in.dart';
 import 'package:bloc/bloc.dart';
+import 'package:injectable/injectable.dart';
 
 import 'login_event.dart';
 import 'login_state.dart';
 
+@injectable
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
   final LogIn _logIn;
 

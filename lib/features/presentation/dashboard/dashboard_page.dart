@@ -1,3 +1,4 @@
+import 'package:beam/common/di/config.dart';
 import 'package:beam/features/presentation/auth/auth_bloc.dart';
 import 'package:beam/features/presentation/auth/auth_event.dart';
 import 'package:beam/features/presentation/dashboard/bloc/dashboard_bloc.dart';
@@ -9,9 +10,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class DashboardPage extends StatefulWidget {
   static Route route() {
     return MaterialPageRoute<void>(
-        builder: (_) => DashboardPage(
+        builder: (_) => BlocProvider(
+            create: (_) => getIt<DashboardBloc>(),
+            child: DashboardPage(
               title: "Beam",
-            ));
+            )));
   }
 
   DashboardPage({Key key, this.title}) : super(key: key);

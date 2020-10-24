@@ -8,6 +8,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 
+import '../../features/presentation/auth/auth_bloc.dart';
 import '../../features/data/beam/auth_storage.dart';
 import '../../features/data/beam/auth_token_manager.dart';
 import '../../features/domain/usecases/auto_log_in.dart';
@@ -15,8 +16,10 @@ import '../../features/data/beam/beam_payment_repository.dart';
 import '../../features/data/beam/beam_service.dart';
 import '../../features/data/beam/beam_service_auth_wrapper.dart';
 import '../../features/data/beam/beam_user_repository.dart';
+import '../../features/presentation/dashboard/bloc/dashboard_bloc.dart';
 import '../../features/domain/usecases/log_in.dart';
 import '../../features/domain/usecases/log_out.dart';
+import '../../features/presentation/login/bloc/login_bloc.dart';
 import '../../features/domain/usecases/make_delayed_payment.dart';
 import '../../features/domain/usecases/get_current_user.dart';
 import '../../features/data/datasources/payment_remote_repository.dart';
@@ -57,9 +60,16 @@ GetIt $initGetIt(
   gh.factory<AutoLogIn>(() => AutoLogIn(get<UserRepository>()));
   gh.factory<LogIn>(() => LogIn(get<UserRepository>()));
   gh.factory<LogOut>(() => LogOut(get<UserRepository>()));
+  gh.factory<LoginBloc>(() => LoginBloc(get<LogIn>()));
   gh.factory<MakeDelayedPayment>(() =>
       MakeDelayedPayment(get<PaymentRepository>(), get<UserRepository>()));
   gh.factory<ObserveUser>(() => ObserveUser(get<UserRepository>()));
+  gh.factory<AuthBloc>(() => AuthBloc(
+        get<ObserveUser>(),
+        get<LogOut>(),
+        get<AutoLogIn>(),
+      ));
+  gh.factory<DashboardBloc>(() => DashboardBloc(get<ObserveUser>()));
 
   // Eager singletons must be registered in the right order
   gh.singleton<FlutterSecureStorage>(storageModule.storage);

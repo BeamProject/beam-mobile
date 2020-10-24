@@ -6,24 +6,20 @@ import 'package:beam/features/domain/usecases/get_current_user.dart';
 import 'package:beam/features/domain/usecases/log_out.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
+import 'package:injectable/injectable.dart';
 
 import 'auth_event.dart';
 import 'auth_state.dart';
 
+@injectable
 class AuthBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
   final ObserveUser _observeUser;
   final LogOut _logOut;
   final AutoLogIn _autoLogIn;
   StreamSubscription<User> _authenticationStatusSubscription;
 
-  AuthBloc(
-      {@required ObserveUser getCurrentUser,
-      @required LogOut logOut,
-      @required AutoLogIn autoLogIn})
-      : _observeUser = getCurrentUser,
-        _logOut = logOut,
-        _autoLogIn = autoLogIn,
-        super(const AuthenticationState.unknown()) {
+  AuthBloc(this._observeUser, this._logOut, this._autoLogIn)
+      : super(const AuthenticationState.unknown()) {
     _authenticationStatusSubscription = _observeUser().listen((user) {
       add(AuthenticationStatusChanged(user));
     });

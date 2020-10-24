@@ -5,7 +5,9 @@ import 'package:beam/features/domain/usecases/get_current_user.dart';
 import 'package:beam/features/presentation/dashboard/bloc/dashboard_event.dart';
 import 'package:beam/features/presentation/dashboard/bloc/dashboard_state.dart';
 import 'package:bloc/bloc.dart';
+import 'package:injectable/injectable.dart';
 
+@injectable
 class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   final ObserveUser _observeUser;
   StreamSubscription<User> _userDataSubscription;
