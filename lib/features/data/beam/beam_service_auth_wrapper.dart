@@ -1,7 +1,9 @@
 import 'package:beam/features/data/beam/auth_token_manager.dart';
 import 'package:beam/features/data/beam/beam_service.dart';
 import 'package:http/http.dart' as http;
+import 'package:injectable/injectable.dart';
 
+@injectable
 class BeamServiceAuthWrapper {
   static const AUTHENTICATION_HEADER_KEY = "authentication";
   final AuthTokenManager _authTokenManager;

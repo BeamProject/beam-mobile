@@ -6,7 +6,9 @@ import 'package:beam/features/data/beam/model/payment_result.dart' as beam;
 import 'package:beam/features/data/datasources/payment_remote_repository.dart';
 import 'package:beam/features/domain/entities/payment.dart';
 import 'package:beam/features/domain/entities/payment_result.dart';
+import 'package:injectable/injectable.dart';
 
+@Injectable(as: PaymentRemoteRepository)
 class BeamPaymentRepository implements PaymentRemoteRepository {
   static const MAKE_DELAYED_PAYMENT_API = "/payment/delayedpayment";
 

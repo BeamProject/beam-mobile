@@ -14,8 +14,10 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'common/di/config.dart';
 import 'features/data/beam/beam_payment_repository.dart';
 import 'features/data/beam/beam_user_repository.dart';
+import 'features/data/datasources/user_local_data_source.dart';
 import 'features/domain/usecases/auto_log_in.dart';
 import 'features/domain/usecases/get_current_user.dart';
 import 'features/domain/usecases/log_in.dart';
@@ -29,24 +31,12 @@ import 'features/presentation/onboarding/onboarding_screen.dart';
 import 'l10n/app_localizations.dart';
 
 void main() {
-  final secureStorage = FlutterSecureStorage();
-  final userStorage = UserStorage(secureStorage);
-  final authStorage = AuthStorage(secureStorage);
-  final beamService = BeamService();
-  final authTokenManager = AuthTokenManager(authStorage);
-  final beamServiceAuthWrapper =
-      BeamServiceAuthWrapper(authTokenManager, beamService);
-  final beamUserRepository =
-      BeamUserRepository(beamServiceAuthWrapper, beamService, authTokenManager);
-  final userRepository = UserRepositoryImpl(userStorage, beamUserRepository);
-  final beamPaymentRepository = BeamPaymentRepository(beamServiceAuthWrapper);
-  final paymentRepository = PaymentRepositoryImpl(beamPaymentRepository);
-  final makeDelayedPayment = MakeDelayedPayment(paymentRepository, userRepository);
-
-  final logIn = LogIn(userRepository);
-  final observeUser = ObserveUser(userRepository);
-  final logOut = LogOut(userRepository);
-  final autoLogIn = AutoLogIn(userRepository);
+  configureDependencies();
+  final makeDelayedPayment = getIt<MakeDelayedPayment>();
+  final logIn = getIt<LogIn>();
+  final observeUser = getIt<ObserveUser>();
+  final logOut = getIt<LogOut>();
+  final autoLogIn = getIt<AutoLogIn>();
   runApp(MultiProvider(providers: [
     BlocProvider(
       create: (_) => AuthBloc(

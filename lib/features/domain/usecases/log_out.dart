@@ -1,5 +1,7 @@
 import 'package:beam/features/domain/repositories/user_repository.dart';
+import 'package:injectable/injectable.dart';
 
+@injectable
 class LogOut {
   final UserRepository _userRepository;
 

@@ -5,8 +5,10 @@ import 'package:beam/features/data/datasources/user_remote_data_source.dart';
 import 'package:beam/features/domain/entities/login_result.dart';
 import 'package:beam/features/domain/entities/user.dart';
 import 'package:beam/features/domain/repositories/user_repository.dart';
+import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
 
+@Singleton(as: UserRepository)
 class UserRepositoryImpl implements UserRepository {
   static const LOGIN_TIMEOUT = const Duration(seconds: 5);
   final UserLocalDataSource _localDataSource;

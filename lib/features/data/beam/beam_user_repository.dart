@@ -7,10 +7,12 @@ import 'package:beam/features/data/beam/model/user.dart' as beam;
 import 'package:beam/features/data/datasources/user_remote_data_source.dart';
 import 'package:beam/features/domain/entities/login_result.dart';
 import 'package:beam/features/domain/entities/user.dart';
+import 'package:injectable/injectable.dart';
 
 import 'beam_service.dart';
 import 'model/user_mapper.dart';
 
+@Injectable(as: UserRemoteDataSource)
 class BeamUserRepository implements UserRemoteDataSource {
   static const GET_USER_API = '/user/me';
   static const LOGIN_API = '/auth/login';

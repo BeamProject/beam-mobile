@@ -1,6 +1,8 @@
 import 'package:beam/features/data/beam/credentials.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:injectable/injectable.dart';
 
+@injectable
 class AuthStorage {
   static const AUTH_TOKEN_KEY = 'auth_token';
   static const REFRESH_TOKEN_KEY = 'refresh_token';

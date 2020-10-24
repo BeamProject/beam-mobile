@@ -1,7 +1,9 @@
 
 import 'package:beam/features/domain/entities/login_result.dart';
 import 'package:beam/features/domain/repositories/user_repository.dart';
+import 'package:injectable/injectable.dart';
 
+@injectable
 class LogIn {
   final UserRepository _userRepository;
 

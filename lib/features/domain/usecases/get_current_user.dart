@@ -1,6 +1,8 @@
 import 'package:beam/features/domain/entities/user.dart';
 import 'package:beam/features/domain/repositories/user_repository.dart';
+import 'package:injectable/injectable.dart';
 
+@injectable
 class ObserveUser {
   final UserRepository _userRepository;
 
