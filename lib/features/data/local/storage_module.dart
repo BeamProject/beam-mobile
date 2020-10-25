@@ -3,6 +3,6 @@ import 'package:injectable/injectable.dart';
 
 @module
 abstract class StorageModule {
-  @singleton
+  @Singleton(env: [Environment.prod])
   FlutterSecureStorage get storage => FlutterSecureStorage();
 }

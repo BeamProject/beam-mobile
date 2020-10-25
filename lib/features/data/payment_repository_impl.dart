@@ -4,7 +4,7 @@ import 'package:beam/features/domain/entities/payment_result.dart';
 import 'package:beam/features/domain/repositories/payment_repository.dart';
 import 'package:injectable/injectable.dart';
 
-@Injectable(as: PaymentRepository)
+@injectable
 class PaymentRepositoryImpl extends PaymentRepository {
   final PaymentRemoteRepository _paymentRemoteRepository;
 

@@ -1,52 +1,53 @@
-import 'package:beam/features/data/datasources/user_local_data_source.dart';
-import 'package:beam/features/data/datasources/user_remote_data_source.dart';
+import 'package:beam/common/di/config.dart';
+import 'package:beam/features/data/datasources/testing/datasources_module.dart';
 import 'package:beam/features/data/user_repository_impl.dart';
 import 'package:beam/features/domain/entities/login_result.dart';
 import 'package:beam/features/domain/entities/user.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:injectable/injectable.dart' as injectable;
 import 'package:mockito/mockito.dart';
-
-class MockUserLocalDataSource extends Mock implements UserLocalDataSource {}
-
-class MockUserRemoteDataSource extends Mock implements UserRemoteDataSource {}
 
 void main() {
   group('login user', () {
-    UserLocalDataSource userLocalDataSource;
-    UserRemoteDataSource userRemoteDataSource;
+    MockUserLocalDataSource mockUserLocalDataSource;
+    MockUserRemoteDataSource mockUserRemoteDataSource;
+
     setUp(() {
-      userLocalDataSource = MockUserLocalDataSource();
-      userRemoteDataSource = MockUserRemoteDataSource();
+      configureDependencies(injectable.Environment.test);
+      mockUserLocalDataSource = getIt<MockUserLocalDataSource>();
+      mockUserRemoteDataSource = getIt<MockUserRemoteDataSource>();
+    });
+
+    tearDown(() {
+      getIt.reset();
     });
 
     group('remote source returns the user', () {
       const testUser = const User(id: "1", firstName: 'john@');
       setUp(() {
-        when(userRemoteDataSource.logIn('John', 'pass'))
+        when(mockUserRemoteDataSource.logIn('John', 'pass'))
             .thenAnswer((_) async => LoginResult.SUCCESS);
-        when(userRemoteDataSource.getUser()).thenAnswer((_) async => testUser);
+        when(mockUserRemoteDataSource.getUser())
+            .thenAnswer((_) async => testUser);
       });
 
       test('return SUCCESS', () {
-        final userRepository =
-            UserRepositoryImpl(userLocalDataSource, userRemoteDataSource);
+        final userRepository = getIt<UserRepositoryImpl>();
 
         expect(userRepository.logIn('John', 'pass'),
             completion(equals(LoginResult.SUCCESS)));
       });
 
       test('updates local data source', () async {
-        final userRepository =
-            UserRepositoryImpl(userLocalDataSource, userRemoteDataSource);
+        final userRepository = getIt<UserRepositoryImpl>();
 
         await userRepository.logIn('John', 'pass');
 
-        verify(userLocalDataSource.updateUser(testUser));
+        verify(mockUserLocalDataSource.updateUser(testUser));
       });
 
       test('emits User', () async {
-        final userRepository =
-            UserRepositoryImpl(userLocalDataSource, userRemoteDataSource);
+        final userRepository = getIt<UserRepositoryImpl>();
 
         await userRepository.logIn('John', 'pass');
 

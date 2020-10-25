@@ -4,5 +4,5 @@ import 'package:injectable/injectable.dart';
 
 final getIt = GetIt.instance;
 
-@InjectableInit()
-void configureDependencies() => $initGetIt(getIt);
+@InjectableInit(generateForDir: ['lib'])
+void configureDependencies(String env) => $initGetIt(getIt, environment: env);

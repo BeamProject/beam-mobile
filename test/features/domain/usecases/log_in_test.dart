@@ -1,45 +1,37 @@
+import 'package:beam/common/di/config.dart';
 import 'package:beam/features/domain/entities/login_result.dart';
-import 'package:beam/features/domain/repositories/user_repository.dart';
+import 'package:beam/features/domain/repositories/testing/fake_user_repository.dart';
 import 'package:beam/features/domain/usecases/log_in.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-
-class FakeUserRepository extends Fake implements UserRepository {
-  LoginResult _loginResult = LoginResult.SUCCESS;
-
-  @override
-  Future<LoginResult> logIn(
-      String username, String password) {
-    return Future.value(_loginResult);
-  }
-
-  void setExpectedLoginResult(LoginResult loginResult) {
-    _loginResult = loginResult;
-  }
-}
+import 'package:injectable/injectable.dart' as injectable;
 
 void main() {
-  FakeUserRepository userRepository;
-  
+  FakeUserRepository fakeUserRepository;
+
   setUp(() {
-    userRepository = FakeUserRepository();
+    configureDependencies(injectable.Environment.test);
+    fakeUserRepository = getIt<FakeUserRepository>();
   });
-  
+
+  tearDown(() {
+    getIt.reset();
+  });
+
   test("Logs in successfully", () {
-    final logIn = LogIn(userRepository);
+    final logIn = getIt<LogIn>();
     expect(logIn("John", "password"), completion(equals(LoginResult.SUCCESS)));
   });
 
   test("Credential error", () {
-    userRepository.setExpectedLoginResult(LoginResult.ERROR);
-    final logIn = LogIn(userRepository);
+    fakeUserRepository.setExpectedLoginResult(LoginResult.ERROR);
+    final logIn = getIt<LogIn>();
     expect(logIn("John", "password"),
         completion(equals(LoginResult.ERROR)));
   });
 
   test("Timeout", () {
-    userRepository.setExpectedLoginResult(LoginResult.TIMEOUT);
-    final logIn = LogIn(userRepository);
+    fakeUserRepository.setExpectedLoginResult(LoginResult.TIMEOUT);
+    final logIn = getIt<LogIn>();
     expect(
         logIn("John", "password"), completion(equals((LoginResult.TIMEOUT))));
   });

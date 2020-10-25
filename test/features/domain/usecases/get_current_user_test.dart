@@ -1,29 +1,34 @@
+import 'package:beam/common/di/config.dart';
 import 'package:beam/features/domain/entities/user.dart';
-import 'package:beam/features/domain/repositories/user_repository.dart';
+import 'package:beam/features/domain/repositories/testing/fake_user_repository.dart';
 import 'package:beam/features/domain/usecases/get_current_user.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:injectable/injectable.dart' as injectable;
 
-final correctUser = User(id: "1", firstName: 'John', lastName: 'Doe');
+void main() {
+  final correctUser = User(id: "1", firstName: 'John', lastName: 'Doe');
+  FakeUserRepository fakeUserRepository;
 
-class FakeUserRepository extends Fake implements UserRepository {
-  @override
-  Stream<User> observeUser() {
-    return Stream.fromIterable([
+  setUp(() {
+    configureDependencies(injectable.Environment.test);
+    fakeUserRepository = getIt<FakeUserRepository>();
+  });
+
+  tearDown(() {
+    getIt.reset();
+  });
+
+  test("Emits correct user data", () {
+    fakeUserRepository.usersStream = Stream.fromIterable([
       null,
       correctUser,
       User(id: "1", firstName: 'John'),
       User(id: "1", lastName: 'Doe'),
       User(firstName: 'John', lastName: 'Doe')
     ]);
-  }
-}
-
-void main() {
-  test("Emits correct user data", () {
-    final getCurrentUser = ObserveUser(FakeUserRepository());
+    final observeUser = getIt<ObserveUser>();
 
     expect(
-        getCurrentUser(), emitsInOrder([null, correctUser, null, null, null]));
+        observeUser(), emitsInOrder([null, correctUser, null, null, null]));
   });
 }

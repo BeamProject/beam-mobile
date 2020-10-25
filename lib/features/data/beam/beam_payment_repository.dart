@@ -8,7 +8,7 @@ import 'package:beam/features/domain/entities/payment.dart';
 import 'package:beam/features/domain/entities/payment_result.dart';
 import 'package:injectable/injectable.dart';
 
-@Injectable(as: PaymentRemoteRepository)
+@injectable
 class BeamPaymentRepository implements PaymentRemoteRepository {
   static const MAKE_DELAYED_PAYMENT_API = "/payment/delayedpayment";
 

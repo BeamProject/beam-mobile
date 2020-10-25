@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:injectable/injectable.dart';
 
-@injectable
+@Injectable(env: [Environment.prod])
 class BeamService {
   static const BEAM_ENDPOINT = "https://api.beamproject.co";
   static const HEADERS = <String, String>{

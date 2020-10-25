@@ -2,6 +2,7 @@ import 'package:beam/features/presentation/splash/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:injectable/injectable.dart';
 
 import 'common/di/config.dart';
 import 'features/presentation/auth/auth_bloc.dart';
@@ -12,7 +13,7 @@ import 'features/presentation/onboarding/onboarding_screen.dart';
 import 'l10n/app_localizations.dart';
 
 void main() {
-  configureDependencies();
+  configureDependencies(Environment.prod);
   runApp(MyApp());
 }
 

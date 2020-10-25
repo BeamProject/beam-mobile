@@ -1,30 +1,28 @@
-import 'package:beam/features/data/beam/auth_storage.dart';
+import 'package:beam/common/di/config.dart';
 import 'package:beam/features/data/beam/auth_token_manager.dart';
 import 'package:beam/features/data/beam/beam_payment_repository.dart';
-import 'package:beam/features/data/beam/beam_service.dart';
-import 'package:beam/features/data/beam/beam_service_auth_wrapper.dart';
 import 'package:beam/features/data/beam/credentials.dart';
+import 'package:beam/features/data/beam/testing/mock_beam_service.dart';
 import 'package:beam/features/domain/entities/payment.dart';
 import 'package:beam/features/domain/entities/payment_result.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
+import 'package:injectable/injectable.dart' as injectable;
 import 'package:mockito/mockito.dart';
-
-import '../../../fakes/fake_storage.dart';
-
-class MockBeamService extends Mock implements BeamService {}
 
 void main() {
   final testPayment = Payment(userId: "1", amount: 20, currency: "USD");
   MockBeamService mockBeamService;
-  BeamServiceAuthWrapper beamServiceAuthWrapper;
   AuthTokenManager authTokenManager;
 
   setUp(() {
-    authTokenManager = AuthTokenManager(AuthStorage(FakeStorage()));
-    mockBeamService = MockBeamService();
-    beamServiceAuthWrapper =
-        BeamServiceAuthWrapper(authTokenManager, mockBeamService);
+    configureDependencies(injectable.Environment.test);
+    authTokenManager = getIt<AuthTokenManager>();
+    mockBeamService = getIt<MockBeamService>();
+  });
+
+  tearDown(() {
+    getIt.reset();
   });
 
   group('make payment', () {
@@ -36,8 +34,7 @@ void main() {
       when(mockBeamService.post(BeamPaymentRepository.MAKE_DELAYED_PAYMENT_API,
               headers: anyNamed('headers'), body: anyNamed('body')))
           .thenAnswer((_) => Future.value(Response('{"success": true}', 200)));
-      final beamPaymentRepository =
-          BeamPaymentRepository(beamServiceAuthWrapper);
+      final beamPaymentRepository = getIt<BeamPaymentRepository>();
 
       expect(beamPaymentRepository.makeDelayedPayment(testPayment),
           completion(PaymentResult.SUCCESS));
@@ -47,8 +44,7 @@ void main() {
       when(mockBeamService.post(BeamPaymentRepository.MAKE_DELAYED_PAYMENT_API,
               headers: anyNamed('headers'), body: anyNamed('body')))
           .thenAnswer((_) => Future.value(Response('{"success": false}', 200)));
-      final beamPaymentRepository =
-          BeamPaymentRepository(beamServiceAuthWrapper);
+      final beamPaymentRepository = getIt<BeamPaymentRepository>();
 
       expect(beamPaymentRepository.makeDelayedPayment(testPayment),
           completion(PaymentResult.ERROR_UNKNOWN));
@@ -58,8 +54,7 @@ void main() {
       when(mockBeamService.post(BeamPaymentRepository.MAKE_DELAYED_PAYMENT_API,
               headers: anyNamed('headers'), body: anyNamed('body')))
           .thenAnswer((_) => Future.value(Response("Error", 401)));
-      final beamPaymentRepository =
-          BeamPaymentRepository(beamServiceAuthWrapper);
+      final beamPaymentRepository = getIt<BeamPaymentRepository>();
 
       expect(beamPaymentRepository.makeDelayedPayment(testPayment),
           completion(PaymentResult.ERROR_INVALID_USER));
@@ -69,8 +64,7 @@ void main() {
       when(mockBeamService.post(BeamPaymentRepository.MAKE_DELAYED_PAYMENT_API,
               headers: anyNamed('headers'), body: anyNamed('body')))
           .thenAnswer((_) => Future.value(null));
-      final beamPaymentRepository =
-          BeamPaymentRepository(beamServiceAuthWrapper);
+      final beamPaymentRepository = getIt<BeamPaymentRepository>();
 
       expect(beamPaymentRepository.makeDelayedPayment(testPayment),
           completion(PaymentResult.ERROR_UNKNOWN));

@@ -3,7 +3,7 @@ import 'package:beam/features/domain/entities/user.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:injectable/injectable.dart';
 
-@Injectable(as: UserLocalDataSource)
+@Injectable(as: UserLocalDataSource, env: [Environment.prod])
 class UserStorage implements UserLocalDataSource {
   static const KEY_ID = 'id';
   static const KEY_FIRST_NAME = 'firstName';

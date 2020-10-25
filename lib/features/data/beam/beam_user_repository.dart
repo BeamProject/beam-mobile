@@ -12,7 +12,7 @@ import 'package:injectable/injectable.dart';
 import 'beam_service.dart';
 import 'model/user_mapper.dart';
 
-@Injectable(as: UserRemoteDataSource)
+@injectable
 class BeamUserRepository implements UserRemoteDataSource {
   static const GET_USER_API = '/user/me';
   static const LOGIN_API = '/auth/login';
