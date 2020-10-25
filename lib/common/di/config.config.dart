@@ -139,9 +139,9 @@ GetIt $initGetIt(
   gh.singleton<MockPaymentRepository>(MockPaymentRepository());
   gh.singleton<MockUserLocalDataSource>(MockUserLocalDataSource());
   gh.singleton<MockUserRemoteDataSource>(MockUserRemoteDataSource());
+  gh.singleton<AuthTokenManager>(AuthTokenManager(get<AuthStorage>()));
   gh.singleton<UserRepositoryImpl>(UserRepositoryImpl(
       get<UserLocalDataSource>(), get<UserRemoteDataSource>()));
-  gh.singleton<AuthTokenManager>(AuthTokenManager(get<AuthStorage>()));
   return get;
 }
 
