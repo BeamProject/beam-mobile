@@ -106,7 +106,7 @@ GetIt $initGetIt(
       ));
   gh.factory<LogIn>(() => LogIn(get<UserRepository>()));
   gh.factory<LogOut>(() => LogOut(get<UserRepository>()));
-  gh.factory<LoginBloc>(() => LoginBloc(get<LogIn>()));
+  gh.factory<LoginCubit>(() => LoginCubit(get<LogIn>()));
   gh.factory<MakeDelayedPayment>(() =>
       MakeDelayedPayment(get<PaymentRepository>(), get<UserRepository>()));
   gh.factory<ObserveUser>(() => ObserveUser(get<UserRepository>()));

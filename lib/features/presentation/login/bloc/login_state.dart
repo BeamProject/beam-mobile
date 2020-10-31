@@ -1,4 +1,4 @@
-enum FieldValidationStatus { init, valid, invalid }
+import 'package:equatable/equatable.dart';
 
 enum FormStatus {
   pure,
@@ -9,17 +9,43 @@ enum FormStatus {
   submissionFailure
 }
 
+abstract class InputField extends Equatable {
+  final String value;
+
+  const InputField(this.value);
+
+  @override
+  List<Object> get props => [value];
+}
+
+class Username extends InputField {
+  const Username(String value) : super(value);
+
+  bool isValid() {
+    return value.isNotEmpty;
+  }
+}
+
+class Password extends InputField {
+  const Password(String value) : super(value);
+
+  bool isValid() {
+    return value.isNotEmpty;
+  }
+}
+
 class LoginState {
-  final String username;
-  final String password;
+  final Username username;
+  final Password password;
   final FormStatus formStatus;
 
   const LoginState(
-      {this.username = '',
-      this.password = '',
+      {this.username = const Username(''),
+      this.password = const Password(''),
       this.formStatus = FormStatus.pure});
 
-  LoginState copy({String username, String password, FormStatus formStatus}) {
+  LoginState copy(
+      {Username username, Password password, FormStatus formStatus}) {
     return LoginState(
         username: username ?? this.username,
         password: password ?? this.password,

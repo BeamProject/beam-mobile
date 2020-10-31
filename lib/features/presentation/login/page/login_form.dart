@@ -1,5 +1,4 @@
 import 'package:beam/features/presentation/login/bloc/login_bloc.dart';
-import 'package:beam/features/presentation/login/bloc/login_event.dart';
 import 'package:beam/features/presentation/login/bloc/login_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +7,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class LoginForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocListener<LoginBloc, LoginState>(
+    return BlocListener<LoginCubit, LoginState>(
+        listenWhen: (previous, current) =>
+            previous.formStatus != current.formStatus,
         listener: (context, state) {
           if (state.formStatus == FormStatus.submissionFailure) {
             Scaffold.of(context)
@@ -35,17 +36,20 @@ class LoginForm extends StatelessWidget {
 class _UsernameInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LoginBloc, LoginState>(
-      buildWhen: (previous, current) => previous.username != current.username,
+    return BlocBuilder<LoginCubit, LoginState>(
+      buildWhen: (previous, current) =>
+          previous.username != current.username ||
+          previous.formStatus != current.formStatus,
       builder: (context, state) {
         return TextField(
             style: TextStyle(color: Colors.white),
             onChanged: (username) =>
-                context.bloc<LoginBloc>().add(LoginUsernameChanged(username)),
+                context.bloc<LoginCubit>().onUsernameChanged(username),
             decoration: InputDecoration(
               labelText: 'Username',
               labelStyle: new TextStyle(color: Colors.white),
-              errorText: state.formStatus == FormStatus.invalid
+              errorText: state.formStatus == FormStatus.invalid &&
+                      !state.username.isValid()
                   ? 'username invalid'
                   : null,
               enabledBorder: UnderlineInputBorder(
@@ -60,18 +64,21 @@ class _UsernameInput extends StatelessWidget {
 class _PasswordInput extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LoginBloc, LoginState>(
-      buildWhen: (previous, current) => previous.password != current.password,
+    return BlocBuilder<LoginCubit, LoginState>(
+      buildWhen: (previous, current) =>
+          previous.password != current.password ||
+          previous.formStatus != current.formStatus,
       builder: (context, state) {
         return TextField(
             style: TextStyle(color: Colors.white),
             obscureText: true,
             onChanged: (password) =>
-                context.bloc<LoginBloc>().add(LoginPasswordChanged(password)),
+                context.bloc<LoginCubit>().onPasswordChanged(password),
             decoration: InputDecoration(
               labelText: 'Password',
               labelStyle: new TextStyle(color: Colors.white),
-              errorText: state.formStatus == FormStatus.invalid
+              errorText: state.formStatus == FormStatus.invalid &&
+                      !state.password.isValid()
                   ? 'password invalid'
                   : null,
               enabledBorder: UnderlineInputBorder(
@@ -86,7 +93,7 @@ class _PasswordInput extends StatelessWidget {
 class _LoginButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LoginBloc, LoginState>(
+    return BlocBuilder<LoginCubit, LoginState>(
       buildWhen: (previous, current) =>
           previous.formStatus != current.formStatus,
       builder: (context, state) {
@@ -94,13 +101,9 @@ class _LoginButton extends StatelessWidget {
             ? CircularProgressIndicator()
             : RaisedButton(
                 child: const Text('Login'),
-                onPressed: (state.formStatus == FormStatus.valid)
-                    ? () {
-                        context.bloc<LoginBloc>().add(LoginDetailsSubmitted());
-                      }
-                    : () {
-                        return null;
-                      });
+                onPressed: () {
+                  context.bloc<LoginCubit>().onLoginDetailsSubmitted();
+                });
       },
     );
   }

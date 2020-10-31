@@ -14,7 +14,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (_) => getIt<LoginBloc>(),
+        create: (_) => getIt<LoginCubit>(),
         child: Scaffold(
             appBar: AppBar(title: const Text('Login')),
             backgroundColor: Color(0xFF2C2D2D),
