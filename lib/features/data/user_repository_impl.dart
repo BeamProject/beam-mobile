@@ -8,7 +8,7 @@ import 'package:beam/features/domain/repositories/user_repository.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
 
-@singleton
+@lazySingleton
 class UserRepositoryImpl implements UserRepository {
   static const LOGIN_TIMEOUT = const Duration(seconds: 5);
   final UserLocalDataSource _localDataSource;

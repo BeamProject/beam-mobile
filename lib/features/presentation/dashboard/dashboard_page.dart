@@ -1,19 +1,20 @@
 import 'package:beam/common/di/config.dart';
 import 'package:beam/features/presentation/auth/auth_bloc.dart';
 import 'package:beam/features/presentation/auth/auth_event.dart';
-import 'package:beam/features/presentation/dashboard/bloc/dashboard_bloc.dart';
-import 'package:beam/features/presentation/dashboard/bloc/dashboard_state.dart';
+import 'package:beam/features/presentation/dashboard/model/dashboard_model.dart';
+import 'package:beam/features/presentation/payments/payments_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 
 class DashboardPage extends StatefulWidget {
   static Route route() {
     return MaterialPageRoute<void>(
-        builder: (_) => BlocProvider(
-            create: (_) => getIt<DashboardBloc>(),
+        builder: (_) => ChangeNotifierProvider(
+            create: (_) => getIt<DashboardModel>(),
             child: DashboardPage(
-              title: "Beam",
+              title: "Dashboard",
             )));
   }
 
@@ -38,10 +39,10 @@ class _DashboardPageState extends State<DashboardPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-              BlocBuilder<DashboardBloc, DashboardState>(
-                builder: (context, state) {
+              Consumer<DashboardModel>(
+                builder: (context, dashboard, _) {
                   return Text(
-                      "Hello ${state.user?.firstName ?? ""} ${state.user?.lastName ?? ""}",
+                      "Hello ${dashboard.user?.firstName ?? ""} ${dashboard.user?.lastName ?? ""}",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -49,6 +50,11 @@ class _DashboardPageState extends State<DashboardPage> {
                           color: Colors.white));
                 },
               ),
+              const Padding(padding: EdgeInsets.all(12)),
+              RaisedButton(
+                  child: const Text('Make payment'),
+                  onPressed: () =>
+                      Navigator.push(context, PaymentsPage.route())),
               const Padding(padding: EdgeInsets.all(12)),
               RaisedButton(
                   child: const Text('Logout'),

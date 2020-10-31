@@ -2,7 +2,7 @@ import 'package:beam/features/data/beam/auth_storage.dart';
 import 'package:beam/features/data/beam/credentials.dart';
 import 'package:injectable/injectable.dart';
 
-@singleton
+@lazySingleton
 class AuthTokenManager {
   static const _AUTH_HEADER_PREFIX = "JWT";
   final AuthStorage _authStorage;

@@ -17,7 +17,7 @@ import '../../features/data/beam/beam_payment_repository.dart';
 import '../../features/data/beam/beam_service.dart';
 import '../../features/data/beam/beam_service_auth_wrapper.dart';
 import '../../features/data/beam/beam_user_repository.dart';
-import '../../features/presentation/dashboard/bloc/dashboard_bloc.dart';
+import '../../features/presentation/dashboard/model/dashboard_model.dart';
 import '../../features/data/inject/repository_module.dart';
 import '../../features/data/local/testing/fake_storage.dart';
 import '../../features/data/local/testing/test_storage_module.dart';
@@ -63,6 +63,8 @@ GetIt $initGetIt(
   final dataRepositoryModule = _$DataRepositoryModule();
   final beamModule = _$BeamModule();
   gh.factory<BeamService>(() => BeamService(), registerFor: {_prod});
+  gh.lazySingleton<FlutterSecureStorage>(() => storageModule.storage,
+      registerFor: {_prod});
   gh.factory<PaymentRemoteRepository>(
       () => dataSourcesModule
           .paymentRemoteRepository(get<MockPaymentRemoteRepository>()),
@@ -73,12 +75,12 @@ GetIt $initGetIt(
   gh.factory<PaymentRepositoryImpl>(
       () => PaymentRepositoryImpl(get<PaymentRemoteRepository>()));
   gh.factory<UserLocalDataSource>(
-      () => UserStorage(get<FlutterSecureStorage>()),
-      registerFor: {_prod});
-  gh.factory<UserLocalDataSource>(
       () =>
           dataSourcesModule.userLocalDataSource(get<MockUserLocalDataSource>()),
       registerFor: {_test});
+  gh.factory<UserLocalDataSource>(
+      () => UserStorage(get<FlutterSecureStorage>()),
+      registerFor: {_prod});
   gh.factory<UserRemoteDataSource>(
       () => dataSourcesModule
           .userRemoteDataSource(get<MockUserRemoteDataSource>()),
@@ -86,7 +88,11 @@ GetIt $initGetIt(
   gh.factory<UserRepository>(
       () => repositoryModule.userRepository(get<FakeUserRepository>()),
       registerFor: {_test});
+  gh.lazySingleton<UserRepositoryImpl>(() => UserRepositoryImpl(
+      get<UserLocalDataSource>(), get<UserRemoteDataSource>()));
   gh.factory<AuthStorage>(() => AuthStorage(get<FlutterSecureStorage>()));
+  gh.lazySingleton<AuthTokenManager>(
+      () => AuthTokenManager(get<AuthStorage>()));
   gh.factory<AutoLogIn>(() => AutoLogIn(get<UserRepository>()));
   gh.factory<BeamService>(
       () => testBeamModule.beamService(get<MockBeamService>()),
@@ -121,7 +127,7 @@ GetIt $initGetIt(
       ));
   gh.factory<BeamPaymentRepository>(
       () => BeamPaymentRepository(get<BeamServiceAuthWrapper>()));
-  gh.factory<DashboardBloc>(() => DashboardBloc(get<ObserveUser>()));
+  gh.factory<DashboardModel>(() => DashboardModel(get<ObserveUser>()));
   gh.factory<PaymentRemoteRepository>(
       () => beamModule.paymentRemoteRepository(get<BeamPaymentRepository>()),
       registerFor: {_prod});
@@ -129,8 +135,6 @@ GetIt $initGetIt(
   // Eager singletons must be registered in the right order
   gh.singleton<FakeStorage>(FakeStorage());
   gh.singleton<FakeUserRepository>(FakeUserRepository());
-  gh.singleton<FlutterSecureStorage>(storageModule.storage,
-      registerFor: {_prod});
   gh.singleton<FlutterSecureStorage>(
       fakeStorageModule.flutterSecureStorage(get<FakeStorage>()),
       registerFor: {_test});
@@ -139,9 +143,6 @@ GetIt $initGetIt(
   gh.singleton<MockPaymentRepository>(MockPaymentRepository());
   gh.singleton<MockUserLocalDataSource>(MockUserLocalDataSource());
   gh.singleton<MockUserRemoteDataSource>(MockUserRemoteDataSource());
-  gh.singleton<AuthTokenManager>(AuthTokenManager(get<AuthStorage>()));
-  gh.singleton<UserRepositoryImpl>(UserRepositoryImpl(
-      get<UserLocalDataSource>(), get<UserRemoteDataSource>()));
   return get;
 }
 
