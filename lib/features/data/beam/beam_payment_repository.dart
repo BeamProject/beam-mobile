@@ -3,26 +3,31 @@ import 'dart:convert';
 import 'package:beam/features/data/beam/beam_service_auth_wrapper.dart';
 import 'package:beam/features/data/beam/model/payment_mapper.dart';
 import 'package:beam/features/data/beam/model/payment_result.dart' as beam;
+import 'package:beam/features/data/beam/model/payment.dart' as beam;
 import 'package:beam/features/data/datasources/payment_remote_repository.dart';
 import 'package:beam/features/domain/entities/payment.dart';
+import 'package:beam/features/domain/entities/payment_request.dart';
 import 'package:beam/features/domain/entities/payment_result.dart';
 import 'package:injectable/injectable.dart';
+import 'package:http/http.dart' as http;
 
 @injectable
 class BeamPaymentRepository implements PaymentRemoteRepository {
   static const MAKE_DELAYED_PAYMENT_API = "/payment/delayedpayment";
+  static const GET_PAYMENTS_API = "/payment/allpayments";
 
   final BeamServiceAuthWrapper _beamServiceAuthWrapper;
 
   BeamPaymentRepository(this._beamServiceAuthWrapper);
 
   @override
-  Future<PaymentResult> makeDelayedPayment(Payment payment) async {
+  Future<PaymentResult> makeDelayedPayment(
+      PaymentRequest paymentRequest) async {
     final response = await _beamServiceAuthWrapper.post(
         MAKE_DELAYED_PAYMENT_API,
-        body: PaymentMapper.mapToBeamPayment(payment).toJson());
+        body: PaymentMapper.mapToBeamPaymentRequest(paymentRequest).toJson());
 
-    if (response?.statusCode == 200) {
+    if (_isResponseSuccessful(response)) {
       final result = beam.PaymentResult.fromJson(json.decode(response.body));
       return result.success == true
           ? PaymentResult.SUCCESS
@@ -34,5 +39,26 @@ class BeamPaymentRepository implements PaymentRemoteRepository {
     }
 
     return PaymentResult.ERROR_UNKNOWN;
+  }
+
+  @override
+  Stream<List<Payment>> getPayments(String userId) async* {
+    final response = await _beamServiceAuthWrapper.get(GET_PAYMENTS_API + "/" + userId);
+
+    if (_isResponseSuccessful(response)) {
+      final jsonList = json.decode(response.body) as List<dynamic>;
+      final List<Payment> payments = jsonList
+          .map((jsonPayment) => beam.Payment.fromJson(jsonPayment as Map<String, dynamic>))
+          .map((beamPayment) => PaymentMapper.mapToPayment(beamPayment))
+          .toList();
+      
+      yield payments;
+    }
+
+    throw Exception("Couldn't fetch payments");
+  }
+
+  bool _isResponseSuccessful(http.Response response) {
+    return response?.statusCode == 200;
   }
 }

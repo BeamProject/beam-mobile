@@ -22,6 +22,7 @@ import '../../features/data/inject/repository_module.dart';
 import '../../features/data/local/testing/fake_storage.dart';
 import '../../features/data/local/testing/test_storage_module.dart';
 import '../../features/domain/repositories/testing/fake_user_repository.dart';
+import '../../features/domain/usecases/get_payments.dart';
 import '../../features/domain/usecases/log_in.dart';
 import '../../features/domain/usecases/log_out.dart';
 import '../../features/presentation/login/bloc/login_bloc.dart';
@@ -33,6 +34,7 @@ import '../../features/domain/usecases/get_current_user.dart';
 import '../../features/data/datasources/payment_remote_repository.dart';
 import '../../features/domain/repositories/payment_repository.dart';
 import '../../features/data/payment_repository_impl.dart';
+import '../../features/presentation/payments/model/payments_model.dart';
 import '../../features/domain/repositories/testing/repository_module.dart';
 import '../../features/data/local/storage_module.dart';
 import '../../features/data/beam/testing/test_beam_module.dart';
@@ -75,12 +77,12 @@ GetIt $initGetIt(
   gh.factory<PaymentRepositoryImpl>(
       () => PaymentRepositoryImpl(get<PaymentRemoteRepository>()));
   gh.factory<UserLocalDataSource>(
+      () => UserStorage(get<FlutterSecureStorage>()),
+      registerFor: {_prod});
+  gh.factory<UserLocalDataSource>(
       () =>
           dataSourcesModule.userLocalDataSource(get<MockUserLocalDataSource>()),
       registerFor: {_test});
-  gh.factory<UserLocalDataSource>(
-      () => UserStorage(get<FlutterSecureStorage>()),
-      registerFor: {_prod});
   gh.factory<UserRemoteDataSource>(
       () => dataSourcesModule
           .userRemoteDataSource(get<MockUserRemoteDataSource>()),
@@ -104,6 +106,8 @@ GetIt $initGetIt(
         get<BeamService>(),
         get<AuthTokenManager>(),
       ));
+  gh.factory<GetPayments>(
+      () => GetPayments(get<PaymentRepository>(), get<UserRepository>()));
   gh.factory<LogIn>(() => LogIn(get<UserRepository>()));
   gh.factory<LogOut>(() => LogOut(get<UserRepository>()));
   gh.factory<LoginCubit>(() => LoginCubit(get<LogIn>()));
@@ -114,6 +118,7 @@ GetIt $initGetIt(
       () =>
           dataRepositoryModule.paymentRepository(get<PaymentRepositoryImpl>()),
       registerFor: {_prod});
+  gh.factory<PaymentsModel>(() => PaymentsModel(get<GetPayments>()));
   gh.factory<UserRemoteDataSource>(
       () => beamModule.userRemoteDataSource(get<BeamUserRepository>()),
       registerFor: {_prod});

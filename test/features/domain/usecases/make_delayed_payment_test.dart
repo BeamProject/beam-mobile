@@ -1,5 +1,5 @@
 import 'package:beam/common/di/config.dart';
-import 'package:beam/features/domain/entities/payment.dart';
+import 'package:beam/features/domain/entities/payment_request.dart';
 import 'package:beam/features/domain/entities/payment_result.dart';
 import 'package:beam/features/domain/entities/user.dart';
 import 'package:beam/features/domain/repositories/testing/fake_user_repository.dart';
@@ -51,6 +51,6 @@ void main() {
     await makeDelayedPayment(10, "USD");
 
     verify(mockPaymentRepository
-        .makeDelayedPayment(Payment(userId: "1", amount: 10, currency: "USD")));
+        .makeDelayedPayment(PaymentRequest(userId: "1", amount: 10, currency: "USD")));
   });
 }

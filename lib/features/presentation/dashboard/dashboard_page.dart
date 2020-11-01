@@ -51,7 +51,7 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
               const Padding(padding: EdgeInsets.all(12)),
               RaisedButton(
-                  child: const Text('Make payment'),
+                  child: const Text('My payments'),
                   onPressed: () =>
                       Navigator.push(context, PaymentsPage.route())),
               const Padding(padding: EdgeInsets.all(12)),
