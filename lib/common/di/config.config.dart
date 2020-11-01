@@ -120,7 +120,7 @@ GetIt $initGetIt(
   gh.factory<UserRepository>(
       () => dataRepositoryModule.userRepository(get<UserRepositoryImpl>()),
       registerFor: {_prod});
-  gh.factory<AuthBloc>(() => AuthBloc(
+  gh.factory<AuthCubit>(() => AuthCubit(
         get<ObserveUser>(),
         get<LogOut>(),
         get<AutoLogIn>(),

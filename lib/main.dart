@@ -6,7 +6,6 @@ import 'package:injectable/injectable.dart';
 
 import 'common/di/config.dart';
 import 'features/presentation/auth/auth_bloc.dart';
-import 'features/presentation/auth/auth_event.dart';
 import 'features/presentation/auth/auth_state.dart';
 import 'features/presentation/dashboard/dashboard_page.dart';
 import 'features/presentation/onboarding/onboarding_screen.dart';
@@ -20,7 +19,7 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (_) => getIt<AuthBloc>(), child: AppView());
+    return BlocProvider(create: (_) => getIt<AuthCubit>(), child: AppView());
   }
 }
 
@@ -36,8 +35,8 @@ class _AppViewState extends State<AppView> {
 
   @override
   Widget build(BuildContext context) {
-    final authBloc = BlocProvider.of<AuthBloc>(context);
-    authBloc.add(AuthenticationAutoLogInRequested());
+    final authBloc = BlocProvider.of<AuthCubit>(context);
+    authBloc.onAutoLogIn();
     return MaterialApp(
         localizationsDelegates: [
           const AppLocalizationsDelegate(),
@@ -54,7 +53,7 @@ class _AppViewState extends State<AppView> {
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         builder: (context, child) {
-          return BlocListener<AuthBloc, AuthenticationState>(
+          return BlocListener<AuthCubit, AuthenticationState>(
               listener: (context, state) {
                 if (state.user != null) {
                   _navigator.pushAndRemoveUntil<void>(

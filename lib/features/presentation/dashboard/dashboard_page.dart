@@ -1,6 +1,5 @@
 import 'package:beam/common/di/config.dart';
 import 'package:beam/features/presentation/auth/auth_bloc.dart';
-import 'package:beam/features/presentation/auth/auth_event.dart';
 import 'package:beam/features/presentation/dashboard/model/dashboard_model.dart';
 import 'package:beam/features/presentation/payments/payments_page.dart';
 import 'package:flutter/cupertino.dart';
@@ -59,8 +58,8 @@ class _DashboardPageState extends State<DashboardPage> {
               RaisedButton(
                   child: const Text('Logout'),
                   onPressed: () => context
-                      .bloc<AuthBloc>()
-                      .add(AuthenticationLogOutRequested()))
+                      .bloc<AuthCubit>()
+                      .onLogout())
             ])));
   }
 }

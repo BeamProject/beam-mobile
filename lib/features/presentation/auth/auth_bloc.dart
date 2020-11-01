@@ -7,40 +7,35 @@ import 'package:beam/features/domain/usecases/log_out.dart';
 import 'package:bloc/bloc.dart';
 import 'package:injectable/injectable.dart';
 
-import 'auth_event.dart';
 import 'auth_state.dart';
 
 @injectable
-class AuthBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
+class AuthCubit extends Cubit<AuthenticationState> {
   final ObserveUser _observeUser;
   final LogOut _logOut;
   final AutoLogIn _autoLogIn;
   StreamSubscription<User> _authenticationStatusSubscription;
 
-  AuthBloc(this._observeUser, this._logOut, this._autoLogIn)
+  AuthCubit(this._observeUser, this._logOut, this._autoLogIn)
       : super(const AuthenticationState.unknown()) {
     _authenticationStatusSubscription = _observeUser().listen((user) {
-      add(AuthenticationStatusChanged(user));
+      _onAuthenticationStatusChanged(user);
     });
   }
 
-  @override
-  Stream<AuthenticationState> mapEventToState(event) async* {
-    if (event is AuthenticationStatusChanged) {
-      yield _mapAuthenticationStatusChangedToState(event);
-    } else if (event is AuthenticationLogOutRequested) {
-      _logOut();
-    } else if (event is AuthenticationAutoLogInRequested) {
-      _autoLogIn();
-    }
+  void onLogout() {
+    _logOut();
   }
 
-  AuthenticationState _mapAuthenticationStatusChangedToState(
-      AuthenticationStatusChanged event) {
-    if (event.user != null) {
-      return AuthenticationState.authenticated(event.user);
+  void onAutoLogIn() {
+    _autoLogIn();
+  }
+
+  void _onAuthenticationStatusChanged(User user) {
+    if (user != null) {
+      emit(AuthenticationState.authenticated(user));
     } else {
-      return AuthenticationState.unauthenticated();
+      emit(AuthenticationState.unauthenticated());
     }
   }
 
