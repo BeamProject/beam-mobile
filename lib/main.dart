@@ -19,16 +19,11 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (_) => getIt<AuthCubit>(), child: AppView());
+    return BlocProvider(create: (_) => getIt<AuthCubit>(), child: AppScreen());
   }
 }
 
-class AppView extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => _AppViewState();
-}
-
-class _AppViewState extends State<AppView> {
+class AppScreen extends StatelessWidget {
   final _navigatorKey = GlobalKey<NavigatorState>();
 
   NavigatorState get _navigator => _navigatorKey.currentState;
