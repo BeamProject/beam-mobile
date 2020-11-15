@@ -10,20 +10,24 @@ import '../../../domain/entities/payment.dart';
 class PaymentsModel extends ChangeNotifier {
   final GetPayments getPayments;
   List<Payment> _payments = [];
-  StreamSubscription<List<Payment>> paymentsSubscription;
+  StreamSubscription<List<Payment>> _paymentsSubscription;
 
   List<Payment> get payments => _payments;
 
   PaymentsModel(this.getPayments) {
-    paymentsSubscription = getPayments().listen((payments) {
+    _paymentsSubscription = getPayments().listen((payments) {
       _payments = payments;
+      notifyListeners();
+    });
+    _paymentsSubscription.onError((error) {
+      _payments = [];
       notifyListeners();
     });
   }
   
   @override
   void dispose() {
-    paymentsSubscription.cancel();
+    _paymentsSubscription.cancel();
     super.dispose();
   }
 }

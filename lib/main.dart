@@ -23,7 +23,13 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class AppScreen extends StatelessWidget {
+class AppScreen extends StatefulWidget {
+  
+  @override
+  _AppScreenState createState() => _AppScreenState();
+}
+
+class _AppScreenState extends State<AppScreen> {
   final _navigatorKey = GlobalKey<NavigatorState>();
 
   NavigatorState get _navigator => _navigatorKey.currentState;

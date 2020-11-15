@@ -8,20 +8,25 @@ import 'package:injectable/injectable.dart';
 @injectable
 class DashboardModel extends ChangeNotifier {
   User _user;
-  StreamSubscription<User> userSubscription;
+  StreamSubscription<User> _userSubscription;
 
   User get user => _user;
 
   DashboardModel(ObserveUser observeUser) {
-    userSubscription = observeUser().listen((user) {
+    _userSubscription = observeUser().listen((user) {
       _user = user;
+      notifyListeners();
+    });
+
+    _userSubscription.onError((error) {
+      _user = null;
       notifyListeners();
     });
   }
 
   @override
   void dispose() {
-    userSubscription.cancel();
+    _userSubscription.cancel();
     super.dispose();
   }
 }
