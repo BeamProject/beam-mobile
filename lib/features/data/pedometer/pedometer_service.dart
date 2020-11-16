@@ -12,7 +12,6 @@ class PedometerService implements StepCounterService {
     if (_stepCountEventStream != null) {
       return _stepCountEventStream;
     }
-
     _stepCountEventStream = Pedometer.stepCountStream.map((stepCount) =>
         StepCountEvent(
             dayOfMeasurement: stepCount.timeStamp, steps: stepCount.steps));

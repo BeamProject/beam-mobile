@@ -16,7 +16,9 @@ class StepCount {
 
   StepCount createWithNewMeasurement(
       DateTime newDayOfMeasurement, int newStepsMeasurement) {
-    if (newDayOfMeasurement.isSameDayAs(dayOfMeasurement)) {
+    if (newDayOfMeasurement.isSameDayAs(dayOfMeasurement) ||
+        // This can happen when the clock changes backwards.
+        newDayOfMeasurement.isBefore(dayOfMeasurement)) {
       return StepCount._(
         dayOfMeasurement: dayOfMeasurement,
         stepCountAtStartOfTheDay: stepCountAtStartOfTheDay,
@@ -31,7 +33,8 @@ class StepCount {
           stepCountAtLastMeasurement: newStepsMeasurement);
     }
 
-    throw Exception("Today can't be before the day of last measurement");
+    throw Exception(
+        "newDayOfMeasurement is neither before, same as nor after dayOfMeasurement");
   }
 }
 

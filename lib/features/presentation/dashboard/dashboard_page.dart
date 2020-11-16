@@ -40,13 +40,22 @@ class _DashboardPageState extends State<DashboardPage> {
                 children: <Widget>[
               Consumer<DashboardModel>(
                 builder: (context, dashboard, _) {
-                  return Text(
-                      "Hello ${dashboard.user?.firstName ?? ""} ${dashboard.user?.lastName ?? ""}",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 50,
-                          color: Colors.white));
+                  return Column(children: <Widget>[
+                    Text(
+                        "Hello ${dashboard.user?.firstName ?? ""} ${dashboard.user?.lastName ?? ""}",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 25,
+                            color: Colors.white)),
+                    const Padding(padding: EdgeInsets.all(12)),
+                    Text("Steps ${dashboard.steps}",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 50,
+                            color: Colors.white))
+                  ]);
                 },
               ),
               const Padding(padding: EdgeInsets.all(12)),
@@ -57,9 +66,7 @@ class _DashboardPageState extends State<DashboardPage> {
               const Padding(padding: EdgeInsets.all(12)),
               RaisedButton(
                   child: const Text('Logout'),
-                  onPressed: () => context
-                      .bloc<AuthCubit>()
-                      .onLogout())
+                  onPressed: () => context.bloc<AuthCubit>().onLogout())
             ])));
   }
 }
