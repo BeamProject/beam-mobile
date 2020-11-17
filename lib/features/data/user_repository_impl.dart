@@ -10,7 +10,7 @@ import 'package:rxdart/rxdart.dart';
 
 @lazySingleton
 class UserRepositoryImpl implements UserRepository {
-  static const LOGIN_TIMEOUT = const Duration(seconds: 5);
+  static const LOGIN_TIMEOUT = const Duration(seconds: 30);
   final UserLocalDataSource _localDataSource;
   final UserRemoteDataSource _remoteDataSource;
 
