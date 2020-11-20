@@ -1,25 +1,31 @@
-class StepCount {
+import 'package:equatable/equatable.dart';
+
+class StepCount extends Equatable {
   final DateTime dayOfMeasurement;
   final int stepCountAtStartOfTheDay;
   final int stepCountAtLastMeasurement;
   int get totalDailySteps =>
       stepCountAtLastMeasurement - stepCountAtStartOfTheDay;
 
-  StepCount._(
+  StepCount(
       {this.dayOfMeasurement,
       this.stepCountAtStartOfTheDay,
       this.stepCountAtLastMeasurement});
 
-  StepCount({this.dayOfMeasurement, int steps})
-      : this.stepCountAtStartOfTheDay = steps,
-        this.stepCountAtLastMeasurement = steps;
+  factory StepCount.createNewFromMeasurement(DateTime dayOfMeasurement,
+      int steps) {
+    return StepCount(
+        dayOfMeasurement: dayOfMeasurement,
+        stepCountAtLastMeasurement: steps,
+        stepCountAtStartOfTheDay: steps);
+  }
 
   StepCount createWithNewMeasurement(
       DateTime newDayOfMeasurement, int newStepsMeasurement) {
     if (newDayOfMeasurement.isSameDayAs(dayOfMeasurement) ||
         // This can happen when the clock changes backwards.
         newDayOfMeasurement.isBefore(dayOfMeasurement)) {
-      return StepCount._(
+      return StepCount(
         dayOfMeasurement: dayOfMeasurement,
         stepCountAtStartOfTheDay: stepCountAtStartOfTheDay,
         stepCountAtLastMeasurement: newStepsMeasurement,
@@ -27,7 +33,7 @@ class StepCount {
     }
 
     if (newDayOfMeasurement.isAfter(dayOfMeasurement)) {
-      return StepCount._(
+      return StepCount(
           dayOfMeasurement: newDayOfMeasurement,
           stepCountAtStartOfTheDay: newStepsMeasurement,
           stepCountAtLastMeasurement: newStepsMeasurement);
@@ -36,6 +42,15 @@ class StepCount {
     throw Exception(
         "newDayOfMeasurement is neither before, same as nor after dayOfMeasurement");
   }
+
+  @override
+  List<Object> get props => [
+        dayOfMeasurement.year,
+        dayOfMeasurement.month,
+        dayOfMeasurement.day,
+        stepCountAtLastMeasurement,
+        stepCountAtStartOfTheDay
+  ];
 }
 
 extension DateOnlyComparator on DateTime {

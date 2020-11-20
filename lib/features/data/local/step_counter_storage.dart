@@ -23,12 +23,15 @@ class StepCounterStorage implements StepCounterLocalDataSource {
 
   Future<Database> _initDatabase() async {
     WidgetsFlutterBinding.ensureInitialized();
+    // FIXME: remove the line below.
+    // deleteDatabase(join(await getDatabasesPath(), DATABASE_NAME));
     return openDatabase(join(await getDatabasesPath(), DATABASE_NAME),
         onCreate: (db, version) {
       return db.execute('''
             CREATE TABLE $STEPS_TABLE_NAME(
               ${StepCountData.COLUMN_ID} integer primary key autoincrement, 
-              ${StepCountData.COLUMN_STEPS} integer,
+              ${StepCountData.COLUMN_STEP_COUNT_AT_START_OF_THE_DAY} integer,
+              ${StepCountData.COLUMN_STEP_COUNT_AT_LAST_MEASUREMENT} integer,
               ${StepCountData.COLUMN_DAY_OF_MEASUREMENT} text)
               ''');
     }, version: 1);
@@ -40,7 +43,8 @@ class StepCounterStorage implements StepCounterLocalDataSource {
     return stepCountData != null
         ? StepCount(
             dayOfMeasurement: DateTime.parse(stepCountData.dayOfMeasurement),
-            steps: stepCountData.steps)
+            stepCountAtStartOfTheDay: stepCountData.stepCountAtStartOfTheDay,
+            stepCountAtLastMeasurement: stepCountData.stepCountAtLastMeasurement)
         : null;
   }
 
@@ -59,10 +63,13 @@ class StepCounterStorage implements StepCounterLocalDataSource {
   Future<void> updateStepCount(StepCount stepCount) async {
     StepCountData stepCountData = StepCountData(
         dayOfMeasurement: stepCount.dayOfMeasurement,
-        steps: stepCount.totalDailySteps);
+        stepCountAtStartOfTheDay: stepCount.stepCountAtStartOfTheDay,
+        stepCountAtLastMeasurement: stepCount.stepCountAtLastMeasurement);
     StepCountData latestStepCountData = await _getLatestStepCountData();
     final db = await database;
     if (latestStepCountData != null &&
+        // FIXME: This logic doesn't belong here. Create an id field in the
+        //  StepCount class and compare ids.
         latestStepCountData.dayOfMeasurement ==
             stepCountData.dayOfMeasurement) {
       return db.update(STEPS_TABLE_NAME, stepCountData.toMap(),

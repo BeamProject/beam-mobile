@@ -2,23 +2,26 @@ import 'package:intl/intl.dart';
 
 class StepCountData {
   static const COLUMN_ID = "id";
-  static const COLUMN_STEPS = "steps";
+  static const COLUMN_STEP_COUNT_AT_START_OF_THE_DAY = "step_count_at_start_of_the_day";
+  static const COLUMN_STEP_COUNT_AT_LAST_MEASUREMENT = "step_count_at_last_measurement";
   static const COLUMN_DAY_OF_MEASUREMENT = "day_of_measurement";
 
   final int id;
-  final int steps;
+  final int stepCountAtStartOfTheDay;
+  final int stepCountAtLastMeasurement;
   final String dayOfMeasurement;
 
-  StepCountData._({this.id, this.steps, this.dayOfMeasurement});
+  StepCountData._({this.id, this.stepCountAtStartOfTheDay, this.stepCountAtLastMeasurement, this.dayOfMeasurement});
 
-  StepCountData({this.steps, DateTime dayOfMeasurement})
+  StepCountData({this.stepCountAtStartOfTheDay, this.stepCountAtLastMeasurement, DateTime dayOfMeasurement})
       : id = 0,
         dayOfMeasurement = new DateFormat('yyyy-MM-dd').format(dayOfMeasurement);
 
   Map<String, dynamic> toMap() {
     return {
       COLUMN_ID: id,
-      COLUMN_STEPS: steps,
+      COLUMN_STEP_COUNT_AT_START_OF_THE_DAY: stepCountAtStartOfTheDay,
+      COLUMN_STEP_COUNT_AT_LAST_MEASUREMENT: stepCountAtLastMeasurement,
       COLUMN_DAY_OF_MEASUREMENT: dayOfMeasurement
     };
   }
@@ -26,7 +29,8 @@ class StepCountData {
   factory StepCountData.fromMap(Map<String, dynamic> map) {
     return StepCountData._(
         id: map[COLUMN_ID],
-        steps: map[COLUMN_STEPS],
+        stepCountAtStartOfTheDay: map[COLUMN_STEP_COUNT_AT_START_OF_THE_DAY],
+        stepCountAtLastMeasurement: map[COLUMN_STEP_COUNT_AT_LAST_MEASUREMENT],
         dayOfMeasurement: map[COLUMN_DAY_OF_MEASUREMENT]);
   }
 }

@@ -30,12 +30,14 @@ class DashboardModel extends ChangeNotifier {
 
     _stepCounterSubscription = observeStepCounter().listen((stepCount) {
       _steps = stepCount.totalDailySteps;
+      notifyListeners();
     });
   }
 
   @override
   void dispose() {
     _userSubscription.cancel();
+    _stepCounterSubscription.cancel();
     super.dispose();
   }
 }

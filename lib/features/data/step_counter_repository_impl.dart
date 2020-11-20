@@ -32,14 +32,16 @@ class StepCounterRepositoryImpl implements StepCounterRepository {
       StepCount latestStepCount = await _getLatestStepCount();
       StepCount newStepCount;
       if (latestStepCount == null) {
-        newStepCount = StepCount(
-            dayOfMeasurement: stepCountEvent.dayOfMeasurement,
-            steps: stepCountEvent.steps);
+        newStepCount = StepCount.createNewFromMeasurement(
+            stepCountEvent.dayOfMeasurement,
+            stepCountEvent.steps);
       } else {
         newStepCount = latestStepCount.createWithNewMeasurement(
             stepCountEvent.dayOfMeasurement, stepCountEvent.steps);
       }
-      _updateLatestStepCount(newStepCount);
+      if (newStepCount != latestStepCount) {
+        _updateLatestStepCount(newStepCount);
+      }
       return newStepCount;
     });
 
@@ -48,8 +50,7 @@ class StepCounterRepositoryImpl implements StepCounterRepository {
 
   Future<StepCount> _getLatestStepCount() async {
     if (_latestStepCount == null) {
-      _updateLatestStepCount(
-          await _stepCounterLocalDataSource.getLatestStepCount());
+      _latestStepCount = await _stepCounterLocalDataSource.getLatestStepCount();
     }
     return _latestStepCount;
   }
@@ -61,11 +62,12 @@ class StepCounterRepositoryImpl implements StepCounterRepository {
   }
 
   void _persistStepCountWithDelay() {
-    if (_persistStepCountTimer != null && _persistStepCountTimer.isActive) {
-      _persistStepCountTimer.cancel();
-    }
-    _persistStepCountTimer = Timer(_persistStepCountTimeout, () {
-      _stepCounterLocalDataSource.updateStepCount(_latestStepCount);
-    });
+    _stepCounterLocalDataSource.updateStepCount(_latestStepCount);
+    // if (_persistStepCountTimer != null && _persistStepCountTimer.isActive) {
+    //   _persistStepCountTimer.cancel();
+    // }
+    // _persistStepCountTimer = Timer(_persistStepCountTimeout, () {
+    //   _stepCounterLocalDataSource.updateStepCount(_latestStepCount);
+    // });
   }
 }
