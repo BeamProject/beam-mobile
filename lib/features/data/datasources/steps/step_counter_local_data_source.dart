@@ -1,7 +1,7 @@
-import 'package:beam/features/domain/entities/steps/step_count.dart';
+import 'package:beam/features/domain/entities/steps/ongoing_daily_step_count.dart';
 
 abstract class StepCounterLocalDataSource {
-  Future<StepCount> getLatestStepCount();
+  Future<OngoingDailyStepCount> getOngoingDailyStepCount();
 
-  Future<void> updateStepCount(StepCount stepCount);
+  Future<void> updateOngoingDailyStepCount(OngoingDailyStepCount stepCount);
 }

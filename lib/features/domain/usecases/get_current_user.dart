@@ -14,6 +14,7 @@ class ObserveUser {
         .map((user) => _isValidUser(user) ? user : null);
   }
 
+  // TODO: Remove this method and rely on User's isValid method.
   bool _isValidUser(User user) {
     return user != null &&
         user.id != null &&

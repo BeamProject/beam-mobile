@@ -1,5 +1,6 @@
-import 'package:beam/features/data/datasources/steps/step_counter_service.dart';
+
 import 'package:beam/features/data/pedometer/pedometer_service.dart';
+import 'package:beam/features/domain/repositories/step_counter_service.dart';
 import 'package:injectable/injectable.dart';
 
 @module

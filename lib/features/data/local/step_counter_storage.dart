@@ -1,6 +1,6 @@
 import 'package:beam/features/data/datasources/steps/step_counter_local_data_source.dart';
 import 'package:beam/features/data/local/model/step_count_data.dart';
-import 'package:beam/features/domain/entities/steps/step_count.dart';
+import 'package:beam/features/domain/entities/steps/ongoing_daily_step_count.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:injectable/injectable.dart';
 import 'package:path/path.dart';
@@ -29,49 +29,50 @@ class StepCounterStorage implements StepCounterLocalDataSource {
         onCreate: (db, version) {
       return db.execute('''
             CREATE TABLE $STEPS_TABLE_NAME(
-              ${StepCountData.COLUMN_ID} integer primary key autoincrement, 
-              ${StepCountData.COLUMN_STEP_COUNT_AT_START_OF_THE_DAY} integer,
-              ${StepCountData.COLUMN_STEP_COUNT_AT_LAST_MEASUREMENT} integer,
-              ${StepCountData.COLUMN_DAY_OF_MEASUREMENT} text)
+              ${OngoingDailyStepCountData.COLUMN_ID} integer primary key autoincrement, 
+              ${OngoingDailyStepCountData.COLUMN_STEP_COUNT_AT_START_OF_THE_DAY} integer,
+              ${OngoingDailyStepCountData.COLUMN_STEP_COUNT_AT_LAST_MEASUREMENT} integer,
+              ${OngoingDailyStepCountData.COLUMN_DAY_OF_MEASUREMENT} text)
               ''');
     }, version: 1);
   }
 
   @override
-  Future<StepCount> getLatestStepCount() async {
-    StepCountData stepCountData = await _getLatestStepCountData();
+  Future<OngoingDailyStepCount> getOngoingDailyStepCount() async {
+    OngoingDailyStepCountData stepCountData = await _getLatestStepCountData();
     return stepCountData != null
-        ? StepCount(
+        ? OngoingDailyStepCount(
             dayOfMeasurement: DateTime.parse(stepCountData.dayOfMeasurement),
             stepCountAtStartOfTheDay: stepCountData.stepCountAtStartOfTheDay,
-            stepCountAtLastMeasurement: stepCountData.stepCountAtLastMeasurement)
+            stepCountAtLastMeasurement:
+                stepCountData.stepCountAtLastMeasurement)
         : null;
   }
 
-  Future<StepCountData> _getLatestStepCountData() async {
+  Future<OngoingDailyStepCountData> _getLatestStepCountData() async {
     final db = await database;
     final List<Map<String, dynamic>> stepCountMaps = await db.query(
         STEPS_TABLE_NAME,
-        orderBy: "${StepCountData.COLUMN_DAY_OF_MEASUREMENT} DESC",
+        orderBy: "${OngoingDailyStepCountData.COLUMN_DAY_OF_MEASUREMENT} DESC",
         limit: 1);
     return stepCountMaps.isNotEmpty
-        ? StepCountData.fromMap(stepCountMaps[0])
+        ? OngoingDailyStepCountData.fromMap(stepCountMaps[0])
         : null;
   }
 
   @override
-  Future<void> updateStepCount(StepCount stepCount) async {
-    StepCountData stepCountData = StepCountData(
+  Future<void> updateOngoingDailyStepCount(
+      OngoingDailyStepCount stepCount) async {
+    OngoingDailyStepCountData stepCountData = OngoingDailyStepCountData(
         dayOfMeasurement: stepCount.dayOfMeasurement,
         stepCountAtStartOfTheDay: stepCount.stepCountAtStartOfTheDay,
         stepCountAtLastMeasurement: stepCount.stepCountAtLastMeasurement);
-    StepCountData latestStepCountData = await _getLatestStepCountData();
+    OngoingDailyStepCountData latestStepCountData =
+        await _getLatestStepCountData();
     final db = await database;
-    if (latestStepCountData != null &&
-        // FIXME: This logic doesn't belong here. Create an id field in the
-        //  StepCount class and compare ids.
-        latestStepCountData.dayOfMeasurement ==
-            stepCountData.dayOfMeasurement) {
+    if (latestStepCountData != null) {
+      // We only ever need to keep one record in the table for ongoingDailyStepCount.
+      // There is only ever one ongoing daily step count and it resets every day.
       return db.update(STEPS_TABLE_NAME, stepCountData.toMap(),
           where: "id = ?", whereArgs: [stepCountData.id]);
     }

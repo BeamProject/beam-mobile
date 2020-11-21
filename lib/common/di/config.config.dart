@@ -30,7 +30,7 @@ import '../../features/domain/usecases/make_delayed_payment.dart';
 import '../../features/data/beam/testing/mock_beam_service.dart';
 import '../../features/data/datasources/testing/datasources_module.dart';
 import '../../features/domain/repositories/testing/mock_payment_repository.dart';
-import '../../features/domain/usecases/observe_step_counter.dart';
+import '../../features/domain/usecases/observe_step_count.dart';
 import '../../features/domain/usecases/get_current_user.dart';
 import '../../features/data/datasources/payment_remote_repository.dart';
 import '../../features/domain/repositories/payment_repository.dart';
@@ -39,11 +39,13 @@ import '../../features/presentation/payments/model/payments_model.dart';
 import '../../features/data/pedometer/pedometer_module.dart';
 import '../../features/data/pedometer/pedometer_service.dart';
 import '../../features/domain/repositories/testing/repository_module.dart';
+import '../../features/domain/usecases/start_step_tracking.dart';
 import '../../features/data/datasources/steps/step_counter_local_data_source.dart';
 import '../../features/domain/repositories/step_counter_repository.dart';
 import '../../features/data/step_counter_repository_impl.dart';
-import '../../features/data/datasources/steps/step_counter_service.dart';
+import '../../features/domain/repositories/step_counter_service.dart';
 import '../../features/data/local/step_counter_storage.dart';
+import '../../features/domain/entities/steps/step_tracker.dart';
 import '../../features/data/local/storage_module.dart';
 import '../../features/data/beam/testing/test_beam_module.dart';
 import '../../features/data/datasources/user_local_data_source.dart';
@@ -65,8 +67,8 @@ GetIt $initGetIt(
   EnvironmentFilter environmentFilter,
 }) {
   final gh = GetItHelper(get, environment, environmentFilter);
-  final storageModule = _$StorageModule();
   final fakeStorageModule = _$FakeStorageModule();
+  final storageModule = _$StorageModule();
   final dataSourcesModule = _$DataSourcesModule();
   final repositoryModule = _$RepositoryModule();
   final pedometerModule = _$PedometerModule();
@@ -136,8 +138,8 @@ GetIt $initGetIt(
   gh.factory<StepCounterLocalDataSource>(
       () => storageModule.stepCounterLocalDataSource(get<StepCounterStorage>()),
       registerFor: {_prod});
-  gh.lazySingleton<StepCounterRepositoryImpl>(() => StepCounterRepositoryImpl(
-      get<StepCounterService>(), get<StepCounterLocalDataSource>()));
+  gh.lazySingleton<StepCounterRepositoryImpl>(
+      () => StepCounterRepositoryImpl(get<StepCounterLocalDataSource>()));
   gh.factory<UserRemoteDataSource>(
       () => beamModule.userRemoteDataSource(get<BeamUserRepository>()),
       registerFor: {_prod});
@@ -158,10 +160,16 @@ GetIt $initGetIt(
       () => dataRepositoryModule
           .stepCounterRepository(get<StepCounterRepositoryImpl>()),
       registerFor: {_prod});
-  gh.factory<ObserveStepCounter>(
-      () => ObserveStepCounter(get<StepCounterRepository>()));
-  gh.factory<DashboardModel>(
-      () => DashboardModel(get<ObserveUser>(), get<ObserveStepCounter>()));
+  gh.lazySingleton<StepTracker>(() =>
+      StepTracker(get<StepCounterService>(), get<StepCounterRepository>()));
+  gh.factory<ObserveStepCount>(
+      () => ObserveStepCount(get<StepCounterRepository>()));
+  gh.factory<StartStepTracking>(() => StartStepTracking(get<StepTracker>()));
+  gh.factory<DashboardModel>(() => DashboardModel(
+        get<ObserveUser>(),
+        get<ObserveStepCount>(),
+        get<StartStepTracking>(),
+      ));
 
   // Eager singletons must be registered in the right order
   gh.singleton<FakeStorage>(FakeStorage());
@@ -177,9 +185,9 @@ GetIt $initGetIt(
   return get;
 }
 
-class _$StorageModule extends StorageModule {}
-
 class _$FakeStorageModule extends FakeStorageModule {}
+
+class _$StorageModule extends StorageModule {}
 
 class _$DataSourcesModule extends DataSourcesModule {}
 

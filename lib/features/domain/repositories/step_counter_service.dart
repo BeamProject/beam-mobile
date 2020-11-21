@@ -1,4 +1,4 @@
-import 'package:beam/features/data/datasources/steps/model/step_count_event.dart';
+import 'package:beam/features/domain/entities/steps/ongoing_daily_step_count.dart';
 
 abstract class StepCounterService {
   Stream<StepCountEvent> observeStepCountEvents();

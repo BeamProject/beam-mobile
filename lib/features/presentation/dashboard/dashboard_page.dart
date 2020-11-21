@@ -60,6 +60,11 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
               const Padding(padding: EdgeInsets.all(12)),
               RaisedButton(
+                  child: const Text('Start tracking steps'),
+                  onPressed: () =>
+                      Provider.of<DashboardModel>(context, listen: false).onStartStepTrackingButtonPressed()),
+              const Padding(padding: EdgeInsets.all(12)),
+              RaisedButton(
                   child: const Text('My payments'),
                   onPressed: () =>
                       Navigator.push(context, PaymentsPage.route())),

@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 
-class StepCountData {
+class OngoingDailyStepCountData {
   static const COLUMN_ID = "id";
   static const COLUMN_STEP_COUNT_AT_START_OF_THE_DAY = "step_count_at_start_of_the_day";
   static const COLUMN_STEP_COUNT_AT_LAST_MEASUREMENT = "step_count_at_last_measurement";
@@ -11,9 +11,9 @@ class StepCountData {
   final int stepCountAtLastMeasurement;
   final String dayOfMeasurement;
 
-  StepCountData._({this.id, this.stepCountAtStartOfTheDay, this.stepCountAtLastMeasurement, this.dayOfMeasurement});
+  OngoingDailyStepCountData._({this.id, this.stepCountAtStartOfTheDay, this.stepCountAtLastMeasurement, this.dayOfMeasurement});
 
-  StepCountData({this.stepCountAtStartOfTheDay, this.stepCountAtLastMeasurement, DateTime dayOfMeasurement})
+  OngoingDailyStepCountData({this.stepCountAtStartOfTheDay, this.stepCountAtLastMeasurement, DateTime dayOfMeasurement})
       : id = 0,
         dayOfMeasurement = new DateFormat('yyyy-MM-dd').format(dayOfMeasurement);
 
@@ -26,8 +26,8 @@ class StepCountData {
     };
   }
 
-  factory StepCountData.fromMap(Map<String, dynamic> map) {
-    return StepCountData._(
+  factory OngoingDailyStepCountData.fromMap(Map<String, dynamic> map) {
+    return OngoingDailyStepCountData._(
         id: map[COLUMN_ID],
         stepCountAtStartOfTheDay: map[COLUMN_STEP_COUNT_AT_START_OF_THE_DAY],
         stepCountAtLastMeasurement: map[COLUMN_STEP_COUNT_AT_LAST_MEASUREMENT],

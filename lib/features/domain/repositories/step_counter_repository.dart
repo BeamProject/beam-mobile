@@ -1,5 +1,10 @@
-import 'package:beam/features/domain/entities/steps/step_count.dart';
+import 'package:beam/features/domain/entities/steps/daily_step_count.dart';
+import 'package:beam/features/domain/entities/steps/ongoing_daily_step_count.dart';
 
 abstract class StepCounterRepository {
-  Stream<StepCount> observeStepCount();
+  Future<void> updateOngoingDailyStepCount(OngoingDailyStepCount ongoingDailyStepCount);
+
+  Stream<OngoingDailyStepCount> observeOngoingDailyStepCount();
+
+  Future<void> updateDailyStepCount(DailyStepCount stepCount);
 }

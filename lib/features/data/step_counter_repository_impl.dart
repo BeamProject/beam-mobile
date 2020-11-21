@@ -1,73 +1,43 @@
 import 'dart:async';
 
 import 'package:beam/features/data/datasources/steps/step_counter_local_data_source.dart';
-import 'package:beam/features/data/datasources/steps/step_counter_service.dart';
-import 'package:beam/features/domain/entities/steps/step_count.dart';
+import 'package:beam/features/domain/entities/steps/daily_step_count.dart';
+import 'package:beam/features/domain/entities/steps/ongoing_daily_step_count.dart';
 import 'package:beam/features/domain/repositories/step_counter_repository.dart';
 import 'package:injectable/injectable.dart';
+import 'package:rxdart/rxdart.dart';
 
 @lazySingleton
 class StepCounterRepositoryImpl implements StepCounterRepository {
-  static const _persistStepCountTimeout = const Duration(seconds: 10);
-
-  final StepCounterService _stepCounterService;
   final StepCounterLocalDataSource _stepCounterLocalDataSource;
 
-  StepCount _latestStepCount;
-  Stream<StepCount> _stepCountStream;
-  Timer _persistStepCountTimer;
+  final _ongoingDailyStepCountStreamController =
+      BehaviorSubject<OngoingDailyStepCount>();
+  bool _isOngoingDailyStepCountInitialized = false;
 
-  StepCounterRepositoryImpl(
-      this._stepCounterService, this._stepCounterLocalDataSource);
+  StepCounterRepositoryImpl(this._stepCounterLocalDataSource);
 
   @override
-  Stream<StepCount> observeStepCount() {
-    if (_stepCountStream != null) {
-      return _stepCountStream;
+  Stream<OngoingDailyStepCount> observeOngoingDailyStepCount() {
+    if (!_isOngoingDailyStepCountInitialized) {
+      _isOngoingDailyStepCountInitialized = true;
+      _ongoingDailyStepCountStreamController.sink.addStream(Stream.fromFuture(
+          _stepCounterLocalDataSource.getOngoingDailyStepCount()));
     }
-
-    _stepCountStream = _stepCounterService
-        .observeStepCountEvents()
-        .asyncMap((stepCountEvent) async {
-      StepCount latestStepCount = await _getLatestStepCount();
-      StepCount newStepCount;
-      if (latestStepCount == null) {
-        newStepCount = StepCount.createNewFromMeasurement(
-            stepCountEvent.dayOfMeasurement,
-            stepCountEvent.steps);
-      } else {
-        newStepCount = latestStepCount.createWithNewMeasurement(
-            stepCountEvent.dayOfMeasurement, stepCountEvent.steps);
-      }
-      if (newStepCount != latestStepCount) {
-        _updateLatestStepCount(newStepCount);
-      }
-      return newStepCount;
-    });
-
-    return _stepCountStream;
+    return _ongoingDailyStepCountStreamController.stream;
   }
 
-  Future<StepCount> _getLatestStepCount() async {
-    if (_latestStepCount == null) {
-      _latestStepCount = await _stepCounterLocalDataSource.getLatestStepCount();
-    }
-    return _latestStepCount;
+  @override
+  Future<void> updateDailyStepCount(DailyStepCount stepCount) {
+    // TODO: implement updateDailyStepCount
+    throw UnimplementedError();
   }
 
-  void _updateLatestStepCount(stepCount) {
-    _latestStepCount = stepCount;
-
-    _persistStepCountWithDelay();
-  }
-
-  void _persistStepCountWithDelay() {
-    _stepCounterLocalDataSource.updateStepCount(_latestStepCount);
-    // if (_persistStepCountTimer != null && _persistStepCountTimer.isActive) {
-    //   _persistStepCountTimer.cancel();
-    // }
-    // _persistStepCountTimer = Timer(_persistStepCountTimeout, () {
-    //   _stepCounterLocalDataSource.updateStepCount(_latestStepCount);
-    // });
+  @override
+  Future<void> updateOngoingDailyStepCount(
+      OngoingDailyStepCount ongoingDailyStepCount) async {
+    await _stepCounterLocalDataSource
+        .updateOngoingDailyStepCount(ongoingDailyStepCount);
+    _ongoingDailyStepCountStreamController.sink.add(ongoingDailyStepCount);
   }
 }
