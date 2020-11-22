@@ -39,13 +39,14 @@ import '../../features/presentation/payments/model/payments_model.dart';
 import '../../features/data/pedometer/pedometer_module.dart';
 import '../../features/data/pedometer/pedometer_service.dart';
 import '../../features/domain/repositories/testing/repository_module.dart';
-import '../../features/domain/usecases/start_step_tracking.dart';
 import '../../features/data/datasources/steps/step_counter_local_data_source.dart';
 import '../../features/domain/repositories/step_counter_repository.dart';
 import '../../features/data/step_counter_repository_impl.dart';
 import '../../features/domain/repositories/step_counter_service.dart';
+import '../../features/domain/usecases/step_counting_service_interactor.dart';
 import '../../features/data/local/step_counter_storage.dart';
 import '../../features/domain/entities/steps/step_tracker.dart';
+import '../../features/domain/usecases/step_tracker_interactor.dart';
 import '../../features/data/local/storage_module.dart';
 import '../../features/data/beam/testing/test_beam_module.dart';
 import '../../features/data/datasources/user_local_data_source.dart';
@@ -91,6 +92,8 @@ GetIt $initGetIt(
   gh.factory<StepCounterService>(
       () => pedometerModule.stepCounterService(get<PedometerService>()),
       registerFor: {_prod});
+  gh.factory<StepCounterServiceInteractor>(
+      () => StepCounterServiceInteractor(get<StepCounterService>()));
   gh.factory<StepCounterStorage>(() => StepCounterStorage());
   gh.factory<UserLocalDataSource>(
       () => UserStorage(get<FlutterSecureStorage>()),
@@ -162,13 +165,14 @@ GetIt $initGetIt(
       registerFor: {_prod});
   gh.lazySingleton<StepTracker>(() =>
       StepTracker(get<StepCounterService>(), get<StepCounterRepository>()));
+  gh.factory<StepTrackerInteractor>(
+      () => StepTrackerInteractor(get<StepTracker>()));
   gh.factory<ObserveStepCount>(
       () => ObserveStepCount(get<StepCounterRepository>()));
-  gh.factory<StartStepTracking>(() => StartStepTracking(get<StepTracker>()));
   gh.factory<DashboardModel>(() => DashboardModel(
         get<ObserveUser>(),
         get<ObserveStepCount>(),
-        get<StartStepTracking>(),
+        get<StepCounterServiceInteractor>(),
       ));
 
   // Eager singletons must be registered in the right order

@@ -54,15 +54,16 @@ class _DashboardPageState extends State<DashboardPage> {
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 50,
-                            color: Colors.white))
+                            color: Colors.white)),
+                    const Padding(padding: EdgeInsets.all(12)),
+                    RaisedButton(
+                        child: Text("${dashboard.stepTrackingButtonText}"),
+                        onPressed: () =>
+                            Provider.of<DashboardModel>(context, listen: false)
+                                .onStepTrackingButtonPressed()),
                   ]);
                 },
               ),
-              const Padding(padding: EdgeInsets.all(12)),
-              RaisedButton(
-                  child: const Text('Start tracking steps'),
-                  onPressed: () =>
-                      Provider.of<DashboardModel>(context, listen: false).onStartStepTrackingButtonPressed()),
               const Padding(padding: EdgeInsets.all(12)),
               RaisedButton(
                   child: const Text('My payments'),

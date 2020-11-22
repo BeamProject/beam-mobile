@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:beam/features/domain/entities/steps/daily_step_count.dart';
 import 'package:beam/features/domain/repositories/step_counter_repository.dart';
@@ -12,19 +13,21 @@ class StepTracker {
   final StepCounterService _stepCounterService;
   final StepCounterRepository _stepCounterRepository;
   StreamSubscription<StepCountEvent> _stepCountEventStreamSubscription;
-  Stream<StepCountEvent> _stepCountEventStream;
 
   StepTracker(this._stepCounterService, this._stepCounterRepository);
 
-  Stream<StepCountEvent> startStepTracking() {
+  Future<void> observeStepEvents() async {
     if (_stepCountEventStreamSubscription != null) {
-      return _stepCountEventStream;
+      return;
     }
 
-    _stepCountEventStream = _stepCounterService.observeStepCountEvents();
-
-    _stepCountEventStreamSubscription =
-        _stepCountEventStream.listen((stepCountEvent) async {
+    // TODO: Extract the observeStepCountEvents from the StepCounterService to a separate
+    // class. StepTracker doesn't need access to the API for stopping/starting the service.
+    _stepCountEventStreamSubscription = _stepCounterService
+        .observeStepCountEvents()
+        .listen((stepCountEvent) async {
+      // TODO: Remove this log when no longer necessary
+      log("On step count event");
       OngoingDailyStepCount ongoingDailyStepCount =
           await _stepCounterRepository.observeOngoingDailyStepCount().first;
       OngoingDailyStepCount newOnGoingDailyStepCount;
@@ -45,16 +48,15 @@ class StepTracker {
 
       await _stepCounterRepository
           .updateOngoingDailyStepCount(newOnGoingDailyStepCount);
-    })
-          ..onError((error) {
-            _stepCountEventStreamSubscription.cancel();
-            _stepCountEventStreamSubscription = null;
-          });
-
-    return _stepCountEventStream;
+    });
   }
 
-  void stopStepTracking() {
+  void stopObservingStepEvents() {
+    // TODO: When stopping the tracker, reset the ongoingDailyStepCount upon restart.
+    // To preserve the todal daily steps update the DailyStepCount as well.
+    // When tracking, always update the DailyStepCount with a new measuerement from the ongoingDailyStepCount.
+    // Rename the stepCountAtStartOfTheDay to stepCountAtFirstMeasurement.
+    // Also stop the foreground service when this method is called. Add a new method on the StepCounterService iface.
     if (_stepCountEventStreamSubscription != null) {
       _stepCountEventStreamSubscription.cancel();
       _stepCountEventStreamSubscription = null;

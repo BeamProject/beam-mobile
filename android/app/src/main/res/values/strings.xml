@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="step_counter_notification_title">Beam step counter</string>
+    <string name="step_counter_notification_message">Counting steps in background</string>
+</resources>
