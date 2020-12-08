@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:pedometer/pedometer.dart';
 
 /// A class representing an ongoing daily step count based on two values:
 ///  1. Step count at the first measurement of the day.
@@ -9,33 +10,33 @@ import 'package:equatable/equatable.dart';
 /// the latest measurement will be used to define the first measurement of the new day.
 class OngoingDailyStepCount extends Equatable {
   final DateTime dayOfMeasurement;
-  final int stepCountAtStartOfTheDay;
+  final int stepCountAtFirstMeasurement;
   final int stepCountAtLastMeasurement;
-  int get totalSteps => stepCountAtLastMeasurement - stepCountAtStartOfTheDay;
+  int get totalSteps => stepCountAtLastMeasurement - stepCountAtFirstMeasurement;
 
   OngoingDailyStepCount(
       {this.dayOfMeasurement,
-      this.stepCountAtStartOfTheDay,
+      this.stepCountAtFirstMeasurement,
       this.stepCountAtLastMeasurement});
 
   factory OngoingDailyStepCount.createNewFromStepCountEvent(
-      StepCountEvent stepCountEvent) {
+      StepCount stepCountEvent) {
     return OngoingDailyStepCount(
-        dayOfMeasurement: stepCountEvent.dayOfMeasurement,
+        dayOfMeasurement: stepCountEvent.timeStamp,
         stepCountAtLastMeasurement: stepCountEvent.steps,
-        stepCountAtStartOfTheDay: stepCountEvent.steps);
+        stepCountAtFirstMeasurement: stepCountEvent.steps);
   }
 
   OngoingDailyStepCount createWithNewStepCountEvent(
-      StepCountEvent stepCountEvent) {
-    final newDayOfMeasurement = stepCountEvent.dayOfMeasurement;
+      StepCount stepCountEvent) {
+    final newDayOfMeasurement = stepCountEvent.timeStamp;
     final newStepsMeasurement = stepCountEvent.steps;
     if (newDayOfMeasurement.isSameDayAs(dayOfMeasurement) ||
         // This can happen when the clock changes backwards.
         newDayOfMeasurement.isBefore(dayOfMeasurement)) {
       return OngoingDailyStepCount(
         dayOfMeasurement: dayOfMeasurement,
-        stepCountAtStartOfTheDay: stepCountAtStartOfTheDay,
+        stepCountAtFirstMeasurement: stepCountAtFirstMeasurement,
         stepCountAtLastMeasurement: newStepsMeasurement,
       );
     }
@@ -43,7 +44,7 @@ class OngoingDailyStepCount extends Equatable {
     if (newDayOfMeasurement.isAfter(dayOfMeasurement)) {
       return OngoingDailyStepCount(
           dayOfMeasurement: newDayOfMeasurement,
-          stepCountAtStartOfTheDay: newStepsMeasurement,
+          stepCountAtFirstMeasurement: newStepsMeasurement,
           stepCountAtLastMeasurement: newStepsMeasurement);
     }
 
@@ -62,22 +63,7 @@ class OngoingDailyStepCount extends Equatable {
         dayOfMeasurement.month,
         dayOfMeasurement.day,
         stepCountAtLastMeasurement,
-        stepCountAtStartOfTheDay
-      ];
-}
-
-class StepCountEvent extends Equatable {
-  final int steps;
-  final DateTime dayOfMeasurement;
-
-  const StepCountEvent({this.steps, this.dayOfMeasurement});
-
-  @override
-  List<Object> get props => [
-        steps,
-        dayOfMeasurement.year,
-        dayOfMeasurement.month,
-        dayOfMeasurement.day,
+        stepCountAtFirstMeasurement
       ];
 }
 
@@ -86,5 +72,9 @@ extension DateOnlyComparator on DateTime {
     return this.year == other.year &&
         this.month == other.month &&
         this.day == other.day;
+  }
+
+  bool isDayBefore(DateTime other) {
+    return !isSameDayAs(other) && isBefore(other);
   }
 }

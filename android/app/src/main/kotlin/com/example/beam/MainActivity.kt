@@ -6,11 +6,18 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
-    private val stepCounterPlugin = StepCounterPlugin(this)
+    private lateinit var stepCounterPlugin: StepCounterPlugin
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, StepCounterPlugin.CHANNEL)
-                .setMethodCallHandler(stepCounterPlugin)
+        val methodChannel = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, StepCounterPlugin.CHANNEL)
+        stepCounterPlugin = StepCounterPlugin(this, methodChannel)
+        methodChannel.setMethodCallHandler(stepCounterPlugin)
+        stepCounterPlugin.bind()
+    }
+
+    override fun cleanUpFlutterEngine(flutterEngine: FlutterEngine) {
+        stepCounterPlugin.unbind()
+        super.cleanUpFlutterEngine(flutterEngine)
     }
 }

@@ -1,6 +1,6 @@
 class DailyStepCount {
   final int steps;
-  final DateTime day;
+  final DateTime dayOfMeasurement;
 
-  DailyStepCount(this.steps, this.day);
+  DailyStepCount({this.steps, this.dayOfMeasurement});
 }

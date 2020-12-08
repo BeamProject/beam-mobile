@@ -1,11 +1,12 @@
 import 'dart:async';
+import 'dart:developer';
+import 'dart:isolate';
 import 'dart:ui';
 
-import 'package:beam/features/domain/entities/steps/ongoing_daily_step_count.dart';
+import 'package:beam/features/domain/entities/steps/daily_step_count.dart';
 import 'package:beam/features/domain/repositories/step_counter_service.dart';
 import 'package:flutter/services.dart';
 import 'package:injectable/injectable.dart';
-import 'package:pedometer/pedometer.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'callback_dispatcher.dart';
@@ -15,24 +16,50 @@ class PedometerService implements StepCounterService {
   static const MethodChannel _channel =
       MethodChannel('plugins.beam/step_counter_plugin');
 
-  Stream<StepCountEvent> _stepCountEventStream;
+  Stream<DailyStepCount> _dailyStepCountStream;
   StreamController<bool> _stepTrackerStatusStreamController =
       BehaviorSubject<bool>();
+  SendPort _stepTrackerSendPort;
   Stream<bool> get _stepTrackingStatusStream async* {
     yield await isInitialized();
     yield* _stepTrackerStatusStreamController.stream;
   }
 
-  @override
-  Stream<StepCountEvent> observeStepCountEvents() {
-    if (_stepCountEventStream != null) {
-      return _stepCountEventStream;
-    }
-    _stepCountEventStream = Pedometer.stepCountStream.map((stepCount) =>
-        StepCountEvent(
-            dayOfMeasurement: stepCount.timeStamp, steps: stepCount.steps));
+  PedometerService() {  
+    _channel.setMethodCallHandler((call) async {
+      if (call.method == 'onServiceStatusChanged') {
+        _stepTrackerStatusStreamController.sink.add(call.arguments);
+      }
+    });
+  }
 
-    return _stepCountEventStream;
+  @override
+  Stream<DailyStepCount> observeDailyStepCount() {
+    if (_dailyStepCountStream != null) {
+      return _dailyStepCountStream;
+    }
+    final receivePort = ReceivePort();
+    final sendPort = receivePort.sendPort;
+    _dailyStepCountStream = receivePort.asBroadcastStream(onCancel: (_) {
+      log("_dailyStepCountStream: onCancel called");
+      final stepTrackerSendPort = _stepTrackerSendPort;
+      if (stepTrackerSendPort != null) {
+        stepTrackerSendPort.send(sendPort);
+      } else {
+        log("_dailyStepCountStream: stepTrackerSendPort is null");
+      }
+    }).map((event) => DailyStepCount(steps: event[0], dayOfMeasurement: DateTime.parse(event[1])));
+
+    StreamSubscription<bool> stepTrackingStatusSubscription;
+    stepTrackingStatusSubscription =
+        _stepTrackingStatusStream.listen((isInitialized) {
+      if (isInitialized) {
+        _stepTrackerSendPort = IsolateNameServer.lookupPortByName("step_tracker_send_port");
+        _stepTrackerSendPort.send(sendPort);
+        stepTrackingStatusSubscription.cancel();
+      }
+    });
+    return _dailyStepCountStream;
   }
 
   @override
@@ -45,7 +72,7 @@ class PedometerService implements StepCounterService {
         PluginUtilities.getCallbackHandle(callbackDispatcher);
     await _channel.invokeMethod("StepCounterService.initializeService",
         <dynamic>[callback.toRawHandle()]);
-    _stepTrackerStatusStreamController.sink.add(true);
+    // _stepTrackerStatusStreamController.sink.add(true);
   }
 
   @override
@@ -56,7 +83,7 @@ class PedometerService implements StepCounterService {
   @override
   Future<void> stopService() async {
     await _channel.invokeMethod("StepCounterService.stopService");
-    _stepTrackerStatusStreamController.sink.add(false);
+    // _stepTrackerStatusStreamController.sink.add(false);
   }
 
   @override

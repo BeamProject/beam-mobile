@@ -1,43 +1,30 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:beam/features/data/datasources/steps/step_counter_local_data_source.dart';
 import 'package:beam/features/domain/entities/steps/daily_step_count.dart';
-import 'package:beam/features/domain/entities/steps/ongoing_daily_step_count.dart';
-import 'package:beam/features/domain/repositories/step_counter_repository.dart';
+import 'package:beam/features/domain/repositories/steps_repository.dart';
 import 'package:injectable/injectable.dart';
-import 'package:rxdart/rxdart.dart';
 
 @lazySingleton
-class StepCounterRepositoryImpl implements StepCounterRepository {
+class StepCounterRepositoryImpl implements StepsRepository {
   final StepCounterLocalDataSource _stepCounterLocalDataSource;
-
-  final _ongoingDailyStepCountStreamController =
-      BehaviorSubject<OngoingDailyStepCount>();
-  bool _isOngoingDailyStepCountInitialized = false;
 
   StepCounterRepositoryImpl(this._stepCounterLocalDataSource);
 
   @override
-  Stream<OngoingDailyStepCount> observeOngoingDailyStepCount() {
-    if (!_isOngoingDailyStepCountInitialized) {
-      _isOngoingDailyStepCountInitialized = true;
-      _ongoingDailyStepCountStreamController.sink.addStream(Stream.fromFuture(
-          _stepCounterLocalDataSource.getOngoingDailyStepCount()));
-    }
-    return _ongoingDailyStepCountStreamController.stream;
-  }
-
-  @override
   Future<void> updateDailyStepCount(DailyStepCount stepCount) {
-    // TODO: implement updateDailyStepCount
-    throw UnimplementedError();
+    log("updating daily step count ${stepCount.steps}, ${stepCount.dayOfMeasurement.toString()}");
+    _stepCounterLocalDataSource.updateDailyStepCount(stepCount);
   }
 
   @override
-  Future<void> updateOngoingDailyStepCount(
-      OngoingDailyStepCount ongoingDailyStepCount) async {
-    await _stepCounterLocalDataSource
-        .updateOngoingDailyStepCount(ongoingDailyStepCount);
-    _ongoingDailyStepCountStreamController.sink.add(ongoingDailyStepCount);
+  Future<DailyStepCount> getDailyStepCount(DateTime day) async {
+    final dailyStepCounts =  await _stepCounterLocalDataSource.getDailyStepCounts(day);
+    assert(dailyStepCounts.length <= 1, "There should only ever be one dailyStepCount event per day");
+    if (dailyStepCounts.length == 1) {
+      return dailyStepCounts[0];
+    }
+    return null;
   }
 }

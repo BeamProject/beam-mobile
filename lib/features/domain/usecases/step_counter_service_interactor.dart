@@ -1,5 +1,3 @@
-import 'package:beam/features/domain/entities/steps/ongoing_daily_step_count.dart';
-import 'package:beam/features/domain/entities/steps/step_tracker.dart';
 import 'package:beam/features/domain/repositories/step_counter_service.dart';
 import 'package:injectable/injectable.dart';
 
@@ -9,15 +7,15 @@ class StepCounterServiceInteractor {
 
   StepCounterServiceInteractor(this._stepCounterService);
 
-  Future<void> startStepTracking() {
+  Future<void> startStepCounter() {
     return _stepCounterService.startService();
   }
 
-  Future<void> stopStepTracking() async {
+  Future<void> stopStepCounter() async {
     await _stepCounterService.stopService();
   }
 
-  Stream<bool> observeStepTrackingStatus() {
+  Stream<bool> observeStepCounterStatus() {
     return _stepCounterService.observeServiceStatus();
   }
 }

@@ -22,6 +22,7 @@ import '../../features/data/inject/repository_module.dart';
 import '../../features/data/local/testing/fake_storage.dart';
 import '../../features/data/local/testing/test_storage_module.dart';
 import '../../features/domain/repositories/testing/fake_user_repository.dart';
+import '../../features/domain/usecases/get_daily_step_count.dart';
 import '../../features/domain/usecases/get_payments.dart';
 import '../../features/domain/usecases/log_in.dart';
 import '../../features/domain/usecases/log_out.dart';
@@ -40,15 +41,15 @@ import '../../features/data/pedometer/pedometer_module.dart';
 import '../../features/data/pedometer/pedometer_service.dart';
 import '../../features/domain/repositories/testing/repository_module.dart';
 import '../../features/data/datasources/steps/step_counter_local_data_source.dart';
-import '../../features/domain/repositories/step_counter_repository.dart';
 import '../../features/data/step_counter_repository_impl.dart';
 import '../../features/domain/repositories/step_counter_service.dart';
-import '../../features/domain/usecases/step_counting_service_interactor.dart';
+import '../../features/domain/usecases/step_counter_service_interactor.dart';
 import '../../features/data/local/step_counter_storage.dart';
-import '../../features/domain/entities/steps/step_tracker.dart';
-import '../../features/domain/usecases/step_tracker_interactor.dart';
+import '../../features/data/pedometer/step_tracker.dart';
+import '../../features/domain/repositories/steps_repository.dart';
 import '../../features/data/local/storage_module.dart';
 import '../../features/data/beam/testing/test_beam_module.dart';
+import '../../features/domain/usecases/update_daily_step_count.dart';
 import '../../features/data/datasources/user_local_data_source.dart';
 import '../../features/data/datasources/user_remote_data_source.dart';
 import '../../features/domain/repositories/user_repository.dart';
@@ -68,8 +69,8 @@ GetIt $initGetIt(
   EnvironmentFilter environmentFilter,
 }) {
   final gh = GetItHelper(get, environment, environmentFilter);
-  final fakeStorageModule = _$FakeStorageModule();
   final storageModule = _$StorageModule();
+  final fakeStorageModule = _$FakeStorageModule();
   final dataSourcesModule = _$DataSourcesModule();
   final repositoryModule = _$RepositoryModule();
   final pedometerModule = _$PedometerModule();
@@ -94,14 +95,14 @@ GetIt $initGetIt(
       registerFor: {_prod});
   gh.factory<StepCounterServiceInteractor>(
       () => StepCounterServiceInteractor(get<StepCounterService>()));
-  gh.factory<StepCounterStorage>(() => StepCounterStorage());
-  gh.factory<UserLocalDataSource>(
-      () => UserStorage(get<FlutterSecureStorage>()),
-      registerFor: {_prod});
+  gh.lazySingleton<StepCounterStorage>(() => StepCounterStorage());
   gh.factory<UserLocalDataSource>(
       () =>
           dataSourcesModule.userLocalDataSource(get<MockUserLocalDataSource>()),
       registerFor: {_test});
+  gh.factory<UserLocalDataSource>(
+      () => UserStorage(get<FlutterSecureStorage>()),
+      registerFor: {_prod});
   gh.factory<UserRemoteDataSource>(
       () => dataSourcesModule
           .userRemoteDataSource(get<MockUserRemoteDataSource>()),
@@ -143,6 +144,12 @@ GetIt $initGetIt(
       registerFor: {_prod});
   gh.lazySingleton<StepCounterRepositoryImpl>(
       () => StepCounterRepositoryImpl(get<StepCounterLocalDataSource>()));
+  gh.factory<StepsRepository>(
+      () => dataRepositoryModule
+          .stepCounterRepository(get<StepCounterRepositoryImpl>()),
+      registerFor: {_prod});
+  gh.factory<UpdateDailyStepCount>(
+      () => UpdateDailyStepCount(get<StepsRepository>()));
   gh.factory<UserRemoteDataSource>(
       () => beamModule.userRemoteDataSource(get<BeamUserRepository>()),
       registerFor: {_prod});
@@ -156,19 +163,14 @@ GetIt $initGetIt(
       ));
   gh.factory<BeamPaymentRepository>(
       () => BeamPaymentRepository(get<BeamServiceAuthWrapper>()));
+  gh.factory<GetDailyStepCount>(
+      () => GetDailyStepCount(get<StepsRepository>()));
+  gh.factory<ObserveStepCount>(() =>
+      ObserveStepCount(get<StepCounterService>(), get<StepsRepository>()));
   gh.factory<PaymentRemoteRepository>(
       () => beamModule.paymentRemoteRepository(get<BeamPaymentRepository>()),
       registerFor: {_prod});
-  gh.factory<StepCounterRepository>(
-      () => dataRepositoryModule
-          .stepCounterRepository(get<StepCounterRepositoryImpl>()),
-      registerFor: {_prod});
-  gh.lazySingleton<StepTracker>(() =>
-      StepTracker(get<StepCounterService>(), get<StepCounterRepository>()));
-  gh.factory<StepTrackerInteractor>(
-      () => StepTrackerInteractor(get<StepTracker>()));
-  gh.factory<ObserveStepCount>(
-      () => ObserveStepCount(get<StepCounterRepository>()));
+  gh.lazySingleton<StepTracker>(() => StepTracker(get<GetDailyStepCount>()));
   gh.factory<DashboardModel>(() => DashboardModel(
         get<ObserveUser>(),
         get<ObserveStepCount>(),
@@ -189,9 +191,9 @@ GetIt $initGetIt(
   return get;
 }
 
-class _$FakeStorageModule extends FakeStorageModule {}
-
 class _$StorageModule extends StorageModule {}
+
+class _$FakeStorageModule extends FakeStorageModule {}
 
 class _$DataSourcesModule extends DataSourcesModule {}
 

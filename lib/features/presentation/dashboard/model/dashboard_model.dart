@@ -1,10 +1,11 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:beam/features/domain/entities/steps/daily_step_count.dart';
 import 'package:beam/features/domain/entities/user.dart';
 import 'package:beam/features/domain/usecases/get_current_user.dart';
 import 'package:beam/features/domain/usecases/observe_step_count.dart';
-import 'package:beam/features/domain/usecases/step_counting_service_interactor.dart';
+import 'package:beam/features/domain/usecases/step_counter_service_interactor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:injectable/injectable.dart';
 
@@ -42,7 +43,7 @@ class DashboardModel extends ChangeNotifier {
     });
 
     _stepTrackingStatusSubscription = _stepCounterServiceInteractor
-        .observeStepTrackingStatus()
+        .observeStepCounterStatus()
         .listen((isRunning) {
       if (isRunning) {
         _stepTrackingState = StepTrackingState.running();
@@ -55,9 +56,9 @@ class DashboardModel extends ChangeNotifier {
 
   void onStepTrackingButtonPressed() async {
     if (_stepTrackingState.isRunning) {
-      await _stepCounterServiceInteractor.stopStepTracking();
+      await _stepCounterServiceInteractor.stopStepCounter();
     } else {
-      await _stepCounterServiceInteractor.startStepTracking();
+      await _stepCounterServiceInteractor.startStepCounter();
     }
   }
 

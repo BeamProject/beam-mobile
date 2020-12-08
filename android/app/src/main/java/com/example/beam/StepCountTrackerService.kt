@@ -7,6 +7,7 @@ import android.app.NotificationManager.IMPORTANCE_DEFAULT
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
@@ -16,18 +17,25 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.view.FlutterCallbackInformation
 import io.flutter.view.FlutterMain
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
-class StepCountTrackerService : Service() {
+@ExperimentalCoroutinesApi
+class StepCountTrackerService : Service(), MethodChannel.MethodCallHandler {
     companion object {
         const val TAG = "StepCountTrackerService"
         const val ACTION_STOP_FOREGROUND = "stop_foreground"
         const val BACKGROUND_METHOD_CHANNEL = "plugins.beam/step_counter_plugin_background"
         private var backgroundFlutterEngine: FlutterEngine? = null
-        var isRunning = false
+        var isInitialized = false
     }
 
     private val onGoingNotificationId = 1;
+    private val binder = LocalBinder()
     private lateinit var backgroundMethodChannel: MethodChannel
+    private val _serviceStatus = MutableStateFlow(false)
+    val serviceStatus: StateFlow<Boolean> = _serviceStatus
 
     override fun onCreate() {
         Log.d(TAG, "onCreate")
@@ -77,29 +85,42 @@ class StepCountTrackerService : Service() {
 
         backgroundMethodChannel = MethodChannel(
                 backgroundFlutterEngine!!.dartExecutor.binaryMessenger, BACKGROUND_METHOD_CHANNEL)
+        backgroundMethodChannel.setMethodCallHandler(this)
         backgroundMethodChannel.invokeMethod("serviceStarted", null)
 
-        isRunning = true
     }
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        if (intent.action == ACTION_STOP_FOREGROUND) {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == ACTION_STOP_FOREGROUND) {
+            _serviceStatus.value = false
+            isInitialized = false
             stopForeground(true)
             stopSelf()
-            isRunning = false
         }
         return START_STICKY
     }
 
-    override fun onBind(intent: Intent): IBinder? {
-        return null
+    inner class LocalBinder : Binder() {
+        fun getService(): StepCountTrackerService = this@StepCountTrackerService
     }
 
+    override fun onBind(intent: Intent): IBinder {
+        return binder
+    }
+
+
     override fun onDestroy() {
-        isRunning = false
+        Log.d(TAG, "onDestroy")
         // onDestroy should be called by the framework automatically after calling stopSelf()
         backgroundMethodChannel.invokeMethod("serviceStopped", null)
         super.onDestroy()
+    }
+
+    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        if (call.method == "step_tracker_initialized") {
+            _serviceStatus.value = true
+            isInitialized = true
+        }
     }
 
 }
