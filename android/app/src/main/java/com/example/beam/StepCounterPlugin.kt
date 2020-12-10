@@ -1,12 +1,10 @@
 package com.example.beam
 
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
-import android.os.IBinder
 import android.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
+import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -17,9 +15,8 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 
-// TODO: Refactor to be an actual FlutterPlugin. And call stopObserviceServiceStatus and unbind when detached
-// from the engine.
-class StepCounterPlugin @Inject constructor(@ApplicationContext private val context: Context) : MethodChannel.MethodCallHandler, EventChannel.StreamHandler {
+class StepCounterPlugin @Inject constructor(@ApplicationContext private val context: Context) :
+        MethodChannel.MethodCallHandler, EventChannel.StreamHandler, FlutterPlugin {
     companion object {
         const val CHANNEL = "plugins.beam/step_counter_plugin"
         const val SERVICE_STATUS_CHANNEL = "plugins.beam/step_counter_service_status_plugin"
@@ -29,17 +26,12 @@ class StepCounterPlugin @Inject constructor(@ApplicationContext private val cont
         const val TAG = "StepCounterPlugin"
     }
 
-    private val pluginScope = CoroutineScope(Job() + Dispatchers.Main)
-    private var serviceStatusCollectionJob: Job? = null
-    private val isInitialized get() = stepCounterServiceStatusProvider.observeServiceStatus().value
-
     @Inject
     lateinit var stepCounterServiceStatusProvider: StepCounterServiceStatusProvider
+    private val isInitialized get() = stepCounterServiceStatusProvider.observeServiceStatus().value
     private lateinit var channel: MethodChannel
-
-    fun setChannel(channel: MethodChannel) {
-        this.channel = channel
-    }
+    private val pluginScope = CoroutineScope(Job() + Dispatchers.Main)
+    private var serviceStatusCollectionJob: Job? = null
 
     override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
         Log.d(TAG, "onListen")
@@ -73,10 +65,6 @@ class StepCounterPlugin @Inject constructor(@ApplicationContext private val cont
         }
     }
 
-    fun dispose() {
-        stopObservingServiceStatus()
-    }
-
     private fun initializeService(callbackHandle: Long) {
         if (isInitialized) {
             return
@@ -106,4 +94,15 @@ class StepCounterPlugin @Inject constructor(@ApplicationContext private val cont
         serviceStatusCollectionJob = null
     }
 
+    override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        Log.d(TAG, "On attached to engine")
+        channel = MethodChannel(binding.binaryMessenger, CHANNEL)
+        channel.setMethodCallHandler(this)
+        EventChannel(binding.binaryMessenger, SERVICE_STATUS_CHANNEL).setStreamHandler(this)
+    }
+
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        Log.d(TAG, "On detached from engine")
+        stopObservingServiceStatus()
+    }
 }

@@ -32,7 +32,6 @@ void callbackDispatcher() {
 
   final List<SendPort> stepTrackerObserverPorts = [];
   stepTracker.totalDailyStepCountStream.listen((stepCount) async {
-    log("Daily step count ${stepCount.steps}, day: ${stepCount.dayOfMeasurement}");
     await updateDailyStepCount(stepCount);
     stepTrackerObserverPorts.forEach((sendPort) {
       sendPort.send([stepCount.steps, stepCount.dayOfMeasurement.toString()]);
