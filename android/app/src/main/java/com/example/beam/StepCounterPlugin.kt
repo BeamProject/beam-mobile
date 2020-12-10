@@ -20,9 +20,6 @@ class StepCounterPlugin @Inject constructor(@ApplicationContext private val cont
     companion object {
         const val CHANNEL = "plugins.beam/step_counter_plugin"
         const val SERVICE_STATUS_CHANNEL = "plugins.beam/step_counter_service_status_plugin"
-        const val CALLBACK_DISPATCHER_HANDLE_KEY =
-                "step_counter_callback_dispatcher_handle_key"
-        const val SHARED_PREFS_KEY = "step_counter_plugin_cache"
         const val TAG = "StepCounterPlugin"
     }
 
@@ -69,13 +66,9 @@ class StepCounterPlugin @Inject constructor(@ApplicationContext private val cont
         if (isInitialized) {
             return
         }
-        // TODO: It shouldn't be necessary to store the callback in shared prefs. Pass it as part of the intent.
-        context.getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE)
-                .edit()
-                .putLong(CALLBACK_DISPATCHER_HANDLE_KEY, callbackHandle)
-                .apply()
-
-        Intent(context, StepCountTrackerService::class.java).also { intent ->
+        Intent(context, StepCountTrackerService::class.java).apply {
+            putExtra(StepCountTrackerService.CALLBACK_HANDLE_EXTRA, callbackHandle)
+        }.also { intent ->
             context.startService(intent)
         }
     }

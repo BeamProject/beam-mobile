@@ -30,6 +30,7 @@ class StepCountTrackerService : Service(), MethodChannel.MethodCallHandler {
     companion object {
         const val TAG = "StepCountTrackerService"
         const val ACTION_STOP_FOREGROUND = "stop_foreground"
+        const val CALLBACK_HANDLE_EXTRA = "callback_handle_extra"
         const val BACKGROUND_METHOD_CHANNEL = "plugins.beam/step_counter_plugin_background"
         private var backgroundFlutterEngine: FlutterEngine? = null
     }
@@ -62,19 +63,12 @@ class StepCountTrackerService : Service(), MethodChannel.MethodCallHandler {
             startForeground(onGoingNotificationId, notificationBuilder.build())
         }
 
+    }
+
+    private fun initializeEngine(callbackHandle: Long) {
         if (backgroundFlutterEngine == null) {
             FlutterMain.startInitialization(this)
             FlutterMain.ensureInitializationComplete(this, null)
-
-            val callbackHandle =
-                    getSharedPreferences(StepCounterPlugin.SHARED_PREFS_KEY, Context.MODE_PRIVATE)
-                            .getLong(StepCounterPlugin.CALLBACK_DISPATCHER_HANDLE_KEY, 0)
-
-            if (callbackHandle == 0L) {
-                Log.e(TAG, "Fatal: no callback registered")
-                return
-            }
-
             backgroundFlutterEngine = FlutterEngine(this)
 
             val callbackInfo = FlutterCallbackInformation.lookupCallbackInformation(callbackHandle)
@@ -83,7 +77,6 @@ class StepCountTrackerService : Service(), MethodChannel.MethodCallHandler {
                     FlutterMain.findAppBundlePath(),
                     callbackInfo
             )
-
             backgroundFlutterEngine!!.dartExecutor.executeDartCallback(dartCallback)
         }
 
@@ -91,7 +84,6 @@ class StepCountTrackerService : Service(), MethodChannel.MethodCallHandler {
                 backgroundFlutterEngine!!.dartExecutor.binaryMessenger, BACKGROUND_METHOD_CHANNEL)
         backgroundMethodChannel.setMethodCallHandler(this)
         backgroundMethodChannel.invokeMethod("serviceStarted", null)
-
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -99,6 +91,8 @@ class StepCountTrackerService : Service(), MethodChannel.MethodCallHandler {
             stepCounterServiceStatusMonitor.serviceStatus.value = false
             stopForeground(true)
             stopSelf()
+        } else if (!stepCounterServiceStatusMonitor.serviceStatus.value) {
+            initializeEngine(intent!!.extras.getLong(CALLBACK_HANDLE_EXTRA))
         }
         return START_STICKY
     }
