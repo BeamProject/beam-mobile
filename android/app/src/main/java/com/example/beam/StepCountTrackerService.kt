@@ -4,6 +4,7 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.NotificationManager.IMPORTANCE_DEFAULT
+import android.app.NotificationManager.IMPORTANCE_MIN
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -11,6 +12,7 @@ import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import dagger.hilt.android.AndroidEntryPoint
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.embedding.engine.dart.DartExecutor
 import io.flutter.plugin.common.MethodCall
@@ -20,7 +22,9 @@ import io.flutter.view.FlutterMain
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Inject
 
+@AndroidEntryPoint
 @ExperimentalCoroutinesApi
 class StepCountTrackerService : Service(), MethodChannel.MethodCallHandler {
     companion object {
@@ -28,23 +32,23 @@ class StepCountTrackerService : Service(), MethodChannel.MethodCallHandler {
         const val ACTION_STOP_FOREGROUND = "stop_foreground"
         const val BACKGROUND_METHOD_CHANNEL = "plugins.beam/step_counter_plugin_background"
         private var backgroundFlutterEngine: FlutterEngine? = null
-        var isInitialized = false
     }
 
     private val onGoingNotificationId = 1;
-    private val binder = LocalBinder()
     private lateinit var backgroundMethodChannel: MethodChannel
-    private val _serviceStatus = MutableStateFlow(false)
-    val serviceStatus: StateFlow<Boolean> = _serviceStatus
+
+    @Inject
+    lateinit var stepCounterServiceStatusMonitor: StepCounterServiceStatusMonitor
 
     override fun onCreate() {
+        super.onCreate()
         Log.d(TAG, "onCreate")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channelId = "step_count_tracker_service"
             val channel = NotificationChannel(
                     channelId,
                     "Step count tracker service",
-                    IMPORTANCE_DEFAULT)
+                    IMPORTANCE_MIN)
             val notificationManager =
                     getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
@@ -92,22 +96,18 @@ class StepCountTrackerService : Service(), MethodChannel.MethodCallHandler {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.action == ACTION_STOP_FOREGROUND) {
-            _serviceStatus.value = false
-            isInitialized = false
+            stepCounterServiceStatusMonitor.serviceStatus.value = false
             stopForeground(true)
             stopSelf()
         }
         return START_STICKY
     }
 
-    inner class LocalBinder : Binder() {
-        fun getService(): StepCountTrackerService = this@StepCountTrackerService
+    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        if (call.method == "step_tracker_initialized") {
+            stepCounterServiceStatusMonitor.serviceStatus.value = true
+        }
     }
-
-    override fun onBind(intent: Intent): IBinder {
-        return binder
-    }
-
 
     override fun onDestroy() {
         Log.d(TAG, "onDestroy")
@@ -116,11 +116,5 @@ class StepCountTrackerService : Service(), MethodChannel.MethodCallHandler {
         super.onDestroy()
     }
 
-    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
-        if (call.method == "step_tracker_initialized") {
-            _serviceStatus.value = true
-            isInitialized = true
-        }
-    }
-
+    override fun onBind(p0: Intent?): IBinder? = null
 }

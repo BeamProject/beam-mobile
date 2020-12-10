@@ -38,7 +38,7 @@ class DashboardModel extends ChangeNotifier {
     });
 
     _stepCounterSubscription = observeStepCount().listen((stepCount) {
-      _steps = stepCount.steps;
+      _steps = stepCount?.steps ?? 0;
       notifyListeners();
     });
 

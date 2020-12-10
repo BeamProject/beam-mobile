@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 
 class DailyStepCountData {
   static const COLUMN_ID = "id";
-  static const COLUMN_STEPS = "stepS";
+  static const COLUMN_STEPS = "steps";
   static const COLUMN_DAY_OF_MEASUREMENT = "day_of_measurement";
   static final dateFormat = DateFormat('yyyy-MM-dd');
 
