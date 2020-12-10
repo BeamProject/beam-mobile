@@ -37,6 +37,7 @@ class StepCountTrackerService : Service(), MethodChannel.MethodCallHandler {
 
     private val onGoingNotificationId = 1;
     private lateinit var backgroundMethodChannel: MethodChannel
+    private var isFirstStart = true
 
     @Inject
     lateinit var stepCounterServiceStatusMonitor: StepCounterServiceStatusMonitor
@@ -62,16 +63,15 @@ class StepCountTrackerService : Service(), MethodChannel.MethodCallHandler {
 
             startForeground(onGoingNotificationId, notificationBuilder.build())
         }
-
     }
 
-    private fun initializeEngine(callbackHandle: Long) {
+    private fun initializeEngine(callbackHandle: Long?) {
         if (backgroundFlutterEngine == null) {
             FlutterMain.startInitialization(this)
             FlutterMain.ensureInitializationComplete(this, null)
             backgroundFlutterEngine = FlutterEngine(this)
 
-            val callbackInfo = FlutterCallbackInformation.lookupCallbackInformation(callbackHandle)
+            val callbackInfo = FlutterCallbackInformation.lookupCallbackInformation(callbackHandle!!)
             val dartCallback = DartExecutor.DartCallback(
                     assets,
                     FlutterMain.findAppBundlePath(),
@@ -91,8 +91,9 @@ class StepCountTrackerService : Service(), MethodChannel.MethodCallHandler {
             stepCounterServiceStatusMonitor.serviceStatus.value = false
             stopForeground(true)
             stopSelf()
-        } else if (!stepCounterServiceStatusMonitor.serviceStatus.value) {
-            initializeEngine(intent!!.extras.getLong(CALLBACK_HANDLE_EXTRA))
+        } else if (isFirstStart) {
+            isFirstStart = false
+            initializeEngine(intent?.extras?.getLong(CALLBACK_HANDLE_EXTRA))
         }
         return START_STICKY
     }
