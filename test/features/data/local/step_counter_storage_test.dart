@@ -1,5 +1,5 @@
 @Skip(
-    "sqflite cannot run on the machine. RUN THIS COMMAND WHEN CONNECTED TO EMULATOR `flutter run test/features/data/local/step_counter_storage_test.dart`. If you run it on your device, you will lose your current steps data.")
+    "sqflite cannot run on the machine. RUN THIS COMMAND WHEN CONNECTED TO EMULATOR `flutter run test/features/data/local/step_counter_storage_test.dart`. If you run it on your device, it'll wipe your beam database.")
 
 import 'package:beam/common/di/config.dart';
 import 'package:beam/features/data/local/step_counter_storage.dart';

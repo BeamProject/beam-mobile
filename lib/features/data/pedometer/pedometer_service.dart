@@ -20,35 +20,44 @@ class PedometerService implements StepCounterService {
 
   SendPort _stepTrackerSendPort;
   Stream<bool> _channelStream;
-  
+
   @override
   Stream<DailyStepCount> observeDailyStepCount() {
     log("observeDailyStepCount");
     final receivePort = ReceivePort();
     final sendPort = receivePort.sendPort;
-    Stream<DailyStepCount> dailyStepCountStream = receivePort.asBroadcastStream(
-        onCancel: (_) {
-      log("dailyStepCountStream: onCancel called");
-      final stepTrackerSendPort = _stepTrackerSendPort;
-      if (stepTrackerSendPort != null) {
-        stepTrackerSendPort.send(sendPort);
-      } else {
-        log("dailyStepCountStream: stepTrackerSendPort is null");
-      }
-    }).map((event) => DailyStepCount(
-        steps: event[0], dayOfMeasurement: DateTime.parse(event[1])));
-
-    StreamSubscription<bool> stepTrackingStatusSubscription;
-    stepTrackingStatusSubscription =
-        observeServiceStatus().listen((isInitialized) {
+    StreamSubscription<bool> stepTrackingServiceStatusSubscription;
+    bool isSendPortRegistered = false;
+    stepTrackingServiceStatusSubscription =
+        observeServiceStatus().listen((isInitialized) async {
       log("stepTrackingStatusSubscription ${isInitialized}");
-      if (isInitialized) {
+      if (isInitialized && !isSendPortRegistered) {
         _stepTrackerSendPort =
             IsolateNameServer.lookupPortByName("step_tracker_send_port");
         _stepTrackerSendPort.send(sendPort);
-        stepTrackingStatusSubscription.cancel();
+        isSendPortRegistered = true;
+        stepTrackingServiceStatusSubscription.cancel();
       }
     });
+
+    Stream<DailyStepCount> dailyStepCountStream = receivePort.asBroadcastStream(
+        onCancel: (subscription) async {
+      log("dailyStepCountStream: onCancel");
+      final stepTrackerSendPort = _stepTrackerSendPort;
+      if (stepTrackerSendPort != null) {
+        if (isSendPortRegistered) {
+          // Sending the same sendPort for the second time cancels the connection
+          // with the step tracker.
+          stepTrackerSendPort.send(sendPort);
+        }
+      } else {
+        log("dailyStepCountStream: stepTrackerSendPort is null");
+      }
+      stepTrackingServiceStatusSubscription.cancel();
+      subscription.cancel();
+    }).map((event) => DailyStepCount(
+        steps: event[0], dayOfMeasurement: DateTime.parse(event[1])));
+
     return dailyStepCountStream;
   }
 
@@ -75,7 +84,7 @@ class PedometerService implements StepCounterService {
   }
 
   @override
-  Stream<bool> observeServiceStatus() async*{
+  Stream<bool> observeServiceStatus() async* {
     // We need to yield this first, because the channel stream does not
     // return the last streamed value. With this we achieve a behavior
     // of a BehaviorSubject.
