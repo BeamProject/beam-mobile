@@ -10,7 +10,6 @@ class DonationsPage extends StatelessWidget {
             textAlign: TextAlign.center,
             style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 32,
-                color: Colors.white)));
+                fontSize: 32)));
   }
 }

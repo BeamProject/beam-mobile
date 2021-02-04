@@ -17,6 +17,7 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final int _pagesCount = 3;
   final PageController _pageController = PageController(initialPage: 0);
+  final TextStyle _textStyle = TextStyle(fontSize: 20.0);
 
   int _currentPage = 0;
 
@@ -41,43 +42,73 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF2C2D2D),
       body: Stack(
         children: [
+          FractionallySizedBox(
+              widthFactor: 0.9,
+              heightFactor: 0.4,
+              child: Container(
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0xff72ff86), Color(0x4946add5)])),
+              )),
           PageView(
             controller: _pageController,
             children: [
               Container(
+                  child: Padding(
+                padding: EdgeInsets.all(12),
                 child: BeamPage(),
-              ),
+              )),
               Container(
+                  child: Padding(
+                padding: EdgeInsets.all(12),
                 child: HabitsPage(),
-              ),
+              )),
               Container(
+                  child: Padding(
+                padding: EdgeInsets.all(12),
                 child: DonationsPage(),
-              )
+              ))
             ],
             onPageChanged: onPageChanged,
           ),
           Positioned.fill(
               child: Padding(
-                  padding: EdgeInsets.only(bottom: 60.0),
+                  padding: EdgeInsets.only(bottom: 20.0),
                   child: Align(
                       alignment: Alignment.bottomCenter,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: buildIndicators(),
-                      )))),
-          Positioned.fill(
-              child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: ButtonTheme(
-                      minWidth: 100.0,
-                      child: RaisedButton(
-                          color: Color(0xFF6EC496),
-                          child: const Text('Login',
-                              style: TextStyle(color: Colors.white)),
-                          onPressed: () => onLoginPressed(context)))))
+                      child: Column(mainAxisSize: MainAxisSize.min, children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: buildIndicators(),
+                        ),
+                        const Padding(padding: EdgeInsets.all(4)),
+                        Padding(
+                            padding: EdgeInsets.all(10),
+                            child: ButtonTheme(
+                                minWidth: 100.0,
+                                child: Material(
+                                    elevation: 5.0,
+                                    borderRadius: BorderRadius.circular(30.0),
+                                    color: Theme.of(context).primaryColor,
+                                    child: MaterialButton(
+                                      minWidth:
+                                          MediaQuery.of(context).size.width,
+                                      padding: EdgeInsets.fromLTRB(
+                                          20.0, 15.0, 20.0, 15.0),
+                                      onPressed: () {
+                                        onLoginPressed(context);
+                                      },
+                                      child: Text("Login",
+                                          textAlign: TextAlign.center,
+                                          style: _textStyle.copyWith(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold)),
+                                    ))))
+                      ]))))
         ],
       ),
     );
@@ -97,7 +128,7 @@ class Indicator extends StatelessWidget {
       height: 8,
       width: _isActive ? 24 : 8,
       decoration: BoxDecoration(
-        color: _isActive ? Color(0xFF6EC496) : Colors.white,
+        color: _isActive ? Theme.of(context).primaryColor : Colors.grey,
         borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
     );

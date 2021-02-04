@@ -17,8 +17,8 @@ class LoginPage extends StatelessWidget {
         create: (_) => getIt<LoginCubit>(),
         child: Scaffold(
             appBar: AppBar(title: const Text('Login')),
-            backgroundColor: Color(0xFF2C2D2D),
-            body: Padding(
-                padding: const EdgeInsets.all(12), child: LoginForm())));
+            resizeToAvoidBottomPadding: false,
+            body: SingleChildScrollView(child: Padding(
+                padding: const EdgeInsets.all(12), child: LoginForm()))));
   }
 }

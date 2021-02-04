@@ -10,7 +10,6 @@ class SplashPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Color(0xFF2C2D2D),
         body: Center(
             child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -25,7 +24,7 @@ class SplashPage extends StatelessWidget {
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 50,
-                    color: Colors.white),
+                    color: Theme.of(context).primaryColor),
               )
             ])));
   }

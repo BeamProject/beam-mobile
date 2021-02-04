@@ -50,8 +50,9 @@ class _AppScreenState extends State<AppScreen> {
         navigatorKey: _navigatorKey,
         title: 'Beam Project',
         theme: ThemeData(
-          primarySwatch: Colors.blue,
+          primarySwatch: Colors.green,
           visualDensity: VisualDensity.adaptivePlatformDensity,
+          fontFamily: 'Inter',
         ),
         builder: (context, child) {
           return BlocListener<AuthCubit, AuthenticationState>(
