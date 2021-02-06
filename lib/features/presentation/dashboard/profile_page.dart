@@ -35,13 +35,77 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: <Widget>[
               Expanded(
                   flex: 2,
-                  child: Container(
-                      decoration: new BoxDecoration(
-                    image: new DecorationImage(
-                      image: new AssetImage("images/bg_gradient.png"),
-                      fit: BoxFit.fill,
-                    ),
-                  ))),
+                  child: Stack(children: [
+                    Container(
+                        decoration: new BoxDecoration(
+                      image: new DecorationImage(
+                        image: new AssetImage("images/bg_gradient.png"),
+                        fit: BoxFit.fill,
+                      ),
+                    )),
+                    Positioned.fill(
+                        child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: Text("Settings"),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                "Profile",
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 1,
+                              child: Text(
+                                "Logout",
+                                textAlign: TextAlign.right,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Padding(padding: EdgeInsets.all(12)),
+                        Expanded(
+                            flex: 1,
+                            child: AspectRatio(
+                                aspectRatio: 1,
+                                child: Container(
+                                    decoration: new BoxDecoration(
+                                  image: new DecorationImage(
+                                    image: new AssetImage("images/earth.png"),
+                                    fit: BoxFit.fitHeight,
+                                  ),
+                                )))),
+                        Padding(padding: EdgeInsets.all(12)),
+                        Expanded(
+                            flex: 1,
+                            child: Padding(
+                                padding: EdgeInsets.all(12),
+                                child: Row(children: [
+                                  Text(
+                                    "Total steps today:",
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold),
+                                  ),
+                                  Padding(padding: EdgeInsets.all(4)),
+                                  Consumer<ProfileModel>(
+                                      builder: (context, profile, _) {
+                                    return Text(
+                                      "${profile.steps}",
+                                    );
+                                  })
+                                ])))
+                      ],
+                    ))
+                  ])),
               Expanded(
                 flex: 3,
                 child: DefaultTabController(
@@ -120,12 +184,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 //         context.bloc<AuthCubit>().onLogout())
               ),
             ])));
-  }
-
-  Widget _getTabBarView(int index, BuildContext context) {
-    if (index == 0) {
-      return _getDonationsView(context);
-    }
   }
 
   Widget _getDonationsView(BuildContext context) {
