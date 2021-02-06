@@ -44,67 +44,72 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     )),
                     Positioned.fill(
+                        top: 13,
                         child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Expanded(
-                              flex: 1,
-                              child: Text("Settings"),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: Text("Settings"),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Text(
+                                    "Profile",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 1,
+                                  child: Text(
+                                    "Logout",
+                                    textAlign: TextAlign.right,
+                                  ),
+                                ),
+                              ],
                             ),
+                            Padding(padding: EdgeInsets.all(12)),
                             Expanded(
-                              flex: 1,
-                              child: Text(
-                                "Profile",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    fontSize: 20, fontWeight: FontWeight.bold),
-                              ),
-                            ),
+                                flex: 1,
+                                child: AspectRatio(
+                                    aspectRatio: 1,
+                                    child: Container(
+                                        decoration: new BoxDecoration(
+                                      image: new DecorationImage(
+                                        image:
+                                            new AssetImage("images/earth.png"),
+                                        fit: BoxFit.fitHeight,
+                                      ),
+                                    )))),
+                            Padding(padding: EdgeInsets.all(12)),
                             Expanded(
-                              flex: 1,
-                              child: Text(
-                                "Logout",
-                                textAlign: TextAlign.right,
-                              ),
-                            ),
+                                flex: 1,
+                                child: Padding(
+                                    padding: EdgeInsets.all(12),
+                                    child: Row(children: [
+                                      Text(
+                                        "Total steps today:",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20),
+                                      ),
+                                      Padding(padding: EdgeInsets.all(4)),
+                                      Consumer<ProfileModel>(
+                                          builder: (context, profile, _) {
+                                        return Text(
+                                          "${profile.steps}",
+                                          style: TextStyle(fontSize: 20),
+                                        );
+                                      })
+                                    ])))
                           ],
-                        ),
-                        Padding(padding: EdgeInsets.all(12)),
-                        Expanded(
-                            flex: 1,
-                            child: AspectRatio(
-                                aspectRatio: 1,
-                                child: Container(
-                                    decoration: new BoxDecoration(
-                                  image: new DecorationImage(
-                                    image: new AssetImage("images/earth.png"),
-                                    fit: BoxFit.fitHeight,
-                                  ),
-                                )))),
-                        Padding(padding: EdgeInsets.all(12)),
-                        Expanded(
-                            flex: 1,
-                            child: Padding(
-                                padding: EdgeInsets.all(12),
-                                child: Row(children: [
-                                  Text(
-                                    "Total steps today:",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  Padding(padding: EdgeInsets.all(4)),
-                                  Consumer<ProfileModel>(
-                                      builder: (context, profile, _) {
-                                    return Text(
-                                      "${profile.steps}",
-                                    );
-                                  })
-                                ])))
-                      ],
-                    ))
+                        ))
                   ])),
               Expanded(
                 flex: 3,
