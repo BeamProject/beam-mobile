@@ -1,6 +1,7 @@
 import 'package:beam/features/presentation/splash/splash_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:injectable/injectable.dart';
 
@@ -9,7 +10,7 @@ import 'features/presentation/auth/auth_bloc.dart';
 import 'features/presentation/auth/auth_state.dart';
 import 'features/presentation/dashboard/dashboard_page.dart';
 import 'features/presentation/onboarding/onboarding_screen.dart';
-import 'l10n/app_localizations.dart';
+
 
 void main() {
   configureDependencies(Environment.prod);
@@ -40,13 +41,11 @@ class _AppScreenState extends State<AppScreen> {
     authBloc.onAutoLogIn();
     return MaterialApp(
         localizationsDelegates: [
-          const AppLocalizationsDelegate(),
+          AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
         ],
-        supportedLocales: [
-          const Locale('en', '')
-        ],
+        supportedLocales: AppLocalizations.supportedLocales,
         navigatorKey: _navigatorKey,
         title: 'Beam Project',
         theme: ThemeData(

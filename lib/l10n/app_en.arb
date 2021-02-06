@@ -1,0 +1,70 @@
+{
+  "@@last_modified": "2020-08-16T10:34:09.586129",
+  "appTitle": "Beam Project",
+  "@appTitle": {
+    "description": "App title",
+    "type": "text",
+    "placeholders": {}
+  },
+  "onboardingChooseGoal": "Choose a goal",
+  "@onboardingChooseGoal": {
+    "description": "Onboarding paragraph about choosing a goal",
+    "type": "text",
+    "placeholders": {}
+  },
+  "onboardingCustomizeSchedule": "Customize your donation schedule",
+  "@onboardingCustomizeSchedule": {
+    "description": "Onboarding paragraph about customizing schedule",
+    "type": "text",
+    "placeholders": {}
+  },
+  "onboardingHelpStartups": "Help cleantech startups",
+  "@onboardingHelpStartups": {
+    "description": "Onboarding paragraph about helping startups",
+    "type": "text",
+    "placeholders": {}
+  },
+  "getStarted": "Get started",
+  "@getStarted": {
+    "description": "Button text to prompt the user to get started with the app",
+    "type": "text",
+    "placeholders": {}
+  },
+  
+  "login": "Login",
+  "@login": {
+    "description": "Login",
+    "type": "text",
+    "placeholders": {}
+  },
+  "username": "Username",
+  "@username": {
+    "description": "User name",
+    "type": "text",
+    "placeholders": {}
+  },
+  "password": "Password",
+  "@password": {
+    "description": "Password",
+    "type": "text",
+    "placeholders": {}
+  },
+  "invalidUsername": "Invalid username",
+  "@invalidUsername": {
+    "description": "Error message when the login username is invalid",
+    "type": "text",
+    "placeholders": {}
+  },
+  "invalidPassword": "Invalid password",
+  "@invalidPassword": {
+    "description": "Error message when the login password is invalid",
+    "type": "text",
+    "placeholders": {}
+  },
+  "authFailure": "Authentication failure",
+  "@authFailure": {
+    "description": "Error message when the app fails to authenticate the user",
+    "type": "text",
+    "placeholders": {}
+  }
+}

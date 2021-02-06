@@ -1,6 +1,6 @@
-import 'package:beam/l10n/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class BeamPage extends StatelessWidget {
   @override
@@ -15,7 +15,7 @@ class BeamPage extends StatelessWidget {
         ),
       ),
       const Padding(padding: EdgeInsets.all(12)),
-      Text(AppLocalizations.of(context).title,
+      Text(AppLocalizations.of(context).appTitle,
           textAlign: TextAlign.center,
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50))
     ]));

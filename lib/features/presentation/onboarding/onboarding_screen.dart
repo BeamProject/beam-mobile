@@ -1,9 +1,11 @@
 import 'package:beam/features/presentation/login/page/login_page.dart';
 import 'package:beam/features/presentation/onboarding/beam_page.dart';
-import 'package:beam/features/presentation/onboarding/donations_page.dart';
-import 'package:beam/features/presentation/onboarding/habits_page.dart';
+import 'package:beam/features/presentation/onboarding/goals_page.dart';
+import 'package:beam/features/presentation/onboarding/help_startups_page.dart';
+import 'package:beam/features/presentation/onboarding/schedule_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class OnboardingScreen extends StatefulWidget {
   static Route route() {
@@ -15,7 +17,28 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  final int _pagesCount = 3;
+  final _pages = [
+    Container(
+        child: Padding(
+      padding: EdgeInsets.all(12),
+      child: BeamPage(),
+    )),
+    Container(
+        child: Padding(
+      padding: EdgeInsets.all(12),
+      child: SchedulePage(),
+    )),
+    Container(
+        child: Padding(
+      padding: EdgeInsets.all(12),
+      child: GoalsPage(),
+    )),
+    Container(
+        child: Padding(
+      padding: EdgeInsets.all(12),
+      child: HelpStartupsPage(),
+    ))
+  ];
   final PageController _pageController = PageController(initialPage: 0);
   final TextStyle _textStyle = TextStyle(fontSize: 20.0);
 
@@ -23,7 +46,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   List<Widget> buildIndicators() {
     List<Widget> indicators = [];
-    for (int i = 0; i < _pagesCount; i++) {
+    for (int i = 0; i < _pages.length; i++) {
       indicators.add(Indicator(_currentPage == i));
     }
     return indicators;
@@ -56,23 +79,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               )),
           PageView(
             controller: _pageController,
-            children: [
-              Container(
-                  child: Padding(
-                padding: EdgeInsets.all(12),
-                child: BeamPage(),
-              )),
-              Container(
-                  child: Padding(
-                padding: EdgeInsets.all(12),
-                child: HabitsPage(),
-              )),
-              Container(
-                  child: Padding(
-                padding: EdgeInsets.all(12),
-                child: DonationsPage(),
-              ))
-            ],
+            children: _pages,
             onPageChanged: onPageChanged,
           ),
           Positioned.fill(
@@ -102,7 +109,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                       onPressed: () {
                                         onLoginPressed(context);
                                       },
-                                      child: Text("Login",
+                                      child: Text(AppLocalizations.of(context).getStarted,
                                           textAlign: TextAlign.center,
                                           style: _textStyle.copyWith(
                                               color: Colors.white,

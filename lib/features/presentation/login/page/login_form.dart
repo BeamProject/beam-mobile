@@ -3,6 +3,7 @@ import 'package:beam/features/presentation/login/bloc/login_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 TextStyle style = TextStyle(fontSize: 20.0);
 
@@ -17,7 +18,7 @@ class LoginForm extends StatelessWidget {
             Scaffold.of(context)
               ..hideCurrentSnackBar()
               ..showSnackBar(
-                  const SnackBar(content: Text('Authentication failure')));
+                  SnackBar(content: Text(AppLocalizations.of(context).authFailure)));
           }
         },
         child: Align(
@@ -56,11 +57,11 @@ class _UsernameInput extends StatelessWidget {
             onChanged: (username) =>
                 context.bloc<LoginCubit>().onUsernameChanged(username),
             decoration: InputDecoration(
-              hintText: 'Username',
+              hintText: AppLocalizations.of(context).username,
               labelStyle: new TextStyle(color: Colors.white),
               errorText: state.formStatus == FormStatus.invalid &&
                       !state.username.isValid()
-                  ? 'username invalid'
+                  ? AppLocalizations.of(context).invalidUsername
                   : null,
               contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
               border:
@@ -85,11 +86,11 @@ class _PasswordInput extends StatelessWidget {
             onChanged: (password) =>
                 context.bloc<LoginCubit>().onPasswordChanged(password),
             decoration: InputDecoration(
-              hintText: 'Password',
+              hintText: AppLocalizations.of(context).password,
               labelStyle: new TextStyle(color: Colors.white),
               errorText: state.formStatus == FormStatus.invalid &&
                       !state.password.isValid()
-                  ? 'password invalid'
+                  ? AppLocalizations.of(context).invalidPassword
                   : null,
               contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
               border:
@@ -119,7 +120,7 @@ class _LoginButton extends StatelessWidget {
                   onPressed: () {
                      context.bloc<LoginCubit>().onLoginDetailsSubmitted();
                   },
-                  child: Text("Login",
+                  child: Text(AppLocalizations.of(context).login,
                       textAlign: TextAlign.center,
                       style: style.copyWith(
                           color: Colors.white, fontWeight: FontWeight.bold)),
