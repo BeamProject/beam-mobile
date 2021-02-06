@@ -7,11 +7,11 @@ import 'package:injectable/injectable.dart' as injectable;
 import 'package:mockito/mockito.dart';
 
 void main() {
-  MockPaymentRemoteRepository mockPaymentRemoteRepository;
+  MockPaymentRemoteDataSource mockPaymentRemoteRepository;
 
   setUp(() {
     configureDependencies(injectable.Environment.test);
-    mockPaymentRemoteRepository = getIt<MockPaymentRemoteRepository>();
+    mockPaymentRemoteRepository = getIt<MockPaymentRemoteDataSource>();
   });
 
   test('make delayed payment', () {

@@ -41,7 +41,7 @@ dependencies:
   intl: ^0.16.1
   rxdart: ^0.24.1
   http: ^0.12.2
-  injectable: ^1.0.5
+  injectable: ^1.0.7
   get_it: ^5.0.1
   pedometer: ^2.0.2
 

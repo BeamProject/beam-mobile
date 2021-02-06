@@ -17,6 +17,7 @@ class PaymentMapper {
         id: payment.id,
         userId: payment.userId,
         amount: payment.amount,
-        currency: payment.currency);
+        currency: payment.currency,
+        transactionDate: payment.transactionDate);
   }
 }

@@ -1,4 +1,6 @@
+import 'package:beam/features/data/datasources/payments_local_data_source.dart';
 import 'package:beam/features/data/datasources/steps/step_counter_local_data_source.dart';
+import 'package:beam/features/data/local/payments_storage.dart';
 import 'package:beam/features/data/local/step_counter_storage.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:injectable/injectable.dart';
@@ -12,4 +14,9 @@ abstract class StorageModule {
   StepCounterLocalDataSource stepCounterLocalDataSource(
           StepCounterStorage stepCounterStorage) =>
       stepCounterStorage;
+
+  @Injectable(env: [Environment.prod])
+  PaymentsLocalDataSource paymentsLocalDataSource(
+          PaymentsStorage paymentsStorage) =>
+      paymentsStorage;
 }

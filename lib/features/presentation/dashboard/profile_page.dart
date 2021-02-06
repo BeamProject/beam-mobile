@@ -146,14 +146,22 @@ class _ProfilePageState extends State<ProfilePage> {
                     // We invert colors and value to make the progress bar go anti-clockwise
                     backgroundColor: Theme.of(context).primaryColor,
                     valueColor: AlwaysStoppedAnimation(Color(0xFFE8E8E8)),
-                    value: 1 - (0.1),
+                    value: 1 - (profile.monthlyDonationGoalPercentage / 100),
                     strokeWidth: 1,
                   )),
-                  Column(mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                    Text("\$32.01", style: TextStyle(color: Theme.of(context).primaryColor, fontSize: 23),),
-                    Text("70% spent", style: TextStyle(color: Color(0xFFBDBDBD), fontSize: 12)),
-                  ])
+                  Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "\$${profile.totalAmountOfPaymentsThisMonth}",
+                          style: TextStyle(
+                              color: Theme.of(context).primaryColor,
+                              fontSize: 23),
+                        ),
+                        Text("${profile.monthlyDonationGoalPercentage}% spent",
+                            style: TextStyle(
+                                color: Color(0xFFBDBDBD), fontSize: 12)),
+                      ])
                 ]);
               }))),
       Padding(padding: EdgeInsets.all(20)),

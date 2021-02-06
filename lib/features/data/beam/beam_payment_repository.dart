@@ -4,7 +4,7 @@ import 'package:beam/features/data/beam/beam_service_auth_wrapper.dart';
 import 'package:beam/features/data/beam/model/payment_mapper.dart';
 import 'package:beam/features/data/beam/model/payment_result.dart' as beam;
 import 'package:beam/features/data/beam/model/payment.dart' as beam;
-import 'package:beam/features/data/datasources/payment_remote_repository.dart';
+import 'package:beam/features/data/datasources/payments_remote_data_source.dart';
 import 'package:beam/features/domain/entities/payment.dart';
 import 'package:beam/features/domain/entities/payment_request.dart';
 import 'package:beam/features/domain/entities/payment_result.dart';
@@ -12,7 +12,7 @@ import 'package:injectable/injectable.dart';
 import 'package:http/http.dart' as http;
 
 @injectable
-class BeamPaymentRepository implements PaymentRemoteRepository {
+class BeamPaymentRepository implements PaymentsRemoteDataSource {
   static const MAKE_DELAYED_PAYMENT_API = "/payment/delayedpayment";
   static const GET_PAYMENTS_API = "/payment/allpayments";
 
@@ -47,15 +47,16 @@ class BeamPaymentRepository implements PaymentRemoteRepository {
 
     if (_isResponseSuccessful(response)) {
       final jsonList = json.decode(response.body) as List<dynamic>;
+      print(jsonList);
       final List<Payment> payments = jsonList
           .map((jsonPayment) => beam.Payment.fromJson(jsonPayment as Map<String, dynamic>))
           .map((beamPayment) => PaymentMapper.mapToPayment(beamPayment))
           .toList();
       
       yield payments;
+    } else {
+      throw Exception("Couldn't fetch payments");
     }
-
-    throw Exception("Couldn't fetch payments");
   }
 
   bool _isResponseSuccessful(http.Response response) {

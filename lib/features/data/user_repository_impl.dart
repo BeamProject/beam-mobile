@@ -39,6 +39,12 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<void> logOut() async {
+    // TODO: *** IMPORTANT *** Decide on a strategy for storing local data
+    // Either keep every local data keyed by a user id, or wipe out all of the
+    // user's data upon logout. Otherwise, when user logs out and logs in with 
+    // a different account there can be data leak between two different accounts.
+    // A probably safer option is to wipe all local data. It should be backed up in the
+    // cloud anyway.
     await _localDataSource.removeCurrentUser();
     _userStatusStreamController.sink.add(null);
   }

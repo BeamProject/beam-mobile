@@ -17,13 +17,12 @@ import '../../features/data/beam/beam_payment_repository.dart';
 import '../../features/data/beam/beam_service.dart';
 import '../../features/data/beam/beam_service_auth_wrapper.dart';
 import '../../features/data/beam/beam_user_repository.dart';
-import '../../features/presentation/dashboard/model/profile_model.dart';
 import '../../features/data/inject/repository_module.dart';
 import '../../features/data/local/testing/fake_storage.dart';
 import '../../features/data/local/testing/test_storage_module.dart';
 import '../../features/domain/repositories/testing/fake_user_repository.dart';
 import '../../features/domain/usecases/get_daily_step_count.dart';
-import '../../features/domain/usecases/get_payments.dart';
+import '../../features/domain/usecases/get_monthly_donation_goal.dart';
 import '../../features/domain/usecases/log_in.dart';
 import '../../features/domain/usecases/log_out.dart';
 import '../../features/presentation/login/bloc/login_bloc.dart';
@@ -33,12 +32,18 @@ import '../../features/data/datasources/testing/datasources_module.dart';
 import '../../features/domain/repositories/testing/mock_payment_repository.dart';
 import '../../features/domain/usecases/observe_step_count.dart';
 import '../../features/domain/usecases/get_current_user.dart';
-import '../../features/data/datasources/payment_remote_repository.dart';
 import '../../features/domain/repositories/payment_repository.dart';
 import '../../features/data/payment_repository_impl.dart';
+import '../../features/domain/usecases/payments_interactor.dart';
+import '../../features/data/datasources/payments_local_data_source.dart';
 import '../../features/presentation/payments/model/payments_model.dart';
+import '../../features/data/datasources/payments_remote_data_source.dart';
+import '../../features/data/local/payments_storage.dart';
 import '../../features/data/pedometer/pedometer_module.dart';
 import '../../features/data/pedometer/pedometer_service.dart';
+import '../../features/presentation/dashboard/model/profile_model.dart';
+import '../../features/domain/repositories/profile_repository.dart';
+import '../../features/data/profile_repository_impl.dart';
 import '../../features/domain/repositories/testing/repository_module.dart';
 import '../../features/data/datasources/steps/step_counter_local_data_source.dart';
 import '../../features/data/step_counter_repository_impl.dart';
@@ -69,10 +74,10 @@ GetIt $initGetIt(
   EnvironmentFilter environmentFilter,
 }) {
   final gh = GetItHelper(get, environment, environmentFilter);
-  final storageModule = _$StorageModule();
   final fakeStorageModule = _$FakeStorageModule();
-  final dataSourcesModule = _$DataSourcesModule();
+  final storageModule = _$StorageModule();
   final repositoryModule = _$RepositoryModule();
+  final dataSourcesModule = _$DataSourcesModule();
   final pedometerModule = _$PedometerModule();
   final testBeamModule = _$TestBeamModule();
   final dataRepositoryModule = _$DataRepositoryModule();
@@ -80,16 +85,20 @@ GetIt $initGetIt(
   gh.factory<BeamService>(() => BeamService(), registerFor: {_prod});
   gh.lazySingleton<FlutterSecureStorage>(() => storageModule.storage,
       registerFor: {_prod});
-  gh.factory<PaymentRemoteRepository>(
-      () => dataSourcesModule
-          .paymentRemoteRepository(get<MockPaymentRemoteRepository>()),
-      registerFor: {_test});
   gh.factory<PaymentRepository>(
       () => repositoryModule.paymentRepository(get<MockPaymentRepository>()),
       registerFor: {_test});
-  gh.factory<PaymentRepositoryImpl>(
-      () => PaymentRepositoryImpl(get<PaymentRemoteRepository>()));
+  gh.factory<PaymentsLocalDataSource>(
+      () => dataSourcesModule
+          .paymentsLocalDataSource(get<MockPaymentsLocalDataSource>()),
+      registerFor: {_test});
+  gh.factory<PaymentsRemoteDataSource>(
+      () => dataSourcesModule
+          .paymentsRemoteDataSource(get<MockPaymentRemoteDataSource>()),
+      registerFor: {_test});
+  gh.lazySingleton<PaymentsStorage>(() => PaymentsStorage());
   gh.lazySingleton<PedometerService>(() => PedometerService());
+  gh.factory<ProfileRepositoryImpl>(() => ProfileRepositoryImpl());
   gh.factory<StepCounterService>(
       () => pedometerModule.stepCounterService(get<PedometerService>()),
       registerFor: {_prod});
@@ -126,19 +135,24 @@ GetIt $initGetIt(
         get<BeamService>(),
         get<AuthTokenManager>(),
       ));
-  gh.factory<GetPayments>(
-      () => GetPayments(get<PaymentRepository>(), get<UserRepository>()));
   gh.factory<LogIn>(() => LogIn(get<UserRepository>()));
   gh.factory<LogOut>(() => LogOut(get<UserRepository>()));
   gh.factory<LoginCubit>(() => LoginCubit(get<LogIn>()));
   gh.factory<MakeDelayedPayment>(() =>
       MakeDelayedPayment(get<PaymentRepository>(), get<UserRepository>()));
   gh.factory<ObserveUser>(() => ObserveUser(get<UserRepository>()));
-  gh.factory<PaymentRepository>(
-      () =>
-          dataRepositoryModule.paymentRepository(get<PaymentRepositoryImpl>()),
+  gh.factory<PaymentRepositoryImpl>(() => PaymentRepositoryImpl(
+      get<PaymentsRemoteDataSource>(), get<PaymentsLocalDataSource>()));
+  gh.factory<PaymentsInteractor>(() =>
+      PaymentsInteractor(get<PaymentRepository>(), get<UserRepository>()));
+  gh.factory<PaymentsLocalDataSource>(
+      () => storageModule.paymentsLocalDataSource(get<PaymentsStorage>()),
       registerFor: {_prod});
-  gh.factory<PaymentsModel>(() => PaymentsModel(get<GetPayments>()));
+  gh.factory<PaymentsModel>(() => PaymentsModel(get<PaymentsInteractor>()));
+  gh.factory<ProfileRepository>(
+      () =>
+          dataRepositoryModule.profileRepository(get<ProfileRepositoryImpl>()),
+      registerFor: {_prod});
   gh.factory<StepCounterLocalDataSource>(
       () => storageModule.stepCounterLocalDataSource(get<StepCounterStorage>()),
       registerFor: {_prod});
@@ -165,17 +179,25 @@ GetIt $initGetIt(
       () => BeamPaymentRepository(get<BeamServiceAuthWrapper>()));
   gh.factory<GetDailyStepCount>(
       () => GetDailyStepCount(get<StepsRepository>()));
+  gh.factory<GetMonthlyDonationGoal>(
+      () => GetMonthlyDonationGoal(get<ProfileRepository>()));
   gh.factory<ObserveStepCount>(() =>
       ObserveStepCount(get<StepCounterService>(), get<StepsRepository>()));
-  gh.factory<PaymentRemoteRepository>(
+  gh.factory<PaymentRepository>(
+      () =>
+          dataRepositoryModule.paymentRepository(get<PaymentRepositoryImpl>()),
+      registerFor: {_prod});
+  gh.factory<PaymentsRemoteDataSource>(
       () => beamModule.paymentRemoteRepository(get<BeamPaymentRepository>()),
       registerFor: {_prod});
-  gh.lazySingleton<StepTracker>(() => StepTracker(get<GetDailyStepCount>()));
   gh.factory<ProfileModel>(() => ProfileModel(
         get<ObserveUser>(),
         get<ObserveStepCount>(),
         get<StepCounterServiceInteractor>(),
+        get<PaymentsInteractor>(),
+        get<GetMonthlyDonationGoal>(),
       ));
+  gh.lazySingleton<StepTracker>(() => StepTracker(get<GetDailyStepCount>()));
 
   // Eager singletons must be registered in the right order
   gh.singleton<FakeStorage>(FakeStorage());
@@ -184,20 +206,21 @@ GetIt $initGetIt(
       fakeStorageModule.flutterSecureStorage(get<FakeStorage>()),
       registerFor: {_test});
   gh.singleton<MockBeamService>(MockBeamService());
-  gh.singleton<MockPaymentRemoteRepository>(MockPaymentRemoteRepository());
+  gh.singleton<MockPaymentRemoteDataSource>(MockPaymentRemoteDataSource());
   gh.singleton<MockPaymentRepository>(MockPaymentRepository());
+  gh.singleton<MockPaymentsLocalDataSource>(MockPaymentsLocalDataSource());
   gh.singleton<MockUserLocalDataSource>(MockUserLocalDataSource());
   gh.singleton<MockUserRemoteDataSource>(MockUserRemoteDataSource());
   return get;
 }
 
-class _$StorageModule extends StorageModule {}
-
 class _$FakeStorageModule extends FakeStorageModule {}
 
-class _$DataSourcesModule extends DataSourcesModule {}
+class _$StorageModule extends StorageModule {}
 
 class _$RepositoryModule extends RepositoryModule {}
+
+class _$DataSourcesModule extends DataSourcesModule {}
 
 class _$PedometerModule extends PedometerModule {}
 
