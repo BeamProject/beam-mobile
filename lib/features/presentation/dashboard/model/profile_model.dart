@@ -10,7 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:injectable/injectable.dart';
 
 @injectable
-class DashboardModel extends ChangeNotifier {
+class ProfileModel extends ChangeNotifier {
   User _user;
   int _steps = 0;
   StepTrackingState _stepTrackingState;
@@ -25,7 +25,7 @@ class DashboardModel extends ChangeNotifier {
   int get steps => _steps;
   String get stepTrackingButtonText => _stepTrackingState?.buttonText ?? "";
 
-  DashboardModel(ObserveUser observeUser, ObserveStepCount observeStepCount,
+  ProfileModel(ObserveUser observeUser, ObserveStepCount observeStepCount,
       this._stepCounterServiceInteractor) {
     _userSubscription = observeUser().listen((user) {
       _user = user;

@@ -17,7 +17,7 @@ import '../../features/data/beam/beam_payment_repository.dart';
 import '../../features/data/beam/beam_service.dart';
 import '../../features/data/beam/beam_service_auth_wrapper.dart';
 import '../../features/data/beam/beam_user_repository.dart';
-import '../../features/presentation/dashboard/model/dashboard_model.dart';
+import '../../features/presentation/dashboard/model/profile_model.dart';
 import '../../features/data/inject/repository_module.dart';
 import '../../features/data/local/testing/fake_storage.dart';
 import '../../features/data/local/testing/test_storage_module.dart';
@@ -171,7 +171,7 @@ GetIt $initGetIt(
       () => beamModule.paymentRemoteRepository(get<BeamPaymentRepository>()),
       registerFor: {_prod});
   gh.lazySingleton<StepTracker>(() => StepTracker(get<GetDailyStepCount>()));
-  gh.factory<DashboardModel>(() => DashboardModel(
+  gh.factory<ProfileModel>(() => ProfileModel(
         get<ObserveUser>(),
         get<ObserveStepCount>(),
         get<StepCounterServiceInteractor>(),

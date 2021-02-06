@@ -8,7 +8,7 @@ import 'package:injectable/injectable.dart';
 import 'common/di/config.dart';
 import 'features/presentation/auth/auth_bloc.dart';
 import 'features/presentation/auth/auth_state.dart';
-import 'features/presentation/dashboard/dashboard_page.dart';
+import 'features/presentation/dashboard/profile_page.dart';
 import 'features/presentation/onboarding/onboarding_screen.dart';
 
 
@@ -50,6 +50,7 @@ class _AppScreenState extends State<AppScreen> {
         title: 'Beam Project',
         theme: ThemeData(
           primarySwatch: Colors.green,
+          backgroundColor: Colors.white,
           visualDensity: VisualDensity.adaptivePlatformDensity,
           fontFamily: 'Inter',
         ),
@@ -58,7 +59,7 @@ class _AppScreenState extends State<AppScreen> {
               listener: (context, state) {
                 if (state.user != null) {
                   _navigator.pushAndRemoveUntil<void>(
-                      DashboardPage.route(), (route) => false);
+                      ProfilePage.route(), (route) => false);
                 } else {
                   _navigator.pushAndRemoveUntil<void>(
                       OnboardingScreen.route(), (route) => false);
