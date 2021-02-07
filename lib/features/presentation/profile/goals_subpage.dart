@@ -16,6 +16,7 @@ class _GoalsSubPageState extends State<GoalsSubPage> {
   int _touchedRodBarIndex;
   int _maxStepCount = 0;
   int _dailyStepCountGoal;
+  int _totalStepsInWeek;
   double _maxY;
   static const int _rodBarGrowthOnTouchValue = 300;
 
@@ -26,11 +27,28 @@ class _GoalsSubPageState extends State<GoalsSubPage> {
           profile.weeklyStepCountList.map((steps) => steps).reduce(max);
       _dailyStepCountGoal = profile.dailyStepCountGoal;
       _maxY = max(_dailyStepCountGoal * 1.5, _maxStepCount.toDouble());
+      _totalStepsInWeek = profile.weeklyStepCountList
+          .reduce((value, element) => value + element);
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text("You walked ... steps this week"),
-          Padding(padding: EdgeInsets.all(12)),
+          Padding(padding: EdgeInsets.all(6)),
+          Center(
+            child: RichText(
+                text: TextSpan(
+                    style: TextStyle(fontSize: 20, color: Colors.black),
+                    children: <TextSpan>[
+                  TextSpan(text: "You walked "),
+                  TextSpan(
+                    text: "$_totalStepsInWeek steps",
+                    style: TextStyle(
+                        color: Theme.of(context).primaryColor,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  TextSpan(text: " this week")
+                ])),
+          ),
+          Padding(padding: EdgeInsets.all(6)),
           Expanded(
               child: Padding(
                   padding: const EdgeInsets.all(22.0),
