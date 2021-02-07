@@ -41,7 +41,7 @@ import '../../features/data/datasources/payments_remote_data_source.dart';
 import '../../features/data/local/payments_storage.dart';
 import '../../features/data/pedometer/pedometer_module.dart';
 import '../../features/data/pedometer/pedometer_service.dart';
-import '../../features/presentation/dashboard/model/profile_model.dart';
+import '../../features/presentation/profile/model/profile_model.dart';
 import '../../features/domain/repositories/profile_repository.dart';
 import '../../features/data/profile_repository_impl.dart';
 import '../../features/domain/repositories/testing/repository_module.dart';

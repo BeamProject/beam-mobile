@@ -8,7 +8,7 @@ import 'package:injectable/injectable.dart';
 import 'common/di/config.dart';
 import 'features/presentation/auth/auth_bloc.dart';
 import 'features/presentation/auth/auth_state.dart';
-import 'features/presentation/dashboard/profile_page.dart';
+import 'features/presentation/profile/profile_page.dart';
 import 'features/presentation/onboarding/onboarding_screen.dart';
 
 

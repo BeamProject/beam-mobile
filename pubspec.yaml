@@ -44,6 +44,7 @@ dependencies:
   injectable: ^1.0.7
   get_it: ^5.0.1
   pedometer: ^2.0.2
+  rive: ^0.6.7
 
 
 

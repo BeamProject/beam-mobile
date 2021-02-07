@@ -1,9 +1,11 @@
 import 'package:beam/common/di/config.dart';
-import 'package:beam/features/presentation/dashboard/model/profile_model.dart';
+import 'package:beam/features/presentation/profile/model/profile_model.dart';
 import 'package:beam/features/presentation/settings/settings_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:rive/rive.dart';
 
 class ProfilePage extends StatefulWidget {
   static Route route() {
@@ -24,6 +26,33 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  final riveFileName = 'images/planet.riv';
+  Artboard _artboard;
+  SimpleAnimation _rivePlanetAnimationController;
+
+  @override
+  void initState() {
+    _loadRiveFile();
+    super.initState();
+  }
+
+  _loadRiveFile() async {
+    final bytes = await rootBundle.load(riveFileName);
+    final file = RiveFile();
+
+    if (file.import(bytes)) {
+      setState(() => _artboard = file.mainArtboard
+        ..addController(
+            _rivePlanetAnimationController = SimpleAnimation('Rotate Head')
+              ..isActiveChanged.addListener(() {
+                if (_rivePlanetAnimationController.isActive) {
+                  _rivePlanetAnimationController.instance.animation.loop =
+                      Loop.oneShot;
+                }
+              })));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,22 +119,17 @@ class _ProfilePageState extends State<ProfilePage> {
                                     ),
                                     Padding(padding: EdgeInsets.all(12)),
                                     Expanded(
-                                        flex: 1,
-                                        child: AspectRatio(
-                                            aspectRatio: 1,
-                                            child: Container(
-                                                decoration: new BoxDecoration(
-                                              image: new DecorationImage(
-                                                image: new AssetImage(
-                                                    "images/earth.png"),
-                                                fit: BoxFit.fitHeight,
-                                              ),
-                                            )))),
-                                    Padding(padding: EdgeInsets.all(12)),
+                                        flex: 2,
+                                        child: Container(
+                                            child: Rive(
+                                          artboard: _artboard,
+                                          fit: BoxFit.fitHeight,
+                                        ))),
                                     Expanded(
                                         flex: 1,
                                         child: Padding(
-                                            padding: EdgeInsets.all(12),
+                                            padding: EdgeInsets.only(
+                                                left: 12, right: 12),
                                             child: Row(children: [
                                               Text(
                                                 "Total steps today:",
@@ -170,44 +194,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ))
                               ],
                             )),
-                        // Consumer<DashboardModel>(
-                        //   builder: (context, dashboard, _) {
-                        //     return Column(children: <Widget>[
-                        //       Text(
-                        //           "Hello ${dashboard.user?.firstName ?? ""} ${dashboard.user?.lastName ?? ""}",
-                        //           textAlign: TextAlign.center,
-                        //           style: TextStyle(
-                        //               fontWeight: FontWeight.bold,
-                        //               fontSize: 25,
-                        //               color: Colors.white)),
-                        //       const Padding(padding: EdgeInsets.all(12)),
-                        //       Text("Steps ${dashboard.steps}",
-                        //           textAlign: TextAlign.center,
-                        //           style: TextStyle(
-                        //               fontWeight: FontWeight.bold,
-                        //               fontSize: 50,
-                        //               color: Colors.white)),
-                        //       const Padding(padding: EdgeInsets.all(12)),
-                        //       RaisedButton(
-                        //           child: Text(
-                        //               "${dashboard.stepTrackingButtonText}"),
-                        //           onPressed: () => Provider.of<DashboardModel>(
-                        //                   context,
-                        //                   listen: false)
-                        //               .onStepTrackingButtonPressed()),
-                        //     ]);
-                        //   },
-                        // ),
-                        // const Padding(padding: EdgeInsets.all(12)),
-                        // RaisedButton(
-                        //     child: const Text('My payments'),
-                        //     onPressed: () =>
-                        //         Navigator.push(context, PaymentsPage.route())),
-                        // const Padding(padding: EdgeInsets.all(12)),
-                        // RaisedButton(
-                        //     child: const Text('Logout'),
-                        //     onPressed: () =>
-                        //         context.bloc<AuthCubit>().onLogout())
                       ),
                     ]))));
   }
