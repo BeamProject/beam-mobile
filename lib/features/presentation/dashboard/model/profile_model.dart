@@ -13,6 +13,7 @@ import 'package:beam/features/domain/usecases/step_counter_service_interactor.da
 import 'package:flutter/cupertino.dart';
 import 'package:injectable/injectable.dart';
 
+// TODO Consider changing this to a bloc
 @injectable
 class ProfileModel extends ChangeNotifier {
   User _user;
@@ -56,7 +57,7 @@ class ProfileModel extends ChangeNotifier {
     });
 
     _stepTrackingStatusSubscription = _stepCounterServiceInteractor
-        .observeStepCounterStatus()
+        .observeStepCounterServiceStatus()
         .listen((isRunning) {
       if (isRunning) {
         _stepTrackingState = StepTrackingState.running();

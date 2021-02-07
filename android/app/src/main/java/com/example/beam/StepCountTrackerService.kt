@@ -36,7 +36,7 @@ class StepCountTrackerService : Service(), MethodChannel.MethodCallHandler {
     }
 
     private val onGoingNotificationId = 1;
-    private lateinit var backgroundMethodChannel: MethodChannel
+    private var backgroundMethodChannel: MethodChannel? = null
     private var isFirstStart = true
 
     @Inject
@@ -82,8 +82,8 @@ class StepCountTrackerService : Service(), MethodChannel.MethodCallHandler {
 
         backgroundMethodChannel = MethodChannel(
                 backgroundFlutterEngine!!.dartExecutor.binaryMessenger, BACKGROUND_METHOD_CHANNEL)
-        backgroundMethodChannel.setMethodCallHandler(this)
-        backgroundMethodChannel.invokeMethod("serviceStarted", null)
+        backgroundMethodChannel?.setMethodCallHandler(this)
+        backgroundMethodChannel?.invokeMethod("serviceStarted", null)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -107,7 +107,7 @@ class StepCountTrackerService : Service(), MethodChannel.MethodCallHandler {
     override fun onDestroy() {
         Log.d(TAG, "onDestroy")
         // onDestroy should be called by the framework automatically after calling stopSelf()
-        backgroundMethodChannel.invokeMethod("serviceStopped", null)
+        backgroundMethodChannel?.invokeMethod("serviceStopped", null)
         super.onDestroy()
     }
 

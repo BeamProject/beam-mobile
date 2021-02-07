@@ -15,7 +15,7 @@ class StepCounterServiceInteractor {
     await _stepCounterService.stopService();
   }
 
-  Stream<bool> observeStepCounterStatus() {
+  Stream<bool> observeStepCounterServiceStatus() {
     return _stepCounterService.observeServiceStatus();
   }
 }

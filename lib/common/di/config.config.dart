@@ -45,6 +45,7 @@ import '../../features/presentation/dashboard/model/profile_model.dart';
 import '../../features/domain/repositories/profile_repository.dart';
 import '../../features/data/profile_repository_impl.dart';
 import '../../features/domain/repositories/testing/repository_module.dart';
+import '../../features/presentation/settings/settings_model.dart';
 import '../../features/data/datasources/steps/step_counter_local_data_source.dart';
 import '../../features/data/step_counter_repository_impl.dart';
 import '../../features/domain/repositories/step_counter_service.dart';
@@ -153,6 +154,8 @@ GetIt $initGetIt(
       () =>
           dataRepositoryModule.profileRepository(get<ProfileRepositoryImpl>()),
       registerFor: {_prod});
+  gh.factory<SettingsModel>(
+      () => SettingsModel(get<StepCounterServiceInteractor>()));
   gh.factory<StepCounterLocalDataSource>(
       () => storageModule.stepCounterLocalDataSource(get<StepCounterStorage>()),
       registerFor: {_prod});

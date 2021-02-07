@@ -1,5 +1,6 @@
 import 'package:beam/common/di/config.dart';
 import 'package:beam/features/presentation/dashboard/model/profile_model.dart';
+import 'package:beam/features/presentation/settings/settings_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -29,166 +30,186 @@ class _ProfilePageState extends State<ProfilePage> {
         appBar: AppBar(
           title: Text(widget.title),
         ),
-        body: Container(
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-              Expanded(
-                  flex: 2,
-                  child: Stack(children: [
-                    Container(
-                        decoration: new BoxDecoration(
-                      image: new DecorationImage(
-                        image: new AssetImage("images/bg_gradient.png"),
-                        fit: BoxFit.fill,
-                      ),
-                    )),
-                    Positioned.fill(
-                        top: 13,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  flex: 1,
-                                  child: Text("Settings"),
-                                ),
-                                Expanded(
-                                  flex: 1,
-                                  child: Text(
-                                    "Profile",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 1,
-                                  child: Text(
-                                    "Logout",
-                                    textAlign: TextAlign.right,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Padding(padding: EdgeInsets.all(12)),
-                            Expanded(
-                                flex: 1,
-                                child: AspectRatio(
-                                    aspectRatio: 1,
-                                    child: Container(
-                                        decoration: new BoxDecoration(
-                                      image: new DecorationImage(
-                                        image:
-                                            new AssetImage("images/earth.png"),
-                                        fit: BoxFit.fitHeight,
-                                      ),
-                                    )))),
-                            Padding(padding: EdgeInsets.all(12)),
-                            Expanded(
-                                flex: 1,
-                                child: Padding(
-                                    padding: EdgeInsets.all(12),
-                                    child: Row(children: [
-                                      Text(
-                                        "Total steps today:",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 20),
-                                      ),
-                                      Padding(padding: EdgeInsets.all(4)),
-                                      Consumer<ProfileModel>(
-                                          builder: (context, profile, _) {
-                                        return Text(
-                                          "${profile.steps}",
-                                          style: TextStyle(fontSize: 20),
-                                        );
-                                      })
-                                    ])))
-                          ],
-                        ))
-                  ])),
-              Expanded(
-                flex: 3,
-                child: DefaultTabController(
-                    length: 2,
+        body: Builder(
+            builder: (context) => Container(
                     child: Column(
-                      children: <Widget>[
-                        Padding(
-                            padding: EdgeInsets.all(12),
-                            child: Container(
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50),
-                                    border: Border.all(
-                                        color: Color(0xFFE8E8E8), width: 1),
-                                    color: Color(0xFFF6F6F6)),
-                                child: TabBar(
-                                  labelColor: Theme.of(context).primaryColor,
-                                  unselectedLabelColor: Color(0xFFBDBDBD),
-                                  indicator: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(50),
-                                      color: Colors.white),
-                                  tabs: [
-                                    Tab(
-                                      text: "Donations",
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                      Expanded(
+                          flex: 2,
+                          child: Stack(children: [
+                            Container(
+                                decoration: new BoxDecoration(
+                              image: new DecorationImage(
+                                image: new AssetImage("images/bg_gradient.png"),
+                                fit: BoxFit.fill,
+                              ),
+                            )),
+                            Positioned.fill(
+                                top: 13,
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          flex: 1,
+                                          child: InkWell(
+                                            splashColor: Colors.black,
+                                            onTap: () {
+                                              Navigator.push(context,
+                                                  SettingsPage.route());
+                                            },
+                                            child: Container(
+                                              padding: EdgeInsets.all(12.0),
+                                              child: Text('Settings'),
+                                            ),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 1,
+                                          child: Text(
+                                            "Profile",
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                        Expanded(
+                                          flex: 1,
+                                          child: Text(
+                                            "Logout",
+                                            textAlign: TextAlign.right,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    Tab(
-                                      text: "Goals",
-                                    ),
+                                    Padding(padding: EdgeInsets.all(12)),
+                                    Expanded(
+                                        flex: 1,
+                                        child: AspectRatio(
+                                            aspectRatio: 1,
+                                            child: Container(
+                                                decoration: new BoxDecoration(
+                                              image: new DecorationImage(
+                                                image: new AssetImage(
+                                                    "images/earth.png"),
+                                                fit: BoxFit.fitHeight,
+                                              ),
+                                            )))),
+                                    Padding(padding: EdgeInsets.all(12)),
+                                    Expanded(
+                                        flex: 1,
+                                        child: Padding(
+                                            padding: EdgeInsets.all(12),
+                                            child: Row(children: [
+                                              Text(
+                                                "Total steps today:",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 20),
+                                              ),
+                                              Padding(
+                                                  padding: EdgeInsets.all(4)),
+                                              Consumer<ProfileModel>(builder:
+                                                  (context, profile, _) {
+                                                return Text(
+                                                  "${profile.steps}",
+                                                  style:
+                                                      TextStyle(fontSize: 20),
+                                                );
+                                              })
+                                            ])))
                                   ],
-                                ))),
-                        Expanded(
-                            child: TabBarView(
-                          children: [
-                            _getDonationsView(context),
-                            Icon(Icons.directions_transit),
-                          ],
-                        ))
-                      ],
-                    )),
-                // Consumer<DashboardModel>(
-                //   builder: (context, dashboard, _) {
-                //     return Column(children: <Widget>[
-                //       Text(
-                //           "Hello ${dashboard.user?.firstName ?? ""} ${dashboard.user?.lastName ?? ""}",
-                //           textAlign: TextAlign.center,
-                //           style: TextStyle(
-                //               fontWeight: FontWeight.bold,
-                //               fontSize: 25,
-                //               color: Colors.white)),
-                //       const Padding(padding: EdgeInsets.all(12)),
-                //       Text("Steps ${dashboard.steps}",
-                //           textAlign: TextAlign.center,
-                //           style: TextStyle(
-                //               fontWeight: FontWeight.bold,
-                //               fontSize: 50,
-                //               color: Colors.white)),
-                //       const Padding(padding: EdgeInsets.all(12)),
-                //       RaisedButton(
-                //           child: Text(
-                //               "${dashboard.stepTrackingButtonText}"),
-                //           onPressed: () => Provider.of<DashboardModel>(
-                //                   context,
-                //                   listen: false)
-                //               .onStepTrackingButtonPressed()),
-                //     ]);
-                //   },
-                // ),
-                // const Padding(padding: EdgeInsets.all(12)),
-                // RaisedButton(
-                //     child: const Text('My payments'),
-                //     onPressed: () =>
-                //         Navigator.push(context, PaymentsPage.route())),
-                // const Padding(padding: EdgeInsets.all(12)),
-                // RaisedButton(
-                //     child: const Text('Logout'),
-                //     onPressed: () =>
-                //         context.bloc<AuthCubit>().onLogout())
-              ),
-            ])));
+                                ))
+                          ])),
+                      Expanded(
+                        flex: 3,
+                        child: DefaultTabController(
+                            length: 2,
+                            child: Column(
+                              children: <Widget>[
+                                Padding(
+                                    padding: EdgeInsets.all(12),
+                                    child: Container(
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(50),
+                                            border: Border.all(
+                                                color: Color(0xFFE8E8E8),
+                                                width: 1),
+                                            color: Color(0xFFF6F6F6)),
+                                        child: TabBar(
+                                          labelColor:
+                                              Theme.of(context).primaryColor,
+                                          unselectedLabelColor:
+                                              Color(0xFFBDBDBD),
+                                          indicator: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(50),
+                                              color: Colors.white),
+                                          tabs: [
+                                            Tab(
+                                              text: "Donations",
+                                            ),
+                                            Tab(
+                                              text: "Goals",
+                                            ),
+                                          ],
+                                        ))),
+                                Expanded(
+                                    child: TabBarView(
+                                  children: [
+                                    _getDonationsView(context),
+                                    Icon(Icons.directions_transit),
+                                  ],
+                                ))
+                              ],
+                            )),
+                        // Consumer<DashboardModel>(
+                        //   builder: (context, dashboard, _) {
+                        //     return Column(children: <Widget>[
+                        //       Text(
+                        //           "Hello ${dashboard.user?.firstName ?? ""} ${dashboard.user?.lastName ?? ""}",
+                        //           textAlign: TextAlign.center,
+                        //           style: TextStyle(
+                        //               fontWeight: FontWeight.bold,
+                        //               fontSize: 25,
+                        //               color: Colors.white)),
+                        //       const Padding(padding: EdgeInsets.all(12)),
+                        //       Text("Steps ${dashboard.steps}",
+                        //           textAlign: TextAlign.center,
+                        //           style: TextStyle(
+                        //               fontWeight: FontWeight.bold,
+                        //               fontSize: 50,
+                        //               color: Colors.white)),
+                        //       const Padding(padding: EdgeInsets.all(12)),
+                        //       RaisedButton(
+                        //           child: Text(
+                        //               "${dashboard.stepTrackingButtonText}"),
+                        //           onPressed: () => Provider.of<DashboardModel>(
+                        //                   context,
+                        //                   listen: false)
+                        //               .onStepTrackingButtonPressed()),
+                        //     ]);
+                        //   },
+                        // ),
+                        // const Padding(padding: EdgeInsets.all(12)),
+                        // RaisedButton(
+                        //     child: const Text('My payments'),
+                        //     onPressed: () =>
+                        //         Navigator.push(context, PaymentsPage.route())),
+                        // const Padding(padding: EdgeInsets.all(12)),
+                        // RaisedButton(
+                        //     child: const Text('Logout'),
+                        //     onPressed: () =>
+                        //         context.bloc<AuthCubit>().onLogout())
+                      ),
+                    ]))));
   }
 
   Widget _getDonationsView(BuildContext context) {

@@ -63,9 +63,16 @@ class StepCounterPlugin @Inject constructor(@ApplicationContext private val cont
     }
 
     private fun initializeService(callbackHandle: Long) {
+        // TODO: isInitialized is only set to true once the service establishes a connection with
+        // the callback handler. As a consequence multiple calls to start service could go past this
+        // condition. While it shouldn't cause any issues, consider having a local isStartRequested
+        // bit which is flipped immediately when the initializeService method is called.
+        // Maybe change the isInitialized to isInitializedAndReady to make it clear what that value
+        // represents
         if (isInitialized) {
             return
         }
+        Log.d(TAG, "initializing service")
         Intent(context, StepCountTrackerService::class.java).apply {
             putExtra(StepCountTrackerService.CALLBACK_HANDLE_EXTRA, callbackHandle)
         }.also { intent ->
@@ -74,6 +81,10 @@ class StepCounterPlugin @Inject constructor(@ApplicationContext private val cont
     }
 
     private fun stopService() {
+        if (!isInitialized) {
+            return
+        }
+        Log.d(TAG, "stopping service")
         Intent(context, StepCountTrackerService::class.java).apply {
             action = StepCountTrackerService.ACTION_STOP_FOREGROUND
         }.also { intent ->
