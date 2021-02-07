@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:beam/common/di/config.dart';
+import 'package:beam/features/presentation/auth/auth_bloc.dart';
 import 'package:beam/features/presentation/profile/goals_subpage.dart';
 import 'package:beam/features/presentation/profile/model/profile_model.dart';
 import 'package:beam/features/presentation/settings/settings_page.dart';
@@ -63,8 +64,7 @@ class _ProfilePageState extends State<ProfilePage> {
         appBar: AppBar(
           title: Text(widget.title),
         ),
-        body: Builder(
-            builder: (context) => Container(
+        body:  Container(
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: <Widget>[
@@ -98,7 +98,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                             },
                                             child: Container(
                                               padding: EdgeInsets.all(12.0),
-                                              child: Text('Settings'),
+                                              child: Text(
+                                                'Settings',
+                                                textAlign: TextAlign.left,
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -108,20 +111,27 @@ class _ProfilePageState extends State<ProfilePage> {
                                             "Profile",
                                             textAlign: TextAlign.center,
                                             style: TextStyle(
-                                                fontSize: 20,
+                                                fontSize: 26,
                                                 fontWeight: FontWeight.bold),
                                           ),
                                         ),
                                         Expanded(
                                           flex: 1,
-                                          child: Text(
-                                            "Logout",
-                                            textAlign: TextAlign.right,
+                                          child: InkWell(
+                                            splashColor: Colors.black,
+                                            onTap: () => context.read<AuthCubit>().onLogout(),
+                                            child: Container(
+                                              padding: EdgeInsets.all(12.0),
+                                              child: Text(
+                                                'Logout',
+                                                textAlign: TextAlign.right,
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ],
                                     ),
-                                    Padding(padding: EdgeInsets.all(12)),
+                                    Padding(padding: EdgeInsets.all(6)),
                                     Expanded(
                                         flex: 2,
                                         child: Container(
@@ -199,7 +209,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               ],
                             )),
                       ),
-                    ]))));
+                    ])));
   }
 
   Widget _getDonationsView(BuildContext context) {
