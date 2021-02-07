@@ -6,7 +6,7 @@ class ProfileRepositoryImpl extends ProfileRepository {
   @override
   Future<int> getDailyStepsGoal() {
     // TODO: implement getDailyStepsGoal
-    return Future.value(4000);
+    return Future.value(5200);
   }
 
   @override

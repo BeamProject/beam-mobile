@@ -22,6 +22,8 @@ import '../../features/data/local/testing/fake_storage.dart';
 import '../../features/data/local/testing/test_storage_module.dart';
 import '../../features/domain/repositories/testing/fake_user_repository.dart';
 import '../../features/domain/usecases/get_daily_step_count.dart';
+import '../../features/domain/usecases/get_daily_step_count_goal.dart';
+import '../../features/domain/usecases/get_daily_step_count_range.dart';
 import '../../features/domain/usecases/get_monthly_donation_goal.dart';
 import '../../features/domain/usecases/log_in.dart';
 import '../../features/domain/usecases/log_out.dart';
@@ -75,8 +77,8 @@ GetIt $initGetIt(
   EnvironmentFilter environmentFilter,
 }) {
   final gh = GetItHelper(get, environment, environmentFilter);
-  final fakeStorageModule = _$FakeStorageModule();
   final storageModule = _$StorageModule();
+  final fakeStorageModule = _$FakeStorageModule();
   final repositoryModule = _$RepositoryModule();
   final dataSourcesModule = _$DataSourcesModule();
   final pedometerModule = _$PedometerModule();
@@ -182,6 +184,10 @@ GetIt $initGetIt(
       () => BeamPaymentRepository(get<BeamServiceAuthWrapper>()));
   gh.factory<GetDailyStepCount>(
       () => GetDailyStepCount(get<StepsRepository>()));
+  gh.factory<GetDailyStepCountGoal>(
+      () => GetDailyStepCountGoal(get<ProfileRepository>()));
+  gh.factory<GetDailyStepCountRange>(
+      () => GetDailyStepCountRange(get<StepsRepository>()));
   gh.factory<GetMonthlyDonationGoal>(
       () => GetMonthlyDonationGoal(get<ProfileRepository>()));
   gh.factory<ObserveStepCount>(() =>
@@ -199,6 +205,8 @@ GetIt $initGetIt(
         get<StepCounterServiceInteractor>(),
         get<PaymentsInteractor>(),
         get<GetMonthlyDonationGoal>(),
+        get<GetDailyStepCountRange>(),
+        get<GetDailyStepCountGoal>(),
       ));
   gh.lazySingleton<StepTracker>(() => StepTracker(get<GetDailyStepCount>()));
 
@@ -217,9 +225,9 @@ GetIt $initGetIt(
   return get;
 }
 
-class _$FakeStorageModule extends FakeStorageModule {}
-
 class _$StorageModule extends StorageModule {}
+
+class _$FakeStorageModule extends FakeStorageModule {}
 
 class _$RepositoryModule extends RepositoryModule {}
 

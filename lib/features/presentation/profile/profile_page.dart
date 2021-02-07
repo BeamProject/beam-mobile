@@ -1,6 +1,10 @@
+import 'dart:math';
+
 import 'package:beam/common/di/config.dart';
+import 'package:beam/features/presentation/profile/goals_subpage.dart';
 import 'package:beam/features/presentation/profile/model/profile_model.dart';
 import 'package:beam/features/presentation/settings/settings_page.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -189,7 +193,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     child: TabBarView(
                                   children: [
                                     _getDonationsView(context),
-                                    Icon(Icons.directions_transit),
+                                    GoalsSubPage()
                                   ],
                                 ))
                               ],

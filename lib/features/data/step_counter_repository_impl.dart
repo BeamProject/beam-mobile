@@ -20,11 +20,19 @@ class StepCounterRepositoryImpl implements StepsRepository {
 
   @override
   Future<DailyStepCount> getDailyStepCount(DateTime day) async {
-    final dailyStepCounts =  await _stepCounterLocalDataSource.getDailyStepCounts(day);
-    assert(dailyStepCounts.length <= 1, "There should only ever be one dailyStepCount event per day");
+    final dailyStepCounts =
+        await _stepCounterLocalDataSource.getDailyStepCounts(day);
+    assert(dailyStepCounts.length <= 1,
+        "There should only ever be one dailyStepCount event per day");
     if (dailyStepCounts.length == 1) {
       return dailyStepCounts[0];
     }
     return null;
+  }
+
+  @override
+  Future<List<DailyStepCount>> getDailyStepCountRange(
+      DateTime from, DateTime to) {
+    return _stepCounterLocalDataSource.getDailyStepCountRange(from, to);
   }
 }

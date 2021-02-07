@@ -45,6 +45,7 @@ dependencies:
   get_it: ^5.0.1
   pedometer: ^2.0.2
   rive: ^0.6.7
+  fl_chart: ^0.12.2
 
 
 

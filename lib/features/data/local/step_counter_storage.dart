@@ -39,10 +39,15 @@ class StepCounterStorage implements StepCounterLocalDataSource {
 
   @override
   Future<List<DailyStepCount>> getDailyStepCounts(DateTime day) async {
-    final dailyStepCountDataList = await _getDailyStepCountData(day);
-    return dailyStepCountDataList
-        .map((dailyStepCountData) => dailyStepCountData.toDailyStepCount())
-        .toList();
+    return _getDailyStepCountData(day)
+        .then((value) => convertToDailyStepCound(value));
+  }
+
+  @override
+  Future<List<DailyStepCount>> getDailyStepCountRange(
+      DateTime from, DateTime to) {
+    return _getDailyStepCountDataRange(from, to)
+        .then((value) => convertToDailyStepCound(value));
   }
 
   @override
@@ -53,12 +58,34 @@ class StepCounterStorage implements StepCounterLocalDataSource {
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
+  List<DailyStepCount> convertToDailyStepCound(
+      List<DailyStepCountData> dailyStepCountDataList) {
+    return dailyStepCountDataList
+        .map((dailyStepCountData) => dailyStepCountData.toDailyStepCount())
+        .toList();
+  }
+
   Future<List<DailyStepCountData>> _getDailyStepCountData(
       DateTime dayOfMeasurement) async {
+    return _getDailyStepCountDataWithWhereClause(
+        "${DailyStepCountData.COLUMN_DAY_OF_MEASUREMENT} = ?",
+        [DailyStepCountData.dateFormat.format(dayOfMeasurement)]);
+  }
+
+  Future<List<DailyStepCountData>> _getDailyStepCountDataRange(
+      DateTime from, DateTime to) async {
+    return _getDailyStepCountDataWithWhereClause(
+        "${DailyStepCountData.COLUMN_DAY_OF_MEASUREMENT} BETWEEN ? AND ?", [
+      DailyStepCountData.dateFormat.format(from),
+      DailyStepCountData.dateFormat.format(to)
+    ]);
+  }
+
+  Future<List<DailyStepCountData>> _getDailyStepCountDataWithWhereClause(
+      String where, List<dynamic> whereArgs) async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(STEPS_TABLE_NAME,
-        where: "${DailyStepCountData.COLUMN_DAY_OF_MEASUREMENT} = ?",
-        whereArgs: [DailyStepCountData.dateFormat.format(dayOfMeasurement)]);
+    final List<Map<String, dynamic>> maps =
+        await db.query(STEPS_TABLE_NAME, where: where, whereArgs: whereArgs);
     return maps
         .map((stepCountMap) => DailyStepCountData.fromMap(stepCountMap))
         .toList();

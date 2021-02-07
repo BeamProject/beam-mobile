@@ -4,4 +4,6 @@ abstract class StepsRepository {
   Future<DailyStepCount> getDailyStepCount(DateTime day);
 
   Future<void> updateDailyStepCount(DailyStepCount stepCount);
+
+  Future<List<DailyStepCount>> getDailyStepCountRange(DateTime from, DateTime to);
 }

@@ -6,6 +6,8 @@ import 'package:beam/features/domain/entities/payment.dart';
 import 'package:beam/features/domain/entities/steps/daily_step_count.dart';
 import 'package:beam/features/domain/entities/user.dart';
 import 'package:beam/features/domain/usecases/get_current_user.dart';
+import 'package:beam/features/domain/usecases/get_daily_step_count_range.dart';
+import 'package:beam/features/domain/usecases/get_daily_step_count_goal.dart';
 import 'package:beam/features/domain/usecases/get_monthly_donation_goal.dart';
 import 'package:beam/features/domain/usecases/payments_interactor.dart';
 import 'package:beam/features/domain/usecases/observe_step_count.dart';
@@ -21,6 +23,10 @@ class ProfileModel extends ChangeNotifier {
   StepTrackingState _stepTrackingState;
   int _totalAmountOfPaymentsThisMonth = 0;
   int _monthlyDonationGoalPercentage = 0;
+  int _dailyStepCountGoal = 0;
+  // _weeklyStepCountList has a fixed length of 7 as it represents daily step count in a week
+  // 0-th element represents Monday, 1-st - Tuesday, etc.
+  List<int> _weeklyStepCountList = [];
 
   StreamSubscription<User> _userSubscription;
   StreamSubscription<DailyStepCount> _stepCounterSubscription;
@@ -33,14 +39,17 @@ class ProfileModel extends ChangeNotifier {
   int get steps => _steps;
   int get totalAmountOfPaymentsThisMonth => _totalAmountOfPaymentsThisMonth;
   int get monthlyDonationGoalPercentage => _monthlyDonationGoalPercentage;
-  String get stepTrackingButtonText => _stepTrackingState?.buttonText ?? "";
+  int get dailyStepCountGoal => _dailyStepCountGoal;
+  List<int> get weeklyStepCountList => _weeklyStepCountList;
 
   ProfileModel(
       ObserveUser observeUser,
       ObserveStepCount observeStepCount,
       this._stepCounterServiceInteractor,
       PaymentsInteractor paymentsInteractor,
-      GetMonthlyDonationGoal getMonthlyDonationGoal) {
+      GetMonthlyDonationGoal getMonthlyDonationGoal,
+      GetDailyStepCountRange getDailyStepCountRange,
+      GetDailyStepCountGoal getDailyStepCountGoal) {
     _userSubscription = observeUser().listen((user) {
       _user = user;
       notifyListeners();
@@ -51,8 +60,23 @@ class ProfileModel extends ChangeNotifier {
       notifyListeners();
     });
 
-    _stepCounterSubscription = observeStepCount().listen((stepCount) {
+    _stepCounterSubscription = observeStepCount().listen((stepCount) async {
       _steps = stepCount?.steps ?? 0;
+      final today = DateTime.now();
+      final firstDayOfWeek = DateTime.utc(today.year, today.month, today.day)
+          .subtract(Duration(days: today.weekday));
+      final weeklyStepCountList =
+          await getDailyStepCountRange(firstDayOfWeek, today);
+      _weeklyStepCountList = List.generate(
+          7,
+          (index) =>
+              weeklyStepCountList
+                  .firstWhere(
+                      (element) =>
+                          element.dayOfMeasurement.weekday - 1 == index,
+                      orElse: () => null)
+                  ?.steps ??
+              0);
       notifyListeners();
     });
 
@@ -82,14 +106,11 @@ class ProfileModel extends ChangeNotifier {
           (_totalAmountOfPaymentsThisMonth.toDouble() / goal * 100).toInt());
       notifyListeners();
     });
-  }
 
-  void onStepTrackingButtonPressed() async {
-    if (_stepTrackingState.isRunning) {
-      await _stepCounterServiceInteractor.stopStepCounter();
-    } else {
-      await _stepCounterServiceInteractor.startStepCounter();
-    }
+    getDailyStepCountGoal().then((value) {
+      _dailyStepCountGoal = value;
+      notifyListeners();
+    });
   }
 
   @override
