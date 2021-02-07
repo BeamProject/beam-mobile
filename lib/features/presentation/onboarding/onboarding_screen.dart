@@ -1,8 +1,5 @@
 import 'package:beam/features/presentation/login/page/login_page.dart';
-import 'package:beam/features/presentation/onboarding/beam_page.dart';
-import 'package:beam/features/presentation/onboarding/goals_page.dart';
-import 'package:beam/features/presentation/onboarding/help_startups_page.dart';
-import 'package:beam/features/presentation/onboarding/schedule_page.dart';
+import 'package:beam/features/presentation/onboarding/onboarding_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -17,30 +14,11 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  final _pages = [
-    Container(
-        child: Padding(
-      padding: EdgeInsets.all(12),
-      child: BeamPage(),
-    )),
-    Container(
-        child: Padding(
-      padding: EdgeInsets.all(12),
-      child: SchedulePage(),
-    )),
-    Container(
-        child: Padding(
-      padding: EdgeInsets.all(12),
-      child: GoalsPage(),
-    )),
-    Container(
-        child: Padding(
-      padding: EdgeInsets.all(12),
-      child: HelpStartupsPage(),
-    ))
-  ];
+  List<Widget> _pages = [];
   final PageController _pageController = PageController(initialPage: 0);
-  final TextStyle _textStyle = TextStyle(fontSize: 20.0);
+  final TextStyle _buttonTextStyle = TextStyle(
+      fontSize: 20.0, color: Colors.white, fontWeight: FontWeight.bold);
+  final TextStyle _paragraphTextStyle = TextStyle(fontSize: 30.0);
 
   int _currentPage = 0;
 
@@ -62,21 +40,62 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     Navigator.push(context, LoginPage.route());
   }
 
+  List<Widget> _createPages(BuildContext context) {
+    return [
+      Container(
+          child: Padding(
+        padding: EdgeInsets.all(12),
+        child: OnboardingPage(
+          "images/beam_logo.png",
+          AppLocalizations.of(context).appTitle,
+          TextStyle(fontWeight: FontWeight.bold, fontSize: 50),
+          imageHeight: 150,
+        ),
+      )),
+      Container(
+          child: Padding(
+        padding: EdgeInsets.all(12),
+        child: OnboardingPage(
+            "images/earth_schedule.png",
+            AppLocalizations.of(context).onboardingCustomizeSchedule,
+            _paragraphTextStyle),
+      )),
+      Container(
+          child: Padding(
+        padding: EdgeInsets.all(12),
+        child: OnboardingPage(
+            "images/earth_goal.png",
+            AppLocalizations.of(context).onboardingChooseGoal,
+            _paragraphTextStyle),
+      )),
+      Container(
+          child: Padding(
+        padding: EdgeInsets.all(12),
+        child: OnboardingPage(
+            "images/earth_clean.png",
+            AppLocalizations.of(context).onboardingHelpStartups,
+            _paragraphTextStyle),
+      ))
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
+    _pages = _createPages(context);
     return Scaffold(
       body: Stack(
         children: [
           FractionallySizedBox(
-              widthFactor: 0.9,
-              heightFactor: 0.4,
-              child: Container(
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Color(0xff72ff86), Color(0x4946add5)])),
-              )),
+            widthFactor: 1,
+            heightFactor: 0.3,
+            child: Container(
+                decoration: new BoxDecoration(
+              image: new DecorationImage(
+                image: new AssetImage("images/bg_gradient.png"),
+                fit: BoxFit.fill,
+              ),
+            )),
+          ),
           PageView(
             controller: _pageController,
             children: _pages,
@@ -109,11 +128,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                       onPressed: () {
                                         onLoginPressed(context);
                                       },
-                                      child: Text(AppLocalizations.of(context).getStarted,
+                                      child: Text(
+                                          AppLocalizations.of(context)
+                                              .getStarted,
                                           textAlign: TextAlign.center,
-                                          style: _textStyle.copyWith(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.bold)),
+                                          style: _buttonTextStyle),
                                     ))))
                       ]))))
         ],
