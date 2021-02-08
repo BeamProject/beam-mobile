@@ -63,8 +63,9 @@ class ProfileModel extends ChangeNotifier {
     _stepCounterSubscription = observeStepCount().listen((stepCount) async {
       _steps = stepCount?.steps ?? 0;
       final today = DateTime.now();
-      final firstDayOfWeek = DateTime.utc(today.year, today.month, today.day)
-          .subtract(Duration(days: today.weekday));
+      final beginningOfToday = DateTime.utc(today.year, today.month, today.day);
+      final firstDayOfWeek = beginningOfToday
+          .subtract(Duration(days: beginningOfToday.weekday - 1));
       final weeklyStepCountList =
           await getDailyStepCountRange(firstDayOfWeek, today);
       _weeklyStepCountList = List.generate(
