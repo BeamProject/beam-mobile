@@ -40,14 +40,14 @@ class StepCounterStorage implements StepCounterLocalDataSource {
   @override
   Future<List<DailyStepCount>> getDailyStepCounts(DateTime day) async {
     return _getDailyStepCountData(day)
-        .then((value) => convertToDailyStepCound(value));
+        .then((value) => convertToDailyStepCount(value));
   }
 
   @override
   Future<List<DailyStepCount>> getDailyStepCountRange(
       DateTime from, DateTime to) {
     return _getDailyStepCountDataRange(from, to)
-        .then((value) => convertToDailyStepCound(value));
+        .then((value) => convertToDailyStepCount(value));
   }
 
   @override
@@ -58,7 +58,7 @@ class StepCounterStorage implements StepCounterLocalDataSource {
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  List<DailyStepCount> convertToDailyStepCound(
+  List<DailyStepCount> convertToDailyStepCount(
       List<DailyStepCountData> dailyStepCountDataList) {
     return dailyStepCountDataList
         .map((dailyStepCountData) => dailyStepCountData.toDailyStepCount())
