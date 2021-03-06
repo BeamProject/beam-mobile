@@ -27,25 +27,58 @@ void main() {
     final day = DateTime.parse("2010-07-20 15:18:00");
     final stepCounterStorage = getIt<StepCounterStorage>();
 
-    await stepCounterStorage.updateDailyStepCount(DailyStepCount(steps: 1000, dayOfMeasurement: day));
+    await stepCounterStorage.updateDailyStepCount(
+        DailyStepCount(steps: 1000, dayOfMeasurement: day));
 
     final dailyStepCounts = await stepCounterStorage.getDailyStepCounts(day);
     expect(dailyStepCounts.length, 1);
     expect(dailyStepCounts.first.steps, 1000);
   });
 
-    test('update daily step count time zone', () async {
+  test('update daily step count time zone', () async {
     final day = DateTime.parse("2020-03-27T01:00:00+0500");
     final stepCounterStorage = getIt<StepCounterStorage>();
 
-    await stepCounterStorage.updateDailyStepCount(DailyStepCount(steps: 1000, dayOfMeasurement: day));
+    await stepCounterStorage.updateDailyStepCount(
+        DailyStepCount(steps: 1000, dayOfMeasurement: day));
 
     final dailyStepCounts = await stepCounterStorage.getDailyStepCounts(day);
     expect(dailyStepCounts.length, 1);
     expect(dailyStepCounts.first.steps, 1000);
   });
 
-  test('update daily step count multiple times per day. There is only one unique step entry per day',
+  test('update last measurement', () async {
+    final day = DateTime.parse("2020-03-27T01:00:00+0500");
+    final stepCounterStorage = getIt<StepCounterStorage>();
+
+    await stepCounterStorage
+        .updateLastMeasurementTimestamp(day.millisecondsSinceEpoch);
+
+    final lastMeasurementTimestamp =
+        await stepCounterStorage.getLastMeasurementTimestamp();
+    expect(lastMeasurementTimestamp, day.millisecondsSinceEpoch);
+  });
+
+  test('update last measurement, keeps only last value', () async {
+    const DAYS_NUM = 20;
+    final firstDay = DateTime.parse("2010-07-20 15:18:00");
+    final days =
+        List.generate(DAYS_NUM, (index) => firstDay.add(Duration(days: index)));
+    final stepCounterStorage = getIt<StepCounterStorage>();
+
+    for (var day in days) {
+      await stepCounterStorage
+          .updateLastMeasurementTimestamp(day.millisecondsSinceEpoch);
+    }
+
+    final lastMeasurementTimestamp =
+        await stepCounterStorage.getLastMeasurementTimestamp();
+    expect(
+        lastMeasurementTimestamp, days[days.length - 1].millisecondsSinceEpoch);
+  });
+
+  test(
+      'update daily step count multiple times per day. There is only one unique step entry per day',
       () async {
     const DAYS_NUM = 20;
     const STEP_LOGS_PER_DAY = 50;

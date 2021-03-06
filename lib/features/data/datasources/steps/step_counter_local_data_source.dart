@@ -6,4 +6,8 @@ abstract class StepCounterLocalDataSource {
   Future<List<DailyStepCount>> getDailyStepCountRange(DateTime from, DateTime to);
 
   Future<void> updateDailyStepCount(DailyStepCount stepCount);
+
+  Future<void> updateLastMeasurementTimestamp(int timestampMsSinceEpoch);
+
+  Future<int> getLastMeasurementTimestamp();
 }
