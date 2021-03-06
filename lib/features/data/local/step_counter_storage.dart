@@ -67,9 +67,7 @@ class StepCounterStorage implements StepCounterLocalDataSource {
 
   Future<List<DailyStepCountData>> _getDailyStepCountData(
       DateTime dayOfMeasurement) async {
-    return _getDailyStepCountDataWithWhereClause(
-        "${DailyStepCountData.COLUMN_DAY_OF_MEASUREMENT} = ?",
-        [DailyStepCountData.dateFormat.format(dayOfMeasurement)]);
+    return _getDailyStepCountDataRange(dayOfMeasurement, dayOfMeasurement);
   }
 
   Future<List<DailyStepCountData>> _getDailyStepCountDataRange(

@@ -16,7 +16,8 @@ class DailyStepCountData {
   DailyStepCountData(DailyStepCount dailyStepCount)
       : id = null,
         steps = dailyStepCount.steps,
-        dayOfMeasurement = dateFormat.format(dailyStepCount.dayOfMeasurement);
+        dayOfMeasurement =
+            dateFormat.format(dailyStepCount.dayOfMeasurement.toUtc());
 
   Map<String, dynamic> toMap() {
     final map = {
@@ -38,6 +39,7 @@ class DailyStepCountData {
 
   DailyStepCount toDailyStepCount() {
     return DailyStepCount(
-        steps: steps, dayOfMeasurement: dateFormat.parse(dayOfMeasurement));
+        steps: steps,
+        dayOfMeasurement: dateFormat.parse(dayOfMeasurement).toUtc());
   }
 }

@@ -34,6 +34,17 @@ void main() {
     expect(dailyStepCounts.first.steps, 1000);
   });
 
+    test('update daily step count time zone', () async {
+    final day = DateTime.parse("2020-03-27T01:00:00+0500");
+    final stepCounterStorage = getIt<StepCounterStorage>();
+
+    await stepCounterStorage.updateDailyStepCount(DailyStepCount(steps: 1000, dayOfMeasurement: day));
+
+    final dailyStepCounts = await stepCounterStorage.getDailyStepCounts(day);
+    expect(dailyStepCounts.length, 1);
+    expect(dailyStepCounts.first.steps, 1000);
+  });
+
   test('update daily step count multiple times per day. There is only one unique step entry per day',
       () async {
     const DAYS_NUM = 20;

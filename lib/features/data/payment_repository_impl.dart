@@ -33,8 +33,8 @@ class PaymentRepositoryImpl extends PaymentRepository {
     final allPayments = await _getPaymentsFromDataSources(userId);
     yield* Stream.value(allPayments
         .where((payment) =>
-            payment.transactionDate.isAfter(from) &&
-            payment.transactionDate.isBefore(to))
+            payment.transactionDate.toUtc().isAfter(from.toUtc()) &&
+            payment.transactionDate.toUtc().isBefore(to.toUtc()))
         .toList());
   }
 
