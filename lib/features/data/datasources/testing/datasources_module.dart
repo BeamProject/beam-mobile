@@ -1,5 +1,6 @@
 import 'package:beam/features/data/datasources/payments_local_data_source.dart';
 import 'package:beam/features/data/datasources/payments_remote_data_source.dart';
+import 'package:beam/features/data/datasources/steps/step_counter_local_data_source.dart';
 import 'package:beam/features/data/datasources/user_local_data_source.dart';
 import 'package:beam/features/data/datasources/user_remote_data_source.dart';
 import 'package:injectable/injectable.dart';
@@ -18,6 +19,10 @@ class MockUserLocalDataSource extends Mock implements UserLocalDataSource {}
 
 @singleton
 class MockUserRemoteDataSource extends Mock implements UserRemoteDataSource {}
+
+@singleton
+class MockStepCounterLocalDataSource extends Mock
+    implements StepCounterLocalDataSource {}
 
 @module
 abstract class DataSourcesModule {
@@ -40,4 +45,9 @@ abstract class DataSourcesModule {
   UserRemoteDataSource userRemoteDataSource(
           MockUserRemoteDataSource mockUserRemoteDataSource) =>
       mockUserRemoteDataSource;
+
+  @Injectable(env: [Environment.test])
+  StepCounterLocalDataSource stepCounterLocalDataSource(
+          MockStepCounterLocalDataSource mockStepCounterLocalDataSource) =>
+      mockStepCounterLocalDataSource;
 }

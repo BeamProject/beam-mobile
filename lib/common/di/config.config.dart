@@ -82,8 +82,8 @@ GetIt $initGetIt(
   final repositoryModule = _$RepositoryModule();
   final dataSourcesModule = _$DataSourcesModule();
   final pedometerModule = _$PedometerModule();
-  final testBeamModule = _$TestBeamModule();
   final dataRepositoryModule = _$DataRepositoryModule();
+  final testBeamModule = _$TestBeamModule();
   final beamModule = _$BeamModule();
   gh.factory<BeamService>(() => BeamService(), registerFor: {_prod});
   gh.lazySingleton<FlutterSecureStorage>(() => storageModule.storage,
@@ -102,12 +102,22 @@ GetIt $initGetIt(
   gh.lazySingleton<PaymentsStorage>(() => PaymentsStorage());
   gh.lazySingleton<PedometerService>(() => PedometerService());
   gh.factory<ProfileRepositoryImpl>(() => ProfileRepositoryImpl());
+  gh.factory<StepCounterLocalDataSource>(
+      () => dataSourcesModule
+          .stepCounterLocalDataSource(get<MockStepCounterLocalDataSource>()),
+      registerFor: {_test});
+  gh.lazySingleton<StepCounterRepositoryImpl>(
+      () => StepCounterRepositoryImpl(get<StepCounterLocalDataSource>()));
   gh.factory<StepCounterService>(
       () => pedometerModule.stepCounterService(get<PedometerService>()),
       registerFor: {_prod});
   gh.factory<StepCounterServiceInteractor>(
       () => StepCounterServiceInteractor(get<StepCounterService>()));
   gh.lazySingleton<StepCounterStorage>(() => StepCounterStorage());
+  gh.factory<StepsRepository>(() => dataRepositoryModule
+      .stepCounterRepository(get<StepCounterRepositoryImpl>()));
+  gh.factory<UpdateDailyStepCount>(
+      () => UpdateDailyStepCount(get<StepsRepository>()));
   gh.factory<UserLocalDataSource>(
       () =>
           dataSourcesModule.userLocalDataSource(get<MockUserLocalDataSource>()),
@@ -138,11 +148,17 @@ GetIt $initGetIt(
         get<BeamService>(),
         get<AuthTokenManager>(),
       ));
+  gh.factory<GetDailyStepCount>(
+      () => GetDailyStepCount(get<StepsRepository>()));
+  gh.factory<GetDailyStepCountRange>(
+      () => GetDailyStepCountRange(get<StepsRepository>()));
   gh.factory<LogIn>(() => LogIn(get<UserRepository>()));
   gh.factory<LogOut>(() => LogOut(get<UserRepository>()));
   gh.factory<LoginCubit>(() => LoginCubit(get<LogIn>()));
   gh.factory<MakeDelayedPayment>(() =>
       MakeDelayedPayment(get<PaymentRepository>(), get<UserRepository>()));
+  gh.factory<ObserveStepCount>(() =>
+      ObserveStepCount(get<StepCounterService>(), get<StepsRepository>()));
   gh.factory<ObserveUser>(() => ObserveUser(get<UserRepository>()));
   gh.factory<PaymentRepositoryImpl>(() => PaymentRepositoryImpl(
       get<PaymentsRemoteDataSource>(), get<PaymentsLocalDataSource>()));
@@ -161,14 +177,7 @@ GetIt $initGetIt(
   gh.factory<StepCounterLocalDataSource>(
       () => storageModule.stepCounterLocalDataSource(get<StepCounterStorage>()),
       registerFor: {_prod});
-  gh.lazySingleton<StepCounterRepositoryImpl>(
-      () => StepCounterRepositoryImpl(get<StepCounterLocalDataSource>()));
-  gh.factory<StepsRepository>(
-      () => dataRepositoryModule
-          .stepCounterRepository(get<StepCounterRepositoryImpl>()),
-      registerFor: {_prod});
-  gh.factory<UpdateDailyStepCount>(
-      () => UpdateDailyStepCount(get<StepsRepository>()));
+  gh.lazySingleton<StepTracker>(() => StepTracker(get<GetDailyStepCount>()));
   gh.factory<UserRemoteDataSource>(
       () => beamModule.userRemoteDataSource(get<BeamUserRepository>()),
       registerFor: {_prod});
@@ -182,16 +191,10 @@ GetIt $initGetIt(
       ));
   gh.factory<BeamPaymentRepository>(
       () => BeamPaymentRepository(get<BeamServiceAuthWrapper>()));
-  gh.factory<GetDailyStepCount>(
-      () => GetDailyStepCount(get<StepsRepository>()));
   gh.factory<GetDailyStepCountGoal>(
       () => GetDailyStepCountGoal(get<ProfileRepository>()));
-  gh.factory<GetDailyStepCountRange>(
-      () => GetDailyStepCountRange(get<StepsRepository>()));
   gh.factory<GetMonthlyDonationGoal>(
       () => GetMonthlyDonationGoal(get<ProfileRepository>()));
-  gh.factory<ObserveStepCount>(() =>
-      ObserveStepCount(get<StepCounterService>(), get<StepsRepository>()));
   gh.factory<PaymentRepository>(
       () =>
           dataRepositoryModule.paymentRepository(get<PaymentRepositoryImpl>()),
@@ -208,7 +211,6 @@ GetIt $initGetIt(
         get<GetDailyStepCountRange>(),
         get<GetDailyStepCountGoal>(),
       ));
-  gh.lazySingleton<StepTracker>(() => StepTracker(get<GetDailyStepCount>()));
 
   // Eager singletons must be registered in the right order
   gh.singleton<FakeStorage>(FakeStorage());
@@ -220,6 +222,8 @@ GetIt $initGetIt(
   gh.singleton<MockPaymentRemoteDataSource>(MockPaymentRemoteDataSource());
   gh.singleton<MockPaymentRepository>(MockPaymentRepository());
   gh.singleton<MockPaymentsLocalDataSource>(MockPaymentsLocalDataSource());
+  gh.singleton<MockStepCounterLocalDataSource>(
+      MockStepCounterLocalDataSource());
   gh.singleton<MockUserLocalDataSource>(MockUserLocalDataSource());
   gh.singleton<MockUserRemoteDataSource>(MockUserRemoteDataSource());
   return get;
@@ -235,8 +239,8 @@ class _$DataSourcesModule extends DataSourcesModule {}
 
 class _$PedometerModule extends PedometerModule {}
 
-class _$TestBeamModule extends TestBeamModule {}
-
 class _$DataRepositoryModule extends DataRepositoryModule {}
+
+class _$TestBeamModule extends TestBeamModule {}
 
 class _$BeamModule extends BeamModule {}

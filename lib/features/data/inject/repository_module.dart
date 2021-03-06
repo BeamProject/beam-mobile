@@ -19,7 +19,7 @@ abstract class DataRepositoryModule {
   UserRepository userRepository(UserRepositoryImpl userRepositoryImpl) =>
       userRepositoryImpl;
 
-  @Injectable(env: [Environment.prod])
+  @injectable
   StepsRepository stepCounterRepository(
           StepCounterRepositoryImpl stepCounterRepositoryImpl) =>
       stepCounterRepositoryImpl;
