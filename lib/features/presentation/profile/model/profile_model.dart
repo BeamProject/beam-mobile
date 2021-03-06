@@ -63,7 +63,7 @@ class ProfileModel extends ChangeNotifier {
     _stepCounterSubscription = observeStepCount().listen((stepCount) async {
       _steps = stepCount?.steps ?? 0;
       final today = DateTime.now();
-      final beginningOfToday = DateTime.utc(today.year, today.month, today.day);
+      final beginningOfToday = DateTime(today.year, today.month, today.day);
       final firstDayOfWeek = beginningOfToday
           .subtract(Duration(days: beginningOfToday.weekday - 1));
       final weeklyStepCountList =
@@ -93,11 +93,11 @@ class ProfileModel extends ChangeNotifier {
     });
 
     final today = DateTime.now();
-    final startDate = DateTime.utc(today.year, today.month, 1);
+    final beginningOfThisMonth = DateTime(today.year, today.month, 1);
     // It's safe to pass 13 as a month value.
-    final endDate = DateTime.utc(today.year, today.month + 1, 0);
+    final endOfThisMonth = DateTime(today.year, today.month + 1, 0);
     _paymentsSubscription = paymentsInteractor
-        .getPaymentsBetween(startDate, endDate)
+        .getPaymentsBetween(beginningOfThisMonth, endOfThisMonth)
         .listen((payments) async {
       _totalAmountOfPaymentsThisMonth = payments
           .map((e) => e.amount)
