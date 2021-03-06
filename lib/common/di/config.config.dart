@@ -47,7 +47,9 @@ import '../../features/presentation/profile/model/profile_model.dart';
 import '../../features/domain/repositories/profile_repository.dart';
 import '../../features/data/profile_repository_impl.dart';
 import '../../features/domain/repositories/testing/repository_module.dart';
+import '../../features/data/datasources/settings_local_data_source.dart';
 import '../../features/presentation/settings/settings_model.dart';
+import '../../features/data/local/settings_storage.dart';
 import '../../features/data/datasources/steps/step_counter_local_data_source.dart';
 import '../../features/data/step_counter_repository_impl.dart';
 import '../../features/domain/repositories/step_counter_service.dart';
@@ -58,6 +60,7 @@ import '../../features/domain/repositories/steps_repository.dart';
 import '../../features/data/local/storage_module.dart';
 import '../../features/data/beam/testing/test_beam_module.dart';
 import '../../features/domain/usecases/update_daily_step_count.dart';
+import '../../features/domain/usecases/update_last_step_count_measurement.dart';
 import '../../features/data/datasources/user_local_data_source.dart';
 import '../../features/data/datasources/user_remote_data_source.dart';
 import '../../features/domain/repositories/user_repository.dart';
@@ -77,14 +80,14 @@ GetIt $initGetIt(
   EnvironmentFilter environmentFilter,
 }) {
   final gh = GetItHelper(get, environment, environmentFilter);
-  final storageModule = _$StorageModule();
   final fakeStorageModule = _$FakeStorageModule();
+  final storageModule = _$StorageModule();
   final repositoryModule = _$RepositoryModule();
   final dataSourcesModule = _$DataSourcesModule();
-  final pedometerModule = _$PedometerModule();
   final dataRepositoryModule = _$DataRepositoryModule();
   final testBeamModule = _$TestBeamModule();
   final beamModule = _$BeamModule();
+  final pedometerModule = _$PedometerModule();
   gh.factory<BeamService>(() => BeamService(), registerFor: {_prod});
   gh.lazySingleton<FlutterSecureStorage>(() => storageModule.storage,
       registerFor: {_prod});
@@ -100,24 +103,21 @@ GetIt $initGetIt(
           .paymentsRemoteDataSource(get<MockPaymentRemoteDataSource>()),
       registerFor: {_test});
   gh.lazySingleton<PaymentsStorage>(() => PaymentsStorage());
-  gh.lazySingleton<PedometerService>(() => PedometerService());
   gh.factory<ProfileRepositoryImpl>(() => ProfileRepositoryImpl());
+  gh.factory<SettingsStorage>(() => SettingsStorage());
   gh.factory<StepCounterLocalDataSource>(
       () => dataSourcesModule
           .stepCounterLocalDataSource(get<MockStepCounterLocalDataSource>()),
       registerFor: {_test});
   gh.lazySingleton<StepCounterRepositoryImpl>(
       () => StepCounterRepositoryImpl(get<StepCounterLocalDataSource>()));
-  gh.factory<StepCounterService>(
-      () => pedometerModule.stepCounterService(get<PedometerService>()),
-      registerFor: {_prod});
-  gh.factory<StepCounterServiceInteractor>(
-      () => StepCounterServiceInteractor(get<StepCounterService>()));
   gh.lazySingleton<StepCounterStorage>(() => StepCounterStorage());
   gh.factory<StepsRepository>(() => dataRepositoryModule
       .stepCounterRepository(get<StepCounterRepositoryImpl>()));
   gh.factory<UpdateDailyStepCount>(
       () => UpdateDailyStepCount(get<StepsRepository>()));
+  gh.factory<UpdateLastStepCountMeasurement>(
+      () => UpdateLastStepCountMeasurement(get<StepsRepository>()));
   gh.factory<UserLocalDataSource>(
       () =>
           dataSourcesModule.userLocalDataSource(get<MockUserLocalDataSource>()),
@@ -157,8 +157,6 @@ GetIt $initGetIt(
   gh.factory<LoginCubit>(() => LoginCubit(get<LogIn>()));
   gh.factory<MakeDelayedPayment>(() =>
       MakeDelayedPayment(get<PaymentRepository>(), get<UserRepository>()));
-  gh.factory<ObserveStepCount>(() =>
-      ObserveStepCount(get<StepCounterService>(), get<StepsRepository>()));
   gh.factory<ObserveUser>(() => ObserveUser(get<UserRepository>()));
   gh.factory<PaymentRepositoryImpl>(() => PaymentRepositoryImpl(
       get<PaymentsRemoteDataSource>(), get<PaymentsLocalDataSource>()));
@@ -172,8 +170,8 @@ GetIt $initGetIt(
       () =>
           dataRepositoryModule.profileRepository(get<ProfileRepositoryImpl>()),
       registerFor: {_prod});
-  gh.factory<SettingsModel>(
-      () => SettingsModel(get<StepCounterServiceInteractor>()));
+  gh.factory<SettingsLocalDataSource>(
+      () => storageModule.settingsLocalDataSource(get<SettingsStorage>()));
   gh.factory<StepCounterLocalDataSource>(
       () => storageModule.stepCounterLocalDataSource(get<StepCounterStorage>()),
       registerFor: {_prod});
@@ -202,6 +200,15 @@ GetIt $initGetIt(
   gh.factory<PaymentsRemoteDataSource>(
       () => beamModule.paymentRemoteRepository(get<BeamPaymentRepository>()),
       registerFor: {_prod});
+  gh.lazySingleton<PedometerService>(() => PedometerService(
+      get<SettingsLocalDataSource>(), get<UpdateLastStepCountMeasurement>()));
+  gh.factory<StepCounterService>(
+      () => pedometerModule.stepCounterService(get<PedometerService>()),
+      registerFor: {_prod});
+  gh.factory<StepCounterServiceInteractor>(
+      () => StepCounterServiceInteractor(get<StepCounterService>()));
+  gh.factory<ObserveStepCount>(() =>
+      ObserveStepCount(get<StepCounterService>(), get<StepsRepository>()));
   gh.factory<ProfileModel>(() => ProfileModel(
         get<ObserveUser>(),
         get<ObserveStepCount>(),
@@ -211,6 +218,8 @@ GetIt $initGetIt(
         get<GetDailyStepCountRange>(),
         get<GetDailyStepCountGoal>(),
       ));
+  gh.factory<SettingsModel>(
+      () => SettingsModel(get<StepCounterServiceInteractor>()));
 
   // Eager singletons must be registered in the right order
   gh.singleton<FakeStorage>(FakeStorage());
@@ -229,18 +238,18 @@ GetIt $initGetIt(
   return get;
 }
 
-class _$StorageModule extends StorageModule {}
-
 class _$FakeStorageModule extends FakeStorageModule {}
+
+class _$StorageModule extends StorageModule {}
 
 class _$RepositoryModule extends RepositoryModule {}
 
 class _$DataSourcesModule extends DataSourcesModule {}
-
-class _$PedometerModule extends PedometerModule {}
 
 class _$DataRepositoryModule extends DataRepositoryModule {}
 
 class _$TestBeamModule extends TestBeamModule {}
 
 class _$BeamModule extends BeamModule {}
+
+class _$PedometerModule extends PedometerModule {}

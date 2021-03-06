@@ -46,6 +46,7 @@ dependencies:
   pedometer: ^2.0.2
   rive: ^0.6.7
   fl_chart: ^0.12.2
+  shared_preferences: ^0.5.12+4
 
 
 

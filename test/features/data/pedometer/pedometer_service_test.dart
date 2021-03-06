@@ -73,10 +73,10 @@ void main() {
     expect(pedometerService.isInitialized(), completion(equals(true)));
   });
 
-  test('stopService', () {
+  test('stopService', () async {
     final pedometerService = getIt<PedometerService>();
 
-    pedometerService.stopService();
+    await pedometerService.stopService();
 
     expect(channelMethodCallCounter[stopServiceChannelMethod], 1);
   });
