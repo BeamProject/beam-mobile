@@ -57,7 +57,6 @@ Future<void> updateDailyStepCountWithHistoricalData(
 void callbackDispatcher() {
   const MethodChannel _backgroundChannel =
       MethodChannel('plugins.beam/step_counter_plugin_background');
-  final iOSDateFormat = DateFormat("yyyy/MM/dd HH:mm");
 
   WidgetsFlutterBinding.ensureInitialized();
 
