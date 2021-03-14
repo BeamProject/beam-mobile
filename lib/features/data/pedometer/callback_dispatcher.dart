@@ -1,13 +1,18 @@
 import 'dart:developer';
+import 'dart:io';
 import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:beam/common/di/config.dart';
 import 'package:beam/features/data/pedometer/step_tracker.dart';
+import 'package:beam/features/domain/entities/steps/daily_step_count.dart';
+import 'package:beam/features/domain/usecases/get_daily_step_count.dart';
+import 'package:beam/features/domain/usecases/get_last_step_count_measurement.dart';
 import 'package:beam/features/domain/usecases/update_daily_step_count.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:injectable/injectable.dart';
+import 'package:intl/intl.dart';
 
 /*
 iOS version:
@@ -29,22 +34,63 @@ The StepTracker continuously updates the step count and thus the last measuremen
 
 */
 
+Future<void> updateDailyStepCountWithHistoricalData(
+    DateTime from,
+    DateTime to,
+    MethodChannel _backgroundChannel,
+    GetDailyStepCount getDailyStepCount,
+    UpdateDailyStepCount updateDailyStepCount) async {
+  assert(from.isSameDate(to));
+  final stepCountData = await _backgroundChannel.invokeMethod(
+      "query_step_count_data", <String, dynamic>{
+    "from": from.toUtc().toIso8601String(),
+    "to": to.toUtc().toIso8601String()
+  });
+  print(stepCountData);
+  final currentStepCount = await getDailyStepCount(from);
+  final newStepCount = DailyStepCount(
+      dayOfMeasurement: from,
+      steps: currentStepCount.steps + stepCountData["steps"]);
+  return updateDailyStepCount(newStepCount);
+}
+
 void callbackDispatcher() {
   const MethodChannel _backgroundChannel =
       MethodChannel('plugins.beam/step_counter_plugin_background');
+  final iOSDateFormat = DateFormat("yyyy/MM/dd HH:mm");
 
   WidgetsFlutterBinding.ensureInitialized();
 
   configureDependencies(Environment.prod);
   final stepTracker = getIt<StepTracker>();
   final updateDailyStepCount = getIt<UpdateDailyStepCount>();
+  final getDailyStepCount = getIt<GetDailyStepCount>();
+  final getLastStepCountMeasurement = getIt<GetLastStepCountMeasurement>();
 
   // TODO: This callback registration can race with the actual calls sent by the service.
   // Fix this.
   _backgroundChannel.setMethodCallHandler((call) async {
     if (call.method == 'serviceStarted') {
+      if (Platform.isIOS) {
+        var lastStepCountMeasurement = await getLastStepCountMeasurement();
+        final now = DateTime.now().toUtc();
+        if (lastStepCountMeasurement.isOneDayBefore(now)) {
+          final lastMidnight = DateTime(now.year, now.month, now.day);
+          await updateDailyStepCountWithHistoricalData(
+              lastStepCountMeasurement,
+              lastMidnight.subtract(Duration(seconds: 1)),
+              _backgroundChannel,
+              getDailyStepCount,
+              updateDailyStepCount);
+          lastStepCountMeasurement = lastMidnight;
+        }
+        if (now.isSameDate(lastStepCountMeasurement)) {
+          await updateDailyStepCountWithHistoricalData(lastStepCountMeasurement,
+              now, _backgroundChannel, getDailyStepCount, updateDailyStepCount);
+        }
+      }
       await stepTracker.startCountingSteps();
-     _backgroundChannel.invokeMethod("step_tracker_initialized");
+      _backgroundChannel.invokeMethod("step_tracker_initialized");
     } else if (call.method == 'serviceStopped') {
       stepTracker.stopCountingSteps();
     }
@@ -59,7 +105,8 @@ void callbackDispatcher() {
   });
 
   final stepTrackerReceivePort = ReceivePort();
-  IsolateNameServer.registerPortWithName(stepTrackerReceivePort.sendPort, "step_tracker_send_port");
+  IsolateNameServer.registerPortWithName(
+      stepTrackerReceivePort.sendPort, "step_tracker_send_port");
   stepTrackerReceivePort.listen((message) {
     if (message is SendPort) {
       final observerPort = message;
@@ -72,4 +119,19 @@ void callbackDispatcher() {
       log("callbackDispatcher: received $message is not a SendPort");
     }
   });
+}
+
+extension DateOnlyCompare on DateTime {
+  bool isSameDate(DateTime other) {
+    return this.year == other.year &&
+        this.month == other.month &&
+        this.day == other.day;
+  }
+
+  bool isOneDayBefore(DateTime other) {
+    final otherMinusOneDay = other.subtract(Duration(days: 1));
+    return this.year == otherMinusOneDay.year &&
+        this.month == otherMinusOneDay.month &&
+        this.day == otherMinusOneDay.day;
+  }
 }

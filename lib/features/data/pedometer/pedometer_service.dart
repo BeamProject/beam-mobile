@@ -46,6 +46,7 @@ class PedometerService implements StepCounterService {
 
   final SettingsLocalDataSource _settingsLocalDataSource;
   final UpdateLastStepCountMeasurement _updateLastStepCountMeasurement;
+  bool _isFirstObserver = true;
   SendPort _stepTrackerSendPort;
   Stream<bool> _channelStream;
 
@@ -54,6 +55,10 @@ class PedometerService implements StepCounterService {
 
   @override
   Stream<DailyStepCount> observeDailyStepCount() {
+    if (_isFirstObserver) {
+      _isFirstObserver = false;
+      _maybeStartService();
+    }
     log("observeDailyStepCount");
     final receivePort = ReceivePort();
     final sendPort = receivePort.sendPort;
@@ -119,6 +124,7 @@ class PedometerService implements StepCounterService {
   @override
   Future<void> stopService() async {
     await _settingsLocalDataSource.setStepCounterServiceEnabled(false);
+    print("Invoking stopService");
     await _channel.invokeMethod("StepCounterService.stopService");
   }
 
@@ -137,5 +143,13 @@ class PedometerService implements StepCounterService {
           .map((event) => event as bool);
     }
     yield* _channelStream;
+  }
+
+  Future<void> _maybeStartService() async {
+    final isStepTrackerServiceEnabled =
+        await _settingsLocalDataSource.isStepCounterServiceEnabled();
+    if (isStepTrackerServiceEnabled) {
+      startService();
+    }
   }
 }

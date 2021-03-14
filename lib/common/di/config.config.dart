@@ -24,6 +24,7 @@ import '../../features/domain/repositories/testing/fake_user_repository.dart';
 import '../../features/domain/usecases/get_daily_step_count.dart';
 import '../../features/domain/usecases/get_daily_step_count_goal.dart';
 import '../../features/domain/usecases/get_daily_step_count_range.dart';
+import '../../features/domain/usecases/get_last_step_count_measurement.dart';
 import '../../features/domain/usecases/get_monthly_donation_goal.dart';
 import '../../features/domain/usecases/log_in.dart';
 import '../../features/domain/usecases/log_out.dart';
@@ -152,6 +153,8 @@ GetIt $initGetIt(
       () => GetDailyStepCount(get<StepsRepository>()));
   gh.factory<GetDailyStepCountRange>(
       () => GetDailyStepCountRange(get<StepsRepository>()));
+  gh.factory<GetLastStepCountMeasurement>(
+      () => GetLastStepCountMeasurement(get<StepsRepository>()));
   gh.factory<LogIn>(() => LogIn(get<UserRepository>()));
   gh.factory<LogOut>(() => LogOut(get<UserRepository>()));
   gh.factory<LoginCubit>(() => LoginCubit(get<LogIn>()));

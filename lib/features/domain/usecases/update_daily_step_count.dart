@@ -10,7 +10,7 @@ class UpdateDailyStepCount {
 
   Future<void> call(DailyStepCount dailyStepCount) async {
     await _stepsRepository.updateDailyStepCount(dailyStepCount);
-    return _stepsRepository.updateLastMeasurementTimestamp(
-        dailyStepCount.dayOfMeasurement.millisecondsSinceEpoch);
+    return _stepsRepository
+        .updateLastStepCountMeasurement(dailyStepCount.dayOfMeasurement);
   }
 }

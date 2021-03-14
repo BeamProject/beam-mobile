@@ -8,7 +8,7 @@ class UpdateLastStepCountMeasurement {
   UpdateLastStepCountMeasurement(this._stepsRepository);
 
   Future<void> call(DateTime dateTimeOfMeasurement) {
-    return _stepsRepository.updateLastMeasurementTimestamp(
-        dateTimeOfMeasurement.millisecondsSinceEpoch);
+    return _stepsRepository
+        .updateLastStepCountMeasurement(dateTimeOfMeasurement);
   }
 }

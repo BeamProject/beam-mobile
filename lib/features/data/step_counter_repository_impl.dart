@@ -19,9 +19,15 @@ class StepCounterRepositoryImpl implements StepsRepository {
   }
 
   @override
-  Future<void> updateLastMeasurementTimestamp(int timestampMsSinceEpoch) {
+  Future<void> updateLastStepCountMeasurement(DateTime dateTime) {
     return _stepCounterLocalDataSource
-        .updateLastMeasurementTimestamp(timestampMsSinceEpoch);
+        .updateLastMeasurementTimestamp(dateTime.toUtc().millisecondsSinceEpoch);
+  }
+
+  @override
+  Future<DateTime> getLastStepCountMeasurement() async {
+    int timestamp = await _stepCounterLocalDataSource.getLastMeasurementTimestamp();
+    return DateTime.fromMillisecondsSinceEpoch(timestamp, isUtc: true);
   }
 
   @override

@@ -1,10 +1,13 @@
 import UIKit
 import Flutter
+import CoreMotion
 
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate, FlutterStreamHandler {
     static var backgroundIsolateRun = false
     
+    private let pedometer = CMPedometer()
+    private let dateFormatter = ISO8601DateFormatter()
     var serviceStatusEventSink: FlutterEventSink?
     var headlessRunner: FlutterEngine?
     var backgroundChannel: FlutterMethodChannel?
@@ -39,6 +42,9 @@ import Flutter
                 if let sink = self?.serviceStatusEventSink {
                     sink(false)
                 }
+                if let bgChannel = self?.backgroundChannel {
+                    bgChannel.invokeMethod("serviceStopped", arguments: nil)
+                }
                 self?.isServiceRunning = false
                 result("stopping")
             default:
@@ -65,12 +71,19 @@ import Flutter
         backgroundChannel = FlutterMethodChannel(name:"plugins.beam/step_counter_plugin_background", binaryMessenger: headlessRunner as! FlutterBinaryMessenger)
         
         backgroundChannel?.setMethodCallHandler({
-            [weak self] (call: FlutterMethodCall, result: FlutterResult) -> Void in
+            [weak self] (call: FlutterMethodCall, result: @escaping FlutterResult) -> Void in
             if call.method == "step_tracker_initialized" {
                 if let sink = self?.serviceStatusEventSink {
                     sink(true)
                 }
                 self?.isServiceRunning = true
+            } else if call.method == "query_step_count_data" {
+                let args = call.arguments as! NSDictionary
+                let trimmedIsoFrom = (args["from"] as! String).replacingOccurrences(of: "\\.\\d+", with: "", options: .regularExpression)
+                let trimmedIsoTo = (args["to"] as! String).replacingOccurrences(of: "\\.\\d+", with: "", options: .regularExpression)
+                let from = self?.dateFormatter.date(from: trimmedIsoFrom)
+                let to = self?.dateFormatter.date(from: trimmedIsoTo)
+                self?.getStepCountData(from: from!, to: to!, result: result)
             }
         })
         
@@ -84,5 +97,16 @@ import Flutter
     
     func onCancel(withArguments arguments: Any?) -> FlutterError? {
         return nil
+    }
+    
+    func getStepCountData(from: Date, to:Date, result:@escaping FlutterResult) {
+        pedometer.queryPedometerData(from: from, to: to) { [weak self] (data, error) in
+            DispatchQueue.main.async {
+                result([
+                        "from": self?.dateFormatter.string(from: from) ?? "",
+                        "to": self?.dateFormatter.string(from: to) ?? "",
+                        "steps": data?.numberOfSteps ?? -1])
+            }
+        }
     }
 }

@@ -5,7 +5,9 @@ abstract class StepsRepository {
 
   Future<void> updateDailyStepCount(DailyStepCount stepCount);
 
-  Future<void> updateLastMeasurementTimestamp(int timestampMsSinceEpoch);
+  Future<void> updateLastStepCountMeasurement(DateTime dateTime);
+
+  Future<DateTime> getLastStepCountMeasurement();
 
   Future<List<DailyStepCount>> getDailyStepCountRange(DateTime from, DateTime to);
 }
