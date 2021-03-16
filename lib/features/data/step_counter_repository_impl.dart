@@ -14,7 +14,7 @@ class StepCounterRepositoryImpl implements StepsRepository {
 
   @override
   Future<void> updateDailyStepCount(DailyStepCount stepCount) async {
-    log("updating daily step count ${stepCount.steps}, ${stepCount.dayOfMeasurement.toString()}");
+    print("updating daily step count ${stepCount.steps}, ${stepCount.dayOfMeasurement.toString()}");
     return _stepCounterLocalDataSource.updateDailyStepCount(stepCount);
   }
 

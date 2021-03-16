@@ -46,11 +46,10 @@ Future<void> updateDailyStepCountWithHistoricalData(
     "from": from.toUtc().toIso8601String(),
     "to": to.toUtc().toIso8601String()
   });
-  print(stepCountData);
-  final currentStepCount = await getDailyStepCount(from);
+  final currentStepCount = (await getDailyStepCount(from))?.steps ?? 0;
   final newStepCount = DailyStepCount(
       dayOfMeasurement: from,
-      steps: currentStepCount.steps + stepCountData["steps"]);
+      steps: currentStepCount + stepCountData["steps"]);
   return updateDailyStepCount(newStepCount);
 }
 
