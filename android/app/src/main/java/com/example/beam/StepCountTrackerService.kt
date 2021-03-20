@@ -3,8 +3,7 @@ package com.example.beam
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.NotificationManager.IMPORTANCE_DEFAULT
-import android.app.NotificationManager.IMPORTANCE_MIN
+import android.app.NotificationManager.IMPORTANCE_LOW
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -50,18 +49,19 @@ class StepCountTrackerService : Service(), MethodChannel.MethodCallHandler {
             val channel = NotificationChannel(
                     channelId,
                     "Step count tracker service",
-                    IMPORTANCE_MIN)
+                    IMPORTANCE_LOW)
             val notificationManager =
                     getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
 
-            val notificationBuilder =
+            val notification =
                     Notification.Builder(this, channelId)
+                            .setContentTitle(getString(R.string.step_counter_notification_title))
+                            .setContentText(getString(R.string.step_counter_notification_message))
+                            .setSmallIcon(R.drawable.beam_logo)
+                            .build()
 
-            notificationBuilder.setContentTitle(getText(R.string.step_counter_notification_title))
-                    .setContentText(getText(R.string.step_counter_notification_message))
-
-            startForeground(onGoingNotificationId, notificationBuilder.build())
+            startForeground(onGoingNotificationId, notification)
         }
     }
 
