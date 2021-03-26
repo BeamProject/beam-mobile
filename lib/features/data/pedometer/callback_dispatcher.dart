@@ -4,6 +4,7 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:beam/common/di/config.dart';
+import 'package:beam/features/data/datasources/settings_local_data_source.dart';
 import 'package:beam/features/data/pedometer/step_tracker.dart';
 import 'package:beam/features/domain/entities/steps/daily_step_count.dart';
 import 'package:beam/features/domain/usecases/get_daily_step_count.dart';
@@ -13,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:injectable/injectable.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /*
 iOS version:
@@ -64,10 +66,19 @@ void callbackDispatcher() {
   final updateDailyStepCount = getIt<UpdateDailyStepCount>();
   final getDailyStepCount = getIt<GetDailyStepCount>();
   final getLastStepCountMeasurement = getIt<GetLastStepCountMeasurement>();
+  final settingsLocalDataSource = getIt<SettingsLocalDataSource>();
 
   // TODO: This callback registration can race with the actual calls sent by the service.
   // Fix this.
   _backgroundChannel.setMethodCallHandler((call) async {
+    if (call.method == 'isServiceEnabled') {
+      final prefs = SharedPreferences.getInstance();
+      DateTime now = DateTime.now();
+      final currString = (await prefs).getString('test');
+      (await prefs).setString("test", "${now.toIso8601String()} \n $currString");
+      print("Timestamps:\n${(await prefs).getString('test')}");
+      return settingsLocalDataSource.isStepCounterServiceEnabled();
+    }
     if (call.method == 'serviceStarted') {
       if (Platform.isIOS) {
         var lastStepCountMeasurement = await getLastStepCountMeasurement();
