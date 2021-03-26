@@ -3,8 +3,8 @@ workflows:
     name: ios_workflow
     environment:
       vars:
-        XCODE_WORKSPACE: "beam_mobile.xcworkspace"
-        XCODE_SCHEME: "beam_mobile"
+        XCODE_WORKSPACE: "ios/Runner.xcodeproj/project.xcworkspace"
+        XCODE_SCHEME: "ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme"
         BUNDLE_ID: "co.beamproject.beammobile"
         APP_STORE_CONNECT_ISSUER_ID: Encrypted(Z0FBQUFBQmdYZkNmaVpoamFxQ2h0THBZWXpoS3hlVU5mZVVBVktmZ3ZxM2ZsOEhvU1pVcThzbzAyV1lXd195Q0YzYWNHZDN1ajBKdlpuLU5Ma0FhbDgzc0hRb2hGX2VYdG95UTdHcm95a2pQM1hpYWFDbFNYUU16cTh6dnRhWGxmckpPNHllbFhNeU0=)
         APP_STORE_CONNECT_KEY_IDENTIFIER: Encrypted(Z0FBQUFBQmdYZkZJQW9hZFFyM1hQTmZTYm9TZUUyNG92eFIzekFuR2YzWFkzSF9Vd0lrRFdHOW5OMDQ2U1FXUXpZLUVlVWNodUV3aWZUN3RQME1BSHhpd09BOVMzdEhjcmc9PQ==)
@@ -26,7 +26,7 @@ workflows:
         script: |
           app-store-connect fetch-signing-files $BUNDLE_ID \
             --type IOS_APP_DEVELOPMENT \
-            --create  # Allow creating resources if existing are not found.
+            --create
       - name: Set up signing certificate
         script: keychain add-certificates
       - name: Set up code signing settings on Xcode project
