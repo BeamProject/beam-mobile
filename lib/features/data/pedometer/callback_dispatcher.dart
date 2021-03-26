@@ -13,8 +13,6 @@ import 'package:beam/features/domain/usecases/update_daily_step_count.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:injectable/injectable.dart';
-import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 /*
 iOS version:
@@ -72,11 +70,6 @@ void callbackDispatcher() {
   // Fix this.
   _backgroundChannel.setMethodCallHandler((call) async {
     if (call.method == 'isServiceEnabled') {
-      final prefs = SharedPreferences.getInstance();
-      DateTime now = DateTime.now();
-      final currString = (await prefs).getString('test');
-      (await prefs).setString("test", "${now.toIso8601String()} \n $currString");
-      print("Timestamps:\n${(await prefs).getString('test')}");
       return settingsLocalDataSource.isStepCounterServiceEnabled();
     }
     if (call.method == 'serviceStarted') {
