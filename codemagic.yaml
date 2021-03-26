@@ -40,6 +40,12 @@ workflows:
       - /tmp/xcodebuild_logs/*.log
       - $HOME/Library/Developer/Xcode/DerivedData/**/Build/**/*.dSYM
     publishing:
-      app_store_connect:
-        apple_id: balasz.mateusz@gmail.com
-        password: Encrypted(Z0FBQUFBQmdYZlNPYnpIT25SWmhYSTB1TUFXY0llaFo0UjUtT2RXOC1KWXNJZFZDWkxXbGlOdTV4V3ZycVFvUmI2aXZycDZvMnhKbjhYX3hEVEg5NnNCcnFJSFNzN1I5U1piQkRzbWE4bUx2R0VVVnJSNlBvSkE9)
+      email:
+        recipients:
+          - balasz.mateusz@gmail.com
+        notify:
+          success: false
+          failure: false
+#      app_store_connect:
+#        apple_id: balasz.mateusz@gmail.com
+#        password: Encrypted(Z0FBQUFBQmdYZlNPYnpIT25SWmhYSTB1TUFXY0llaFo0UjUtT2RXOC1KWXNJZFZDWkxXbGlOdTV4V3ZycVFvUmI2aXZycDZvMnhKbjhYX3hEVEg5NnNCcnFJSFNzN1I5U1piQkRzbWE4bUx2R0VVVnJSNlBvSkE9)
