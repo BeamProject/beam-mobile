@@ -48,8 +48,7 @@ Future<void> updateDailyStepCountWithHistoricalData(
   });
   final currentStepCount = (await getDailyStepCount(from))?.steps ?? 0;
   final newStepCount = DailyStepCount(
-      dayOfMeasurement: from,
-      steps: currentStepCount + stepCountData["steps"]);
+      dayOfMeasurement: to, steps: currentStepCount + stepCountData["steps"]);
   return updateDailyStepCount(newStepCount);
 }
 
@@ -76,15 +75,18 @@ void callbackDispatcher() {
       if (Platform.isIOS) {
         var lastStepCountMeasurement = await getLastStepCountMeasurement();
         final now = DateTime.now().toUtc();
-        if (lastStepCountMeasurement.isOneDayBefore(now)) {
-          final lastMidnight = DateTime(now.year, now.month, now.day);
+        while (lastStepCountMeasurement.isBefore(now) &&
+            !now.isSameDate(lastStepCountMeasurement)) {
+          final nextDay = lastStepCountMeasurement.add(Duration(days: 1));
+          final nextMidnight =
+              DateTime(nextDay.year, nextDay.month, nextDay.day);
           await updateDailyStepCountWithHistoricalData(
               lastStepCountMeasurement,
-              lastMidnight.subtract(Duration(seconds: 1)),
+              nextMidnight.subtract(Duration(seconds: 1)),
               _backgroundChannel,
               getDailyStepCount,
               updateDailyStepCount);
-          lastStepCountMeasurement = lastMidnight;
+          lastStepCountMeasurement = nextMidnight;
         }
         if (now.isSameDate(lastStepCountMeasurement)) {
           await updateDailyStepCountWithHistoricalData(lastStepCountMeasurement,
