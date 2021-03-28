@@ -79,7 +79,7 @@ void callbackDispatcher() {
             !now.isSameDate(lastStepCountMeasurement)) {
           final nextDay = lastStepCountMeasurement.add(Duration(days: 1));
           final nextMidnight =
-              DateTime(nextDay.year, nextDay.month, nextDay.day);
+              DateTime(nextDay.year, nextDay.month, nextDay.day).toUtc();
           await updateDailyStepCountWithHistoricalData(
               lastStepCountMeasurement,
               nextMidnight.subtract(Duration(seconds: 1)),
