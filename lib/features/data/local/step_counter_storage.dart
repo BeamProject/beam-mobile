@@ -100,8 +100,8 @@ class StepCounterStorage implements StepCounterLocalDataSource {
       DateTime from, DateTime to) async {
     return _getDailyStepCountDataWithWhereClause(
         "${DailyStepCountData.COLUMN_DAY_OF_MEASUREMENT} BETWEEN ? AND ?", [
-      DailyStepCountData.dateFormat.format(from),
-      DailyStepCountData.dateFormat.format(to)
+      DailyStepCountData.dateFormat.format(from.toUtc()),
+      DailyStepCountData.dateFormat.format(to.toUtc())
     ]);
   }
 

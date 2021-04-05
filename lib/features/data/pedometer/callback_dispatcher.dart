@@ -34,26 +34,62 @@ The StepTracker continuously updates the step count and thus the last measuremen
 
 */
 
-Future<void> updateDailyStepCountWithHistoricalData(
-    DateTime from,
-    DateTime to,
-    MethodChannel _backgroundChannel,
+Future<void> updateDailyStepCountBetweenTimes(
+    DateTime fromLocal,
+    DateTime toLocal,
+    MethodChannel backgroundChannel,
     GetDailyStepCount getDailyStepCount,
     UpdateDailyStepCount updateDailyStepCount) async {
-  assert(from.isSameDate(to));
-  final stepCountData = await _backgroundChannel.invokeMethod(
-      "query_step_count_data", <String, dynamic>{
-    "from": from.toUtc().toIso8601String(),
-    "to": to.toUtc().toIso8601String()
+  assert(fromLocal.isSameDate(toLocal));
+  final stepCountData = await backgroundChannel
+      .invokeMethod("query_step_count_data", <String, dynamic>{
+    // Passing utc time because toIso8601String returns a format without a
+    // timezone offset for local timezone and swift cannot parse it.
+    // toIso8601String for UTC dates returns a correct format and the ios
+    // counterpart should convert utc back to local when querying for pedometer
+    // data.
+    "from": fromLocal.toUtc().toIso8601String(),
+    "to": toLocal.toUtc().toIso8601String()
   });
-  final currentStepCount = (await getDailyStepCount(from))?.steps ?? 0;
+  print(
+      "step count from: ${fromLocal.toIso8601String()} to ${toLocal.toIso8601String()}: ${stepCountData["steps"]}");
+  var newSteps = stepCountData["steps"];
+  if (newSteps < 0) {
+    newSteps = 0;
+  }
+  final existingSteps = (await getDailyStepCount(fromLocal))?.steps ?? 0;
   final newStepCount = DailyStepCount(
-      dayOfMeasurement: to, steps: currentStepCount + stepCountData["steps"]);
+      dayOfMeasurement: toLocal, steps: existingSteps + newSteps);
   return updateDailyStepCount(newStepCount);
 }
 
+Future<void> updateStepCountBetweenDates(
+    DateTime fromLocal,
+    DateTime toLocal,
+    MethodChannel backgroundChannel,
+    GetDailyStepCount getDailyStepCount,
+    UpdateDailyStepCount updateDailyStepCount) async {
+  var lastStepCountMeasurement = fromLocal;
+  while (lastStepCountMeasurement.isBefore(toLocal) &&
+      !toLocal.isSameDate(lastStepCountMeasurement)) {
+    final nextDay = lastStepCountMeasurement.add(Duration(days: 1));
+    final nextMidnight = DateTime(nextDay.year, nextDay.month, nextDay.day);
+    await updateDailyStepCountBetweenTimes(
+        lastStepCountMeasurement,
+        nextMidnight.subtract(Duration(seconds: 1)),
+        backgroundChannel,
+        getDailyStepCount,
+        updateDailyStepCount);
+    lastStepCountMeasurement = nextMidnight;
+  }
+  if (toLocal.isSameDate(lastStepCountMeasurement)) {
+    await updateDailyStepCountBetweenTimes(lastStepCountMeasurement, toLocal,
+        backgroundChannel, getDailyStepCount, updateDailyStepCount);
+  }
+}
+
 void callbackDispatcher() {
-  const MethodChannel _backgroundChannel =
+  const MethodChannel backgroundChannel =
       MethodChannel('plugins.beam/step_counter_plugin_background');
 
   WidgetsFlutterBinding.ensureInitialized();
@@ -67,34 +103,20 @@ void callbackDispatcher() {
 
   // TODO: This callback registration can race with the actual calls sent by the service.
   // Fix this.
-  _backgroundChannel.setMethodCallHandler((call) async {
+  backgroundChannel.setMethodCallHandler((call) async {
     if (call.method == 'isServiceEnabled') {
       return settingsLocalDataSource.isStepCounterServiceEnabled();
     }
     if (call.method == 'serviceStarted') {
       if (Platform.isIOS) {
-        var lastStepCountMeasurement = await getLastStepCountMeasurement();
-        final now = DateTime.now().toUtc();
-        while (lastStepCountMeasurement.isBefore(now) &&
-            !now.isSameDate(lastStepCountMeasurement)) {
-          final nextDay = lastStepCountMeasurement.add(Duration(days: 1));
-          final nextMidnight =
-              DateTime(nextDay.year, nextDay.month, nextDay.day).toUtc();
-          await updateDailyStepCountWithHistoricalData(
-              lastStepCountMeasurement,
-              nextMidnight.subtract(Duration(seconds: 1)),
-              _backgroundChannel,
-              getDailyStepCount,
-              updateDailyStepCount);
-          lastStepCountMeasurement = nextMidnight;
-        }
-        if (now.isSameDate(lastStepCountMeasurement)) {
-          await updateDailyStepCountWithHistoricalData(lastStepCountMeasurement,
-              now, _backgroundChannel, getDailyStepCount, updateDailyStepCount);
-        }
+        var lastStepCountMeasurement =
+            (await getLastStepCountMeasurement()).toLocal();
+        final now = DateTime.now();
+        await updateStepCountBetweenDates(lastStepCountMeasurement, now,
+            backgroundChannel, getDailyStepCount, updateDailyStepCount);
       }
       await stepTracker.startCountingSteps();
-      _backgroundChannel.invokeMethod("step_tracker_initialized");
+      backgroundChannel.invokeMethod("step_tracker_initialized");
     } else if (call.method == 'serviceStopped') {
       stepTracker.stopCountingSteps();
     }

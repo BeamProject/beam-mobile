@@ -7,6 +7,7 @@ abstract class StepsRepository {
 
   Future<void> updateLastStepCountMeasurement(DateTime dateTime);
 
+  // Returns last measurement date in utc format.
   Future<DateTime> getLastStepCountMeasurement();
 
   Future<List<DailyStepCount>> getDailyStepCountRange(DateTime from, DateTime to);

@@ -24,6 +24,7 @@ class ProfileModel extends ChangeNotifier {
   int _totalAmountOfPaymentsThisMonth = 0;
   int _monthlyDonationGoalPercentage = 0;
   int _dailyStepCountGoal = 0;
+
   // _weeklyStepCountList has a fixed length of 7 as it represents daily step count in a week
   // 0-th element represents Monday, 1-st - Tuesday, etc.
   List<int> _weeklyStepCountList = [];
@@ -36,10 +37,15 @@ class ProfileModel extends ChangeNotifier {
   final StepCounterServiceInteractor _stepCounterServiceInteractor;
 
   User get user => _user;
+
   int get steps => _steps;
+
   int get totalAmountOfPaymentsThisMonth => _totalAmountOfPaymentsThisMonth;
+
   int get monthlyDonationGoalPercentage => _monthlyDonationGoalPercentage;
+
   int get dailyStepCountGoal => _dailyStepCountGoal;
+
   List<int> get weeklyStepCountList => _weeklyStepCountList;
 
   ProfileModel(
@@ -99,6 +105,9 @@ class ProfileModel extends ChangeNotifier {
     _paymentsSubscription = paymentsInteractor
         .getPaymentsBetween(beginningOfThisMonth, endOfThisMonth)
         .listen((payments) async {
+      if (payments.isEmpty) {
+        return;
+      }
       _totalAmountOfPaymentsThisMonth = payments
           .map((e) => e.amount)
           .reduce((value, amount) => value + amount);

@@ -46,6 +46,7 @@ abstract class DataSourcesModule {
           MockUserRemoteDataSource mockUserRemoteDataSource) =>
       mockUserRemoteDataSource;
 
+  // TODO: Change this to a fake instead of a mock.
   @Injectable(env: [Environment.test])
   StepCounterLocalDataSource stepCounterLocalDataSource(
           MockStepCounterLocalDataSource mockStepCounterLocalDataSource) =>

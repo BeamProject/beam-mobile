@@ -14,19 +14,23 @@ class StepCounterRepositoryImpl implements StepsRepository {
 
   @override
   Future<void> updateDailyStepCount(DailyStepCount stepCount) async {
-    print("updating daily step count ${stepCount.steps}, ${stepCount.dayOfMeasurement.toString()}");
+    print(
+        "updating daily step count ${stepCount.steps}, ${stepCount.dayOfMeasurement.toString()}");
     return _stepCounterLocalDataSource.updateDailyStepCount(stepCount);
   }
 
   @override
   Future<void> updateLastStepCountMeasurement(DateTime dateTime) {
-    return _stepCounterLocalDataSource
-        .updateLastMeasurementTimestamp(dateTime.toUtc().millisecondsSinceEpoch);
+    // TODO: Move the conversion from DateTime to timestamp to the data source.
+    // It should be data source's responsibility to convert the given input to utc.
+    return _stepCounterLocalDataSource.updateLastMeasurementTimestamp(
+        dateTime.toUtc().millisecondsSinceEpoch);
   }
 
   @override
   Future<DateTime> getLastStepCountMeasurement() async {
-    int timestamp = await _stepCounterLocalDataSource.getLastMeasurementTimestamp();
+    int timestamp =
+        await _stepCounterLocalDataSource.getLastMeasurementTimestamp();
     return DateTime.fromMillisecondsSinceEpoch(timestamp, isUtc: true);
   }
 
