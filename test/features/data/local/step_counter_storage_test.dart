@@ -6,6 +6,7 @@ import 'package:beam/features/data/local/step_counter_storage.dart';
 import 'package:beam/features/domain/entities/steps/daily_step_count.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:injectable/injectable.dart' as injectable;
+import 'package:intl/intl.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -14,7 +15,7 @@ void main() {
     configureDependencies(injectable.Environment.test);
   });
 
-  tearDown(() {
+  tearDown(() async {
     getIt.reset();
   });
 
@@ -102,5 +103,31 @@ void main() {
       final lastStepCountOfTheDay = (STEP_LOGS_PER_DAY - 1) * 200;
       expect(dailyStepCountList.first.steps, lastStepCountOfTheDay);
     }
+  });
+
+  test('getDailyStepCountRange', () async {
+    final dayOne = DateTime.parse("2011-07-20 00:18:00");
+    final dayTwo = DateTime.parse("2011-07-21 02:18:00");
+    final dayThree = DateTime.parse("2011-07-22 09:18:00");
+    final stepCounterStorage = getIt<StepCounterStorage>();
+
+    await stepCounterStorage.updateDailyStepCount(
+        DailyStepCount(steps: 1000, dayOfMeasurement: dayOne));
+    await stepCounterStorage.updateDailyStepCount(
+        DailyStepCount(steps: 3000, dayOfMeasurement: dayTwo));
+    await stepCounterStorage.updateDailyStepCount(
+        DailyStepCount(steps: 7000, dayOfMeasurement: dayThree));
+
+    final dailyStepCounts =
+        await stepCounterStorage.getDailyStepCountRange(dayOne, dayThree);
+    final dateFormat = DateFormat('yyyy-MM-dd');
+    expect(dailyStepCounts,[
+      DailyStepCount(
+          dayOfMeasurement: dateFormat.parse("2011-07-20"), steps: 1000),
+      DailyStepCount(
+          dayOfMeasurement: dateFormat.parse("2011-07-21"), steps: 3000),
+      DailyStepCount(
+          dayOfMeasurement: dateFormat.parse("2011-07-22"), steps: 7000)
+    ]);
   });
 }

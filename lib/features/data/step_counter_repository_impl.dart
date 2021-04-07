@@ -23,15 +23,15 @@ class StepCounterRepositoryImpl implements StepsRepository {
   Future<void> updateLastStepCountMeasurement(DateTime dateTime) {
     // TODO: Move the conversion from DateTime to timestamp to the data source.
     // It should be data source's responsibility to convert the given input to utc.
-    return _stepCounterLocalDataSource.updateLastMeasurementTimestamp(
-        dateTime.toUtc().millisecondsSinceEpoch);
+    return _stepCounterLocalDataSource
+        .updateLastMeasurementTimestamp(dateTime.millisecondsSinceEpoch);
   }
 
   @override
   Future<DateTime> getLastStepCountMeasurement() async {
     int timestamp =
         await _stepCounterLocalDataSource.getLastMeasurementTimestamp();
-    return DateTime.fromMillisecondsSinceEpoch(timestamp, isUtc: true);
+    return DateTime.fromMillisecondsSinceEpoch(timestamp);
   }
 
   @override

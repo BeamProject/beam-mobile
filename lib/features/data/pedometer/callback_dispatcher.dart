@@ -78,7 +78,7 @@ Future<void> updateStepCountBetweenDates(
         lastStepCountMeasurement,
         nextMidnight.subtract(Duration(seconds: 1)),
         backgroundChannel,
-        getDailyStepCount,
+      getDailyStepCount,
         updateDailyStepCount);
     lastStepCountMeasurement = nextMidnight;
   }

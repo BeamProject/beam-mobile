@@ -9,20 +9,19 @@ class DailyStepCountData {
 
   final int id;
   final int steps;
-  final String dayOfMeasurementUtc;
+  final String dayOfMeasurement;
 
-  DailyStepCountData._({this.id, this.steps, this.dayOfMeasurementUtc});
+  DailyStepCountData._({this.id, this.steps, this.dayOfMeasurement});
 
   DailyStepCountData(DailyStepCount dailyStepCount)
       : id = null,
         steps = dailyStepCount.steps,
-        dayOfMeasurementUtc =
-            dateFormat.format(dailyStepCount.dayOfMeasurement.toUtc());
+        dayOfMeasurement = dateFormat.format(dailyStepCount.dayOfMeasurement);
 
   Map<String, dynamic> toMap() {
     final map = {
       COLUMN_STEPS: steps,
-      COLUMN_DAY_OF_MEASUREMENT: dayOfMeasurementUtc
+      COLUMN_DAY_OF_MEASUREMENT: dayOfMeasurement
     };
     if (id != null) {
       map[COLUMN_ID] = id;
@@ -34,12 +33,12 @@ class DailyStepCountData {
     return DailyStepCountData._(
         id: map[COLUMN_ID],
         steps: map[COLUMN_STEPS],
-        dayOfMeasurementUtc: map[COLUMN_DAY_OF_MEASUREMENT]);
+        dayOfMeasurement: map[COLUMN_DAY_OF_MEASUREMENT]);
   }
 
   DailyStepCount toDailyStepCount() {
     return DailyStepCount(
         steps: steps,
-        dayOfMeasurement: dateFormat.parse(dayOfMeasurementUtc, true));
+        dayOfMeasurement: dateFormat.parse(dayOfMeasurement));
   }
 }
