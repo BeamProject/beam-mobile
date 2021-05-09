@@ -49,7 +49,8 @@ dependencies:
   shared_preferences: ^0.5.12+4
 #  Even though this plugin is unused in the flutter code, just depending on it somehow makes
 #  iOS app refresh work. Otherwise, I couldn't trigger the app refresh without this plugin.
-  background_fetch: '^0.7.0'
+#  Disable this dependency for Android builds and enable for iOS.
+  # background_fetch: '^0.7.0'
 
 
 
