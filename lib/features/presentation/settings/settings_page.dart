@@ -14,7 +14,7 @@ class SettingsPage extends StatefulWidget {
             )));
   }
 
-  SettingsPage({Key key, this.title}) : super(key: key);
+  SettingsPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 

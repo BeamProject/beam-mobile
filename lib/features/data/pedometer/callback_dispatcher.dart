@@ -51,9 +51,9 @@ Future<void> updateDailyStepCountBetweenTimes(
     "from": fromLocal.toUtc().toIso8601String(),
     "to": toLocal.toUtc().toIso8601String()
   });
-  print(
+  log(
       "step count from: ${fromLocal.toIso8601String()} to ${toLocal.toIso8601String()}: ${stepCountData["steps"]}");
-  var newSteps = stepCountData["steps"];
+  var newSteps = stepCountData["steps"] as int;
   if (newSteps < 0) {
     newSteps = 0;
   }
@@ -109,9 +109,9 @@ void callbackDispatcher() {
     }
     if (call.method == 'serviceStarted') {
       if (Platform.isIOS) {
-        var lastStepCountMeasurement =
-            (await getLastStepCountMeasurement()).toLocal();
         final now = DateTime.now();
+        var lastStepCountMeasurement =
+            (await getLastStepCountMeasurement())?.toLocal() ?? now;
         await updateStepCountBetweenDates(lastStepCountMeasurement, now,
             backgroundChannel, getDailyStepCount, updateDailyStepCount);
       }

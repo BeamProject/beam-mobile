@@ -13,11 +13,11 @@ class GoalsSubPage extends StatefulWidget {
 }
 
 class _GoalsSubPageState extends State<GoalsSubPage> {
-  int _touchedRodBarIndex;
+  int _touchedRodBarIndex = -1;
   int _maxStepCount = 0;
-  int _dailyStepCountGoal;
-  int _totalStepsInWeek;
-  double _maxY;
+  late int _dailyStepCountGoal;
+  late int _totalStepsInWeek;
+  late double _maxY;
   static const int _rodBarGrowthOnTouchValue = 300;
 
   @override
@@ -67,9 +67,7 @@ class _GoalsSubPageState extends State<GoalsSubPage> {
                           }),
                       touchCallback: (barTouchResponse) {
                         setState(() {
-                          _touchedRodBarIndex = (barTouchResponse.spot != null)
-                              ? barTouchResponse.spot.touchedBarGroupIndex
-                              : _touchedRodBarIndex = -1;
+                          _touchedRodBarIndex = barTouchResponse.spot?.touchedBarGroupIndex ?? -1;
                         });
                       },
                     ),

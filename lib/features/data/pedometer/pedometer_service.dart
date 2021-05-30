@@ -47,8 +47,8 @@ class PedometerService implements StepCounterService {
   final SettingsLocalDataSource _settingsLocalDataSource;
   final UpdateLastStepCountMeasurement _updateLastStepCountMeasurement;
   bool _isFirstObserver = true;
-  SendPort _stepTrackerSendPort;
-  Stream<bool> _channelStream;
+  SendPort? _stepTrackerSendPort;
+  Stream<bool>? _channelStream;
 
   PedometerService(
       this._settingsLocalDataSource, this._updateLastStepCountMeasurement);
@@ -62,7 +62,7 @@ class PedometerService implements StepCounterService {
     log("observeDailyStepCount");
     final receivePort = ReceivePort();
     final sendPort = receivePort.sendPort;
-    StreamSubscription<bool> stepTrackingServiceStatusSubscription;
+    late final StreamSubscription<bool> stepTrackingServiceStatusSubscription;
     bool isSendPortRegistered = false;
     stepTrackingServiceStatusSubscription =
         observeServiceStatus().listen((isInitialized) async {
@@ -70,7 +70,7 @@ class PedometerService implements StepCounterService {
       if (isInitialized && !isSendPortRegistered) {
         _stepTrackerSendPort =
             IsolateNameServer.lookupPortByName("step_tracker_send_port");
-        _stepTrackerSendPort.send(sendPort);
+        _stepTrackerSendPort?.send(sendPort);
         isSendPortRegistered = true;
         stepTrackingServiceStatusSubscription.cancel();
       }
@@ -110,21 +110,21 @@ class PedometerService implements StepCounterService {
       await _updateLastStepCountMeasurement(DateTime.now());
     }
 
-    final CallbackHandle callback =
+    final CallbackHandle? callback =
         PluginUtilities.getCallbackHandle(callbackDispatcher);
     await _channel.invokeMethod("StepCounterService.initializeService",
-        <dynamic>[callback.toRawHandle()]);
+        <dynamic>[callback?.toRawHandle()]);
   }
 
   @override
-  Future<bool> isInitialized() {
-    return _channel.invokeMethod("StepCounterService.isInitialized");
+  Future<bool> isInitialized() async {
+    return (await _channel.invokeMethod("StepCounterService.isInitialized"))
+        as bool;
   }
 
   @override
   Future<void> stopService() async {
     await _settingsLocalDataSource.setStepCounterServiceEnabled(false);
-    print("Invoking stopService");
     await _channel.invokeMethod("StepCounterService.stopService");
   }
 
@@ -137,12 +137,14 @@ class PedometerService implements StepCounterService {
     // We have to cache the stream returned by receiveBroadcastStream because otherwise
     // we'd always close the stream last returned by that method, thus limiting the max
     // number of observers to one.
-    if (_channelStream == null) {
-      _channelStream = _serviceStatuschannel
+    Stream<bool>? channelStream = _channelStream;
+    if (channelStream == null) {
+      channelStream = _serviceStatuschannel
           .receiveBroadcastStream()
           .map((event) => event as bool);
+      _channelStream = channelStream;
     }
-    yield* _channelStream;
+    yield* channelStream;
   }
 
   Future<void> _maybeStartService() async {

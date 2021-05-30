@@ -23,8 +23,8 @@ class PaymentsInteractor {
   }
 
   Future<User> _getValidUserOrThrow() async {
-    User user = await _userRepository.observeUser().first;
-    if (user == null || !user.isValid()) {
+    User? user = await _userRepository.observeUser().first;
+    if (user == null) {
       throw Exception("Current user is invalid");
     }
     return user;

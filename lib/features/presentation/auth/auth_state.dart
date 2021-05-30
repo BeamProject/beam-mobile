@@ -2,7 +2,7 @@ import 'package:beam/features/domain/entities/user.dart';
 import 'package:equatable/equatable.dart';
 
 class AuthenticationState extends Equatable {
-  final User user;
+  final User? user;
 
   const AuthenticationState._(
       {this.user});
@@ -16,5 +16,5 @@ class AuthenticationState extends Equatable {
       : this._(user: user);
 
   @override
-  List<Object> get props => [user];
+  List<Object?> get props => [user];
 }

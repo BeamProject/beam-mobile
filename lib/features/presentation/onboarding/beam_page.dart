@@ -15,7 +15,7 @@ class BeamPage extends StatelessWidget {
         ),
       ),
       const Padding(padding: EdgeInsets.all(12)),
-      Text(AppLocalizations.of(context).appTitle,
+      Text(AppLocalizations.of(context)?.appTitle ?? "",
           textAlign: TextAlign.center,
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 50))
     ]));

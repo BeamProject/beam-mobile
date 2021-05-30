@@ -10,7 +10,7 @@ import '../../../domain/entities/payment.dart';
 class PaymentsModel extends ChangeNotifier {
   final PaymentsInteractor paymentsInteractor;
   List<Payment> _payments = [];
-  StreamSubscription<List<Payment>> _paymentsSubscription;
+  late final StreamSubscription<List<Payment>> _paymentsSubscription;
 
   List<Payment> get payments => _payments;
 

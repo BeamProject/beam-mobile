@@ -30,16 +30,14 @@ class BeamUserRepository implements UserRemoteDataSource {
         .post(LOGIN_API, body: {"email": username, "password": password});
     if (response.statusCode == 200) {
       final credentials = Credentials.fromJson(json.decode(response.body));
-      if (credentials?.authToken != null) {
-        await _authTokenManager.saveCredentials(credentials);
-        return LoginResult.SUCCESS;
-      }
+      await _authTokenManager.saveCredentials(credentials);
+      return LoginResult.SUCCESS;
     }
     return LoginResult.ERROR;
   }
 
   @override
-  Future<User> getUser() async {
+  Future<User?> getUser() async {
     final response = await _beamServiceAuthWrapper.get(GET_USER_API);
     if (response.statusCode == 200) {
       return UserMapper.mapFromBeamUser(

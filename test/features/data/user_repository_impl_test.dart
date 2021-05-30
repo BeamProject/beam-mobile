@@ -1,5 +1,5 @@
 import 'package:beam/common/di/config.dart';
-import 'package:beam/features/data/datasources/testing/datasources_module.dart';
+import 'package:beam/features/data/datasources/testing/datasources_module.mocks.dart';
 import 'package:beam/features/data/user_repository_impl.dart';
 import 'package:beam/features/domain/entities/login_result.dart';
 import 'package:beam/features/domain/entities/user.dart';
@@ -9,8 +9,8 @@ import 'package:mockito/mockito.dart';
 
 void main() {
   group('login user', () {
-    MockUserLocalDataSource mockUserLocalDataSource;
-    MockUserRemoteDataSource mockUserRemoteDataSource;
+    late MockUserLocalDataSource mockUserLocalDataSource;
+    late MockUserRemoteDataSource mockUserRemoteDataSource;
 
     setUp(() {
       configureDependencies(injectable.Environment.test);

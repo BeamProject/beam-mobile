@@ -3,9 +3,9 @@ import 'package:equatable/equatable.dart';
 class PaymentRequest extends Equatable {
   final String userId;
   final int amount;
-  final String currency;
+  final String? currency;
 
-  PaymentRequest({this.userId, this.amount, this.currency});
+  PaymentRequest({required this.userId, required this.amount, this.currency});
 
   Map<String, dynamic> toJson() {
     return {
@@ -15,5 +15,5 @@ class PaymentRequest extends Equatable {
   }
   
   @override
-  List<Object> get props => [userId, amount, currency];
+  List<Object?> get props => [userId, amount, currency];
 }

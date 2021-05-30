@@ -6,22 +6,27 @@ import 'package:injectable/injectable.dart';
 class AuthTokenManager {
   static const _AUTH_HEADER_PREFIX = "JWT";
   final AuthStorage _authStorage;
-  Credentials _cachedCredentials;
+  Credentials? _cachedCredentials;
 
   AuthTokenManager(this._authStorage);
 
-  Future<String> getAuthToken() async {
+  Future<String?> getAuthToken() async {
     if (_cachedCredentials == null) {
       _cachedCredentials = await _authStorage.getCredentials();
     }
-    if (_cachedCredentials.isExpired) {
-      _cachedCredentials = await renewAuth(_cachedCredentials.refreshToken);
-      _authStorage.updateCredentials(_cachedCredentials);
+    Credentials? credentials = _cachedCredentials;
+    if (credentials != null && credentials.isExpired) {
+      final refreshToken = credentials.refreshToken;
+      if (refreshToken != null) {
+        credentials = await renewAuth(refreshToken);
+        _authStorage.updateCredentials(credentials);
+        _cachedCredentials = credentials;
+      }
     }
-    return _cachedCredentials.authToken;
+    return _cachedCredentials?.authToken;
   }
 
-  Future<String> getAuthHeader() async {
+  Future<String?> getAuthHeader() async {
     final token = await getAuthToken();
     if (token == null) {
       return null;

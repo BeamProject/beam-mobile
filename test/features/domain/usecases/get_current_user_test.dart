@@ -7,7 +7,7 @@ import 'package:injectable/injectable.dart' as injectable;
 
 void main() {
   final correctUser = User(id: "1", firstName: 'John', lastName: 'Doe');
-  FakeUserRepository fakeUserRepository;
+  late FakeUserRepository fakeUserRepository;
 
   setUp(() {
     configureDependencies(injectable.Environment.test);
@@ -23,12 +23,11 @@ void main() {
       null,
       correctUser,
       User(id: "1", firstName: 'John'),
-      User(id: "1", lastName: 'Doe'),
-      User(firstName: 'John', lastName: 'Doe')
+      User(id: "1", lastName: 'Doe')
     ]);
     final observeUser = getIt<ObserveUser>();
 
     expect(
-        observeUser(), emitsInOrder([null, correctUser, null, null, null]));
+        observeUser(), emitsInOrder([null, correctUser, null, null]));
   });
 }

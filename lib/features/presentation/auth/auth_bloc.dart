@@ -14,7 +14,7 @@ class AuthCubit extends Cubit<AuthenticationState> {
   final ObserveUser _observeUser;
   final LogOut _logOut;
   final AutoLogIn _autoLogIn;
-  StreamSubscription<User> _authenticationStatusSubscription;
+  late final StreamSubscription<User?> _authenticationStatusSubscription;
 
   AuthCubit(this._observeUser, this._logOut, this._autoLogIn)
       : super(const AuthenticationState.unknown()) {
@@ -31,7 +31,7 @@ class AuthCubit extends Cubit<AuthenticationState> {
     _autoLogIn();
   }
 
-  void _onAuthenticationStatusChanged(User user) {
+  void _onAuthenticationStatusChanged(User? user) {
     if (user != null) {
       emit(AuthenticationState.authenticated(user));
     } else {
@@ -41,7 +41,7 @@ class AuthCubit extends Cubit<AuthenticationState> {
 
   @override
   Future<void> close() {
-    _authenticationStatusSubscription?.cancel();
+    _authenticationStatusSubscription.cancel();
     return super.close();
   }
 }

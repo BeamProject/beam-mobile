@@ -9,5 +9,5 @@ abstract class StepCounterLocalDataSource {
 
   Future<void> updateLastMeasurementTimestamp(int timestampMsSinceEpoch);
 
-  Future<int> getLastMeasurementTimestamp();
+  Future<int?> getLastMeasurementTimestamp();
 }

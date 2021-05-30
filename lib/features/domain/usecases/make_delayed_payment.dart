@@ -13,7 +13,7 @@ class MakeDelayedPayment {
 
   Future<PaymentResult> call(int amount, String currency) async {
     final user = await _userRepository.observeUser().first;
-    if (user == null || !user.isValid()) {
+    if (user == null) {
       return PaymentResult.ERROR_INVALID_USER;
     }
     return _paymentRepository.makeDelayedPayment(

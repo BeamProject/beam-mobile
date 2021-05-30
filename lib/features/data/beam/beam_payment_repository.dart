@@ -34,7 +34,7 @@ class BeamPaymentRepository implements PaymentsRemoteDataSource {
           : PaymentResult.ERROR_UNKNOWN;
     }
 
-    if (response?.statusCode == 401) {
+    if (response.statusCode == 401) {
       return PaymentResult.ERROR_INVALID_USER;
     }
 
@@ -60,6 +60,6 @@ class BeamPaymentRepository implements PaymentsRemoteDataSource {
   }
 
   bool _isResponseSuccessful(http.Response response) {
-    return response?.statusCode == 200;
+    return response.statusCode == 200;
   }
 }

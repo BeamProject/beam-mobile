@@ -17,7 +17,7 @@ class LoginPage extends StatelessWidget {
     return BlocProvider(
         create: (_) => getIt<LoginCubit>(),
         child: Scaffold(
-            appBar: AppBar(title: Text(AppLocalizations.of(context).login)),
+            appBar: AppBar(title: Text(AppLocalizations.of(context)?.login ?? "")),
             body: SingleChildScrollView(child: Padding(
                 padding: const EdgeInsets.all(12), child: LoginForm()))));
   }

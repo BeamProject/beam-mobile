@@ -2,7 +2,7 @@ import 'package:beam/common/di/config.dart';
 import 'package:beam/features/data/beam/auth_token_manager.dart';
 import 'package:beam/features/data/beam/beam_payment_repository.dart';
 import 'package:beam/features/data/beam/credentials.dart';
-import 'package:beam/features/data/beam/testing/mock_beam_service.dart';
+import 'package:beam/features/data/beam/testing/test_beam_module.mocks.dart';
 import 'package:beam/features/domain/entities/payment_request.dart';
 import 'package:beam/features/domain/entities/payment_result.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -12,8 +12,8 @@ import 'package:mockito/mockito.dart';
 
 void main() {
   final testPayment = PaymentRequest(userId: "1", amount: 20, currency: "USD");
-  MockBeamService mockBeamService;
-  AuthTokenManager authTokenManager;
+  late MockBeamService mockBeamService;
+  late AuthTokenManager authTokenManager;
 
   setUp(() {
     configureDependencies(injectable.Environment.test);
@@ -58,16 +58,6 @@ void main() {
 
       expect(beamPaymentRepository.makeDelayedPayment(testPayment),
           completion(PaymentResult.ERROR_INVALID_USER));
-    });
-
-    test('response null', () {
-      when(mockBeamService.post(BeamPaymentRepository.MAKE_DELAYED_PAYMENT_API,
-              headers: anyNamed('headers'), body: anyNamed('body')))
-          .thenAnswer((_) => Future.value(null));
-      final beamPaymentRepository = getIt<BeamPaymentRepository>();
-
-      expect(beamPaymentRepository.makeDelayedPayment(testPayment),
-          completion(PaymentResult.ERROR_UNKNOWN));
     });
   });
 }

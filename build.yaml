@@ -1,0 +1,8 @@
+builders:
+  # We need the injectable generator to run after the mock files are generated
+  # in order to bind the mocks in the dependency graph.
+  injectable_builder:
+    import: "package:injectable_generator/builder.dart"
+    builder_factories: ["injectableBuilder"]
+    build_extensions: { ".dart": [".injectable.json"] }
+    required_inputs: [".mocks.dart"]

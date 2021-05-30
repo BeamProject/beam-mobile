@@ -4,11 +4,11 @@ class Payment extends Equatable {
   final String id;
   final String userId;
   final int amount;
-  final String currency;
+  final String? currency;
   final DateTime transactionDate;
 
   Payment(
-      {this.id, this.userId, this.amount, this.currency, this.transactionDate});
+      {required this.id, required this.userId, required this.amount, this.currency, required this.transactionDate});
 
   factory Payment.fromJson(Map<String, dynamic> json) {
     return Payment(
@@ -19,5 +19,5 @@ class Payment extends Equatable {
   }
 
   @override
-  List<Object> get props => [id, userId, amount, currency, transactionDate];
+  List<Object?> get props => [id, userId, amount, currency, transactionDate];
 }

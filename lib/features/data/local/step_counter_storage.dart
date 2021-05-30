@@ -13,14 +13,15 @@ class StepCounterStorage implements StepCounterLocalDataSource {
   static const STEPS_TABLE_NAME = "steps";
   static const LAST_STEPS_MEASUREMENT_TABLE_NAME = "last_measurement";
 
-  static Database _database;
+  static Database? _database;
 
   Future<Database> get database async {
-    if (_database != null) {
-      return _database;
+    var database = _database;
+    if (database == null) {
+      database = await _initDatabase();
+      _database = database;
     }
-    _database = await _initDatabase();
-    return _database;
+    return database;
   }
 
   Future<Database> _initDatabase() async {
@@ -61,20 +62,20 @@ class StepCounterStorage implements StepCounterLocalDataSource {
   Future<void> updateDailyStepCount(DailyStepCount dailyStepCount) async {
     final dailyStepCountData = DailyStepCountData(dailyStepCount);
     final db = await database;
-    return db.insert(STEPS_TABLE_NAME, dailyStepCountData.toMap(),
+    await db.insert(STEPS_TABLE_NAME, dailyStepCountData.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   @override
   Future<void> updateLastMeasurementTimestamp(int timestampMsSinceEpoch) async {
     final db = await database;
-    return db.insert(LAST_STEPS_MEASUREMENT_TABLE_NAME,
+    await db.insert(LAST_STEPS_MEASUREMENT_TABLE_NAME,
         LastMeasurementData(timestampMsSinceEpoch).toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   @override
-  Future<int> getLastMeasurementTimestamp() async {
+  Future<int?> getLastMeasurementTimestamp() async {
     final db = await database;
     final List<Map<String, dynamic>> maps =
         await db.query(LAST_STEPS_MEASUREMENT_TABLE_NAME);

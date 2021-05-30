@@ -14,7 +14,7 @@ class StepCounterRepositoryImpl implements StepsRepository {
 
   @override
   Future<void> updateDailyStepCount(DailyStepCount stepCount) async {
-    print(
+    log(
         "updating daily step count ${stepCount.steps}, ${stepCount.dayOfMeasurement.toString()}");
     return _stepCounterLocalDataSource.updateDailyStepCount(stepCount);
   }
@@ -28,14 +28,16 @@ class StepCounterRepositoryImpl implements StepsRepository {
   }
 
   @override
-  Future<DateTime> getLastStepCountMeasurement() async {
-    int timestamp =
+  Future<DateTime?> getLastStepCountMeasurement() async {
+    int? timestamp =
         await _stepCounterLocalDataSource.getLastMeasurementTimestamp();
-    return DateTime.fromMillisecondsSinceEpoch(timestamp);
+    return timestamp != null
+        ? DateTime.fromMillisecondsSinceEpoch(timestamp)
+        : null;
   }
 
   @override
-  Future<DailyStepCount> getDailyStepCount(DateTime day) async {
+  Future<DailyStepCount?> getDailyStepCount(DateTime day) async {
     final dailyStepCounts =
         await _stepCounterLocalDataSource.getDailyStepCounts(day);
     assert(dailyStepCounts.length <= 1,

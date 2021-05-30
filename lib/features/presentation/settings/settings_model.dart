@@ -9,7 +9,7 @@ class SettingsModel extends ChangeNotifier {
   bool get isStepTrackerRunning => _isStepCounterServiceRunning;
 
   final StepCounterServiceInteractor _stepCounterServiceInteractor;
-  StreamSubscription<bool> _serviceStatusSubscription;
+  late final StreamSubscription<bool> _serviceStatusSubscription;
   bool _isStepCounterServiceRunning = false;
 
   SettingsModel(this._stepCounterServiceInteractor) {

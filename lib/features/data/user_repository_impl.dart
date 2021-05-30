@@ -14,12 +14,12 @@ class UserRepositoryImpl implements UserRepository {
   final UserLocalDataSource _localDataSource;
   final UserRemoteDataSource _remoteDataSource;
 
-  final _userStatusStreamController = BehaviorSubject<User>();
+  final _userStatusStreamController = BehaviorSubject<User?>();
 
   UserRepositoryImpl(this._localDataSource, this._remoteDataSource);
 
   @override
-  Stream<User> observeUser() {
+  Stream<User?> observeUser() {
     return _userStatusStreamController.stream;
   }
 
@@ -31,8 +31,10 @@ class UserRepositoryImpl implements UserRepository {
 
     if (loginResult == LoginResult.SUCCESS) {
       final user = await _remoteDataSource.getUser();
-      await _localDataSource.updateUser(user);
-      _userStatusStreamController.sink.add(user);
+      if (user != null) {
+        await _localDataSource.updateUser(user);
+        _userStatusStreamController.sink.add(user);
+      }
     }
     return loginResult;
   }

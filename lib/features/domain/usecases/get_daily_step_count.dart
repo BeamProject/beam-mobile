@@ -8,7 +8,7 @@ class GetDailyStepCount {
 
   GetDailyStepCount(this._stepsRepository);
 
-  Future<DailyStepCount> call(DateTime dayOfMeasurement) {
+  Future<DailyStepCount?> call(DateTime dayOfMeasurement) {
     return _stepsRepository.getDailyStepCount(dayOfMeasurement);
   }
 }

@@ -17,9 +17,9 @@ class StepTracker {
   Stream<DailyStepCount> get totalDailyStepCountStream =>
       _totalDailyStepCountStreamController.stream;
 
-  StreamSubscription<StepCount> _stepCountEventStreamSubscription;
-  DailyStepCount _initialStepCount;
-  OngoingDailyStepCount _ongoingDailyStepCount;
+  StreamSubscription<StepCount>? _stepCountEventStreamSubscription;
+  late DailyStepCount _initialStepCount;
+  OngoingDailyStepCount? _ongoingDailyStepCount;
 
   StepTracker(this._getDailyStepCount);
 
@@ -36,12 +36,13 @@ class StepTracker {
       OngoingDailyStepCount newOnGoingDailyStepCount;
       DateTime today = DateTime.now();
 
-      if (_ongoingDailyStepCount == null) {
+      final ongoingDailyStepCount = _ongoingDailyStepCount;
+      if (ongoingDailyStepCount == null) {
         newOnGoingDailyStepCount =
             OngoingDailyStepCount.createNewFromStepCountEvent(stepCount);
       } else {
         newOnGoingDailyStepCount =
-            _ongoingDailyStepCount.createWithNewStepCountEvent(stepCount);
+            ongoingDailyStepCount.createWithNewStepCountEvent(stepCount);
       }
 
       if (_initialStepCount.dayOfMeasurement.isDayBefore(today)) {
@@ -57,10 +58,8 @@ class StepTracker {
   }
 
   void stopCountingSteps() {
-    if (_stepCountEventStreamSubscription != null) {
-      _stepCountEventStreamSubscription.cancel();
-      _stepCountEventStreamSubscription = null;
-    }
+    _stepCountEventStreamSubscription?.cancel();
+    _stepCountEventStreamSubscription = null;
     _ongoingDailyStepCount = null;
   }
 }

@@ -12,7 +12,7 @@ class ObserveStepCount {
 
   ObserveStepCount(this._stepCounterService, this._stepsRepository);
 
-  Stream<DailyStepCount> call() async* {
+  Stream<DailyStepCount?> call() async* {
     yield await _stepsRepository.getDailyStepCount(DateTime.now());
     yield* _stepCounterService.observeDailyStepCount();
   }

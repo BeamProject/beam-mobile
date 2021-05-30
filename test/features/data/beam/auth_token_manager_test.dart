@@ -6,8 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:injectable/injectable.dart' as injectable;
 
 void main() {
-  AuthTokenManager authTokenManager;
-  AuthStorage authStorage;
+  late AuthTokenManager authTokenManager;
+  late AuthStorage authStorage;
 
   setUp(() {
     configureDependencies(injectable.Environment.test);

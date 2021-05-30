@@ -45,7 +45,7 @@ class LoginState {
       this.formStatus = FormStatus.pure});
 
   LoginState copy(
-      {Username username, Password password, FormStatus formStatus}) {
+      {Username? username, Password? password, FormStatus? formStatus}) {
     return LoginState(
         username: username ?? this.username,
         password: password ?? this.password,

@@ -14,9 +14,12 @@ class UserStorage implements UserLocalDataSource {
   UserStorage(this._storage);
 
   @override
-  Future<User> getUser() async {
+  Future<User?> getUser() async {
     final all = await _storage.readAll();
     final id = all[KEY_ID];
+    if (id == null) {
+      return null;
+    }
     final firstName = all[KEY_FIRST_NAME];
     final lastName = all[KEY_LAST_NAME];
     return User(id: id, firstName: firstName, lastName: lastName);

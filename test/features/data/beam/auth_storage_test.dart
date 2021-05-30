@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:injectable/injectable.dart' as injectable;
 
 void main() {
-  AuthStorage authStorage;
+  late AuthStorage authStorage;
 
   setUp(() {
     configureDependencies(injectable.Environment.test);
@@ -16,11 +16,10 @@ void main() {
     getIt.reset();
   });
 
-  test("get credentials returns empty at init", () {
+  test("get credentials returns null at init", () {
     expect(
         authStorage.getCredentials(),
-        completion(Credentials(
-            authToken: null, refreshToken: null, expiration: null)));
+        completion(null));
   });
 
   test("update and get credentials", () async {

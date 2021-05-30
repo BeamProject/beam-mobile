@@ -5,5 +5,5 @@ abstract class UserRemoteDataSource {
   Future<LoginResult> logIn(
       String username, String password);
   
-  Future<User> getUser();
+  Future<User?> getUser();
 }

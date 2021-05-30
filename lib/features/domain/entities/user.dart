@@ -1,18 +1,13 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 
 class User extends Equatable {
   final String id;
-  final String firstName;
-  final String lastName;
+  final String? firstName;
+  final String? lastName;
 
   const User(
-      {@required this.id, @required this.firstName, @required this.lastName});
+      {required this.id, this.firstName, this.lastName});
 
   @override
   List<Object> get props => [id];
-
-  bool isValid() {
-    return id != null;
-  }
 }

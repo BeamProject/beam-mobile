@@ -1,12 +1,12 @@
 import 'package:beam/common/di/config.dart';
-import 'package:beam/features/data/datasources/testing/datasources_module.dart';
+import 'package:beam/features/data/datasources/testing/datasources_module.mocks.dart';
 import 'package:beam/features/data/step_counter_repository_impl.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:injectable/injectable.dart' as injectable;
 import 'package:mockito/mockito.dart';
 
 void main() {
-  MockStepCounterLocalDataSource mockStepCounterLocalDataSource;
+  late MockStepCounterLocalDataSource mockStepCounterLocalDataSource;
 
   setUp(() {
     configureDependencies(injectable.Environment.test);

@@ -33,7 +33,7 @@ class AppScreen extends StatefulWidget {
 class _AppScreenState extends State<AppScreen> {
   final _navigatorKey = GlobalKey<NavigatorState>();
 
-  NavigatorState get _navigator => _navigatorKey.currentState;
+  NavigatorState? get _navigator => _navigatorKey.currentState;
 
   @override
   Widget build(BuildContext context) {
@@ -58,10 +58,10 @@ class _AppScreenState extends State<AppScreen> {
           return BlocListener<AuthCubit, AuthenticationState>(
               listener: (context, state) {
                 if (state.user != null) {
-                  _navigator.pushAndRemoveUntil<void>(
+                  _navigator?.pushAndRemoveUntil<void>(
                       ProfilePage.route(), (route) => false);
                 } else {
-                  _navigator.pushAndRemoveUntil<void>(
+                  _navigator?.pushAndRemoveUntil<void>(
                       OnboardingScreen.route(), (route) => false);
                 }
               },

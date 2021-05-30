@@ -13,7 +13,7 @@ class PaymentsPage extends StatefulWidget {
             child: PaymentsPage(title: "Payments")));
   }
 
-  PaymentsPage({Key key, this.title}) : super(key: key);
+  PaymentsPage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 

@@ -5,7 +5,7 @@ abstract class UserRepository {
   Future<LoginResult> logIn(
       String username, String password);
 
-  Stream<User> observeUser();
+  Stream<User?> observeUser();
 
   Future<void> logOut();
 

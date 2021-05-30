@@ -6,16 +6,16 @@ class Credentials extends Equatable {
   static const EXPIRATION_KEY = "expiration";
 
   final String authToken;
-  final String refreshToken;
-  final DateTime expiration;
+  final String? refreshToken;
+  final DateTime? expiration;
 
   bool get isExpired =>
-      expiration != null && DateTime.now().isAfter(expiration);
+      expiration != null && DateTime.now().isAfter(expiration!);
 
-  Credentials({this.authToken, this.refreshToken, this.expiration});
+  Credentials({required this.authToken,  this.refreshToken, this.expiration});
 
   factory Credentials.fromJson(Map<String, dynamic> json) {
-    DateTime expiration = (json[EXPIRATION_KEY] is int)
+    DateTime? expiration = (json[EXPIRATION_KEY] is int)
         ? DateTime.fromMillisecondsSinceEpoch(json[EXPIRATION_KEY])
         : null;
     return Credentials(
@@ -25,5 +25,5 @@ class Credentials extends Equatable {
   }
 
   @override
-  List<Object> get props => [authToken, refreshToken, expiration];
+  List<Object?> get props => [authToken, refreshToken, expiration];
 }

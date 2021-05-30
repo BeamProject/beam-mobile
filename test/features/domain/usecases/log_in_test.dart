@@ -6,7 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:injectable/injectable.dart' as injectable;
 
 void main() {
-  FakeUserRepository fakeUserRepository;
+  late FakeUserRepository fakeUserRepository;
 
   setUp(() {
     configureDependencies(injectable.Environment.test);

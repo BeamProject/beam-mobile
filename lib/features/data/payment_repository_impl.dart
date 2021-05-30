@@ -46,7 +46,7 @@ class PaymentRepositoryImpl extends PaymentRepository {
           .doOnEach((paymentsNofitication) {
         if (paymentsNofitication.kind == Kind.OnData) {
           print("Repo: Caching payments");
-          _paymentLocalDataSource.setPayments(paymentsNofitication.value);
+          _paymentLocalDataSource.setPayments(paymentsNofitication.requireData);
         }
       })
     ]).first;

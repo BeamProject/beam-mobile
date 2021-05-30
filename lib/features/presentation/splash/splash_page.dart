@@ -20,7 +20,7 @@ class SplashPage extends StatelessWidget {
           ),
           SizedBox(height: 20),
           Text(
-            AppLocalizations.of(context).appTitle,
+            AppLocalizations.of(context)!.appTitle,
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 50,

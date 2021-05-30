@@ -11,10 +11,13 @@ class AuthStorage {
 
   AuthStorage(this._storage);
 
-  Future<Credentials> getCredentials() async {
+  Future<Credentials?> getCredentials() async {
     final all = await _storage.readAll();
     final authToken = all[AUTH_TOKEN_KEY];
     final refreshToken = all[REFRESH_TOKEN_KEY];
+    if (authToken == null || refreshToken == null) {
+      return null;
+    }
     final expirationInt = int.tryParse(all[TOKEN_EXPIRATION_KEY] ?? "");
     final expiration = (expirationInt != null)
         ? DateTime.fromMillisecondsSinceEpoch(expirationInt)

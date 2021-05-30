@@ -4,7 +4,7 @@ class DailyStepCount extends Equatable {
   final int steps;
   final DateTime dayOfMeasurement;
 
-  DailyStepCount({this.steps, this.dayOfMeasurement});
+  DailyStepCount({required this.steps, required this.dayOfMeasurement});
 
   @override
   List<Object> get props => [steps, dayOfMeasurement];

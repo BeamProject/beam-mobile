@@ -15,9 +15,9 @@ class OngoingDailyStepCount extends Equatable {
   int get totalSteps => stepCountAtLastMeasurement - stepCountAtFirstMeasurement;
 
   OngoingDailyStepCount(
-      {this.dayOfMeasurement,
-      this.stepCountAtFirstMeasurement,
-      this.stepCountAtLastMeasurement});
+      {required this.dayOfMeasurement,
+      required this.stepCountAtFirstMeasurement,
+      required this.stepCountAtLastMeasurement});
 
   factory OngoingDailyStepCount.createNewFromStepCountEvent(
       StepCount stepCountEvent) {

@@ -25,10 +25,10 @@ void mockChannelMethodToReturnValue(
 }
 
 void sendValueToEventChannel(String channelName, dynamic value) {
-  ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
+  ServicesBinding.instance?.defaultBinaryMessenger.handlePlatformMessage(
       channelName,
       const StandardMethodCodec().encodeSuccessEnvelope(value),
-      (ByteData data) {});
+      (ByteData? data) {});
 }
 
 void mockEventChannelToStreamValues<T>(

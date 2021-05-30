@@ -7,12 +7,14 @@ class SettingsStorage extends SettingsLocalDataSource {
   static const KEY_STEP_COUNTER_SERVICE_ENABLED =
       "is_step_counter_service_enabled";
 
-  SharedPreferences __prefs;
+  SharedPreferences? __prefs;
   Future<SharedPreferences> get _prefs async {
-    if (__prefs == null) {
-      __prefs = await SharedPreferences.getInstance();
+    var prefs = __prefs;
+    if (prefs == null) {
+      prefs = await SharedPreferences.getInstance();
+      __prefs = prefs;
     }
-    return __prefs;
+    return prefs;
   }
 
   @override

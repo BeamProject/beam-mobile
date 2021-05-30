@@ -6,11 +6,11 @@ import 'package:mockito/mockito.dart';
 
 @singleton
 class FakeUserRepository extends Fake implements UserRepository {
-  Stream<User> usersStream;
+  Stream<User?> usersStream = Stream<User?>.empty();
   LoginResult _loginResult = LoginResult.SUCCESS;
 
   @override
-  Stream<User> observeUser() {
+  Stream<User?> observeUser() {
     return usersStream;
   }
 

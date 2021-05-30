@@ -7,7 +7,7 @@ class GetLastStepCountMeasurement {
 
   GetLastStepCountMeasurement(this._stepsRepository);
 
-  Future<DateTime> call() {
+  Future<DateTime?> call() {
     return _stepsRepository.getLastStepCountMeasurement();
   }
 }

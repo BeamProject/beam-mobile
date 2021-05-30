@@ -47,7 +47,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         padding: EdgeInsets.all(12),
         child: OnboardingPage(
           "images/beam_logo.png",
-          AppLocalizations.of(context).appTitle,
+          AppLocalizations.of(context)!.appTitle,
           TextStyle(fontWeight: FontWeight.bold, fontSize: 50),
           imageHeight: 150,
         ),
@@ -57,7 +57,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         padding: EdgeInsets.all(12),
         child: OnboardingPage(
             "images/earth_schedule.png",
-            AppLocalizations.of(context).onboardingCustomizeSchedule,
+            AppLocalizations.of(context)!.onboardingCustomizeSchedule,
             _paragraphTextStyle),
       )),
       Container(
@@ -65,7 +65,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         padding: EdgeInsets.all(12),
         child: OnboardingPage(
             "images/earth_goal.png",
-            AppLocalizations.of(context).onboardingChooseGoal,
+            AppLocalizations.of(context)!.onboardingChooseGoal,
             _paragraphTextStyle),
       )),
       Container(
@@ -73,7 +73,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         padding: EdgeInsets.all(12),
         child: OnboardingPage(
             "images/earth_clean.png",
-            AppLocalizations.of(context).onboardingHelpStartups,
+            AppLocalizations.of(context)!.onboardingHelpStartups,
             _paragraphTextStyle),
       ))
     ];
@@ -130,7 +130,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                       },
                                       child: Text(
                                           AppLocalizations.of(context)
-                                              .getStarted,
+                                              !.getStarted,
                                           textAlign: TextAlign.center,
                                           style: _buttonTextStyle),
                                     ))))

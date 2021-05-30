@@ -7,11 +7,11 @@ class DailyStepCountData {
   static const COLUMN_DAY_OF_MEASUREMENT = "day_of_measurement";
   static final dateFormat = DateFormat('yyyy-MM-dd');
 
-  final int id;
+  final int? id;
   final int steps;
   final String dayOfMeasurement;
 
-  DailyStepCountData._({this.id, this.steps, this.dayOfMeasurement});
+  DailyStepCountData._({this.id, required this.steps, required this.dayOfMeasurement});
 
   DailyStepCountData(DailyStepCount dailyStepCount)
       : id = null,
@@ -23,8 +23,9 @@ class DailyStepCountData {
       COLUMN_STEPS: steps,
       COLUMN_DAY_OF_MEASUREMENT: dayOfMeasurement
     };
-    if (id != null) {
-      map[COLUMN_ID] = id;
+    final nonNullId = id;
+    if (nonNullId != null) {
+      map[COLUMN_ID] = nonNullId;
     }
     return map;
   }

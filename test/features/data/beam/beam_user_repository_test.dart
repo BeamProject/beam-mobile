@@ -2,7 +2,7 @@ import 'package:beam/common/di/config.dart';
 import 'package:beam/features/data/beam/auth_token_manager.dart';
 import 'package:beam/features/data/beam/beam_user_repository.dart';
 import 'package:beam/features/data/beam/credentials.dart';
-import 'package:beam/features/data/beam/testing/mock_beam_service.dart';
+import 'package:beam/features/data/beam/testing/test_beam_module.mocks.dart';
 import 'package:beam/features/domain/entities/login_result.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
@@ -10,8 +10,8 @@ import 'package:injectable/injectable.dart' as injectable;
 import 'package:mockito/mockito.dart';
 
 void main() {
-  MockBeamService mockBeamService;
-  AuthTokenManager authTokenManager;
+  late MockBeamService mockBeamService;
+  late AuthTokenManager authTokenManager;
 
   group('logIn success', () {
     final authTokenValue = "tokenvalue";

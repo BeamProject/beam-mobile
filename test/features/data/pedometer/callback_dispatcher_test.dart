@@ -1,5 +1,5 @@
 import 'package:beam/common/di/config.dart';
-import 'package:beam/features/data/datasources/testing/datasources_module.dart';
+import 'package:beam/features/data/datasources/testing/datasources_module.mocks.dart';
 import 'package:beam/features/data/pedometer/callback_dispatcher.dart';
 import 'package:beam/features/domain/entities/steps/daily_step_count.dart';
 import 'package:beam/features/domain/usecases/get_daily_step_count.dart';
@@ -28,9 +28,9 @@ class MockMethodChannel {
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  UpdateDailyStepCount updateDailyStepCount;
-  GetDailyStepCount getDailyStepCount;
-  MockStepCounterLocalDataSource mockStepCounterLocalDataSource;
+  late UpdateDailyStepCount updateDailyStepCount;
+  late GetDailyStepCount getDailyStepCount;
+  late MockStepCounterLocalDataSource mockStepCounterLocalDataSource;
 
   const MethodChannel backgroundChannel =
       MethodChannel('plugins.beam/step_counter_plugin_background');

@@ -18,7 +18,7 @@ class LoginForm extends StatelessWidget {
             Scaffold.of(context)
               ..hideCurrentSnackBar()
               ..showSnackBar(
-                  SnackBar(content: Text(AppLocalizations.of(context).authFailure)));
+                  SnackBar(content: Text(AppLocalizations.of(context)!.authFailure)));
           }
         },
         child: Align(
@@ -55,13 +55,13 @@ class _UsernameInput extends StatelessWidget {
         return TextField(
             style: style,
             onChanged: (username) =>
-                context.bloc<LoginCubit>().onUsernameChanged(username),
+                context.read<LoginCubit>().onUsernameChanged(username),
             decoration: InputDecoration(
-              hintText: AppLocalizations.of(context).username,
+              hintText: AppLocalizations.of(context)!.username,
               labelStyle: new TextStyle(color: Colors.white),
               errorText: state.formStatus == FormStatus.invalid &&
                       !state.username.isValid()
-                  ? AppLocalizations.of(context).invalidUsername
+                  ? AppLocalizations.of(context)!.invalidUsername
                   : null,
               contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
               border:
@@ -84,13 +84,13 @@ class _PasswordInput extends StatelessWidget {
             style: style,
             obscureText: true,
             onChanged: (password) =>
-                context.bloc<LoginCubit>().onPasswordChanged(password),
+                context.read<LoginCubit>().onPasswordChanged(password),
             decoration: InputDecoration(
-              hintText: AppLocalizations.of(context).password,
+              hintText: AppLocalizations.of(context)!.password,
               labelStyle: new TextStyle(color: Colors.white),
               errorText: state.formStatus == FormStatus.invalid &&
                       !state.password.isValid()
-                  ? AppLocalizations.of(context).invalidPassword
+                  ? AppLocalizations.of(context)!.invalidPassword
                   : null,
               contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
               border:
@@ -118,9 +118,9 @@ class _LoginButton extends StatelessWidget {
                   minWidth: MediaQuery.of(context).size.width,
                   padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                   onPressed: () {
-                     context.bloc<LoginCubit>().onLoginDetailsSubmitted();
+                     context.read<LoginCubit>().onLoginDetailsSubmitted();
                   },
-                  child: Text(AppLocalizations.of(context).login,
+                  child: Text(AppLocalizations.of(context)!.login,
                       textAlign: TextAlign.center,
                       style: style.copyWith(
                           color: Colors.white, fontWeight: FontWeight.bold)),
