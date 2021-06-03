@@ -7,7 +7,7 @@ import 'package:beam/features/domain/entities/user.dart';
 import 'package:beam/features/domain/usecases/get_current_user.dart';
 import 'package:beam/features/domain/usecases/get_daily_step_count_range.dart';
 import 'package:beam/features/domain/usecases/get_daily_step_count_goal.dart';
-import 'package:beam/features/domain/usecases/get_monthly_donation_goal.dart';
+import 'package:beam/features/domain/usecases/get_donation_goal.dart';
 import 'package:beam/features/domain/usecases/payments_interactor.dart';
 import 'package:beam/features/domain/usecases/observe_step_count.dart';
 import 'package:flutter/cupertino.dart';
@@ -46,7 +46,7 @@ class ProfileModel extends ChangeNotifier {
       ObserveUser observeUser,
       ObserveStepCount observeStepCount,
       PaymentsInteractor paymentsInteractor,
-      GetMonthlyDonationGoal getMonthlyDonationGoal,
+      DonationGoalInteractor donationGoalInteractor,
       GetDailyStepCountRange getDailyStepCountRange,
       GetDailyStepCountGoal getDailyStepCountGoal) {
     _userSubscription = observeUser().listen((user) {
@@ -93,9 +93,15 @@ class ProfileModel extends ChangeNotifier {
       _totalAmountOfPaymentsThisMonth = payments
           .map((e) => e.amount)
           .reduce((value, amount) => value + amount);
-      final int goal = await getMonthlyDonationGoal();
-      _monthlyDonationGoalPercentage = min(100,
-          (_totalAmountOfPaymentsThisMonth.toDouble() / goal * 100).toInt());
+      final int? goalAmount =
+          (await donationGoalInteractor.getDonationGoal(Period.MONTHLY))
+              ?.amount;
+      _monthlyDonationGoalPercentage = goalAmount != null
+          ? min(
+              100,
+              (_totalAmountOfPaymentsThisMonth.toDouble() / goalAmount * 100)
+                  .toInt())
+          : 0;
       notifyListeners();
     });
 

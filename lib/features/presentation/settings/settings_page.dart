@@ -22,7 +22,11 @@ class SettingsPage extends StatefulWidget {
   _SettingsPageState createState() => _SettingsPageState();
 }
 
+enum DialogResult { OK, CANCEL }
+
 class _SettingsPageState extends State<SettingsPage> {
+  int? _dialogDonationGoalValue;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,9 +43,53 @@ class _SettingsPageState extends State<SettingsPage> {
                 onChanged: (newValue) {
                   settings.onStepCounterServiceStatusChanged(newValue);
                 },
-              )
+              ),
+              ListTile(
+                  title: const Text("Set monthly donation goal"),
+                  trailing: Text("\$ ${settings.monthlyDonationGoal}"),
+                  onTap: () async {
+                    if (await _showNumberFieldDialog(
+                            "${settings.monthlyDonationGoal}") ==
+                        DialogResult.OK) {
+                      final dialogDonationGoalValue = _dialogDonationGoalValue;
+                      if (dialogDonationGoalValue != null) {
+                        settings.onMonthlyDonationGoalChanged(
+                            dialogDonationGoalValue);
+                      }
+                    }
+                  })
             ],
           );
         }));
+  }
+
+  Future<DialogResult?> _showNumberFieldDialog(String hintText) {
+    return showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+              contentPadding: EdgeInsets.only(top: 32, left: 32, right: 32),
+              content: TextField(
+                autofocus: true,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                    prefixText: "\$",
+                    labelText: 'Set monthly donation goal',
+                    hintText: hintText),
+                onChanged: (value) =>
+                    _dialogDonationGoalValue = int.parse(value),
+              ),
+              actions: <Widget>[
+                TextButton(
+                    child: const Text('Cancel'),
+                    onPressed: () {
+                      Navigator.pop(context, DialogResult.CANCEL);
+                    }),
+                TextButton(
+                    child: const Text('Ok'),
+                    onPressed: () {
+                      Navigator.pop(context, DialogResult.OK);
+                    })
+              ],
+            ));
   }
 }
