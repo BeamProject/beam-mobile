@@ -13,6 +13,7 @@ class SettingsModel extends ChangeNotifier {
   final StepCounterServiceInteractor _stepCounterServiceInteractor;
   final DonationGoalInteractor _donationGoalInteractor;
   late final StreamSubscription<bool> _serviceStatusSubscription;
+  late final StreamSubscription<DonationGoal?> _donationGoalStreamSubscription;
   bool _isStepCounterServiceRunning = false;
   int _monthlyDonationGoal = 0;
 
@@ -24,7 +25,7 @@ class SettingsModel extends ChangeNotifier {
       _isStepCounterServiceRunning = isRunning;
       notifyListeners();
     });
-    _donationGoalInteractor
+    _donationGoalStreamSubscription = _donationGoalInteractor
         .observeDonationGoal(Period.MONTHLY)
         .listen((donationGoal) {
       _monthlyDonationGoal = donationGoal?.amount ?? 0;
@@ -50,6 +51,7 @@ class SettingsModel extends ChangeNotifier {
   @override
   void dispose() {
     _serviceStatusSubscription.cancel();
+    _donationGoalStreamSubscription.cancel();
     super.dispose();
   }
 }
