@@ -42,18 +42,20 @@ class BeamPaymentRepository implements PaymentsRemoteDataSource {
   }
 
   @override
-  Stream<List<Payment>> getPayments(String userId) async* {
-    final response = await _beamServiceAuthWrapper.get(GET_PAYMENTS_API + "/" + userId);
+  Future<List<Payment>> getPayments(String userId) async {
+    final response =
+        await _beamServiceAuthWrapper.get(GET_PAYMENTS_API + "/" + userId);
 
     if (_isResponseSuccessful(response)) {
       final jsonList = json.decode(response.body) as List<dynamic>;
       print(jsonList);
       final List<Payment> payments = jsonList
-          .map((jsonPayment) => beam.Payment.fromJson(jsonPayment as Map<String, dynamic>))
+          .map((jsonPayment) =>
+              beam.Payment.fromJson(jsonPayment as Map<String, dynamic>))
           .map((beamPayment) => PaymentMapper.mapToPayment(beamPayment))
           .toList();
-      
-      yield payments;
+
+      return payments;
     } else {
       throw Exception("Couldn't fetch payments");
     }

@@ -7,17 +7,18 @@ import 'dart:async' as _i4;
 import 'package:beam/features/data/datasources/payments_local_data_source.dart'
     as _i9;
 import 'package:beam/features/data/datasources/payments_remote_data_source.dart'
-    as _i11;
+    as _i12;
 import 'package:beam/features/data/datasources/steps/step_counter_local_data_source.dart'
     as _i3;
 import 'package:beam/features/data/datasources/user_local_data_source.dart'
     as _i8;
 import 'package:beam/features/data/datasources/user_remote_data_source.dart'
     as _i6;
+import 'package:beam/features/data/payment_repository_impl.dart' as _i10;
 import 'package:beam/features/domain/entities/login_result.dart' as _i7;
-import 'package:beam/features/domain/entities/payment.dart' as _i10;
-import 'package:beam/features/domain/entities/payment_request.dart' as _i13;
-import 'package:beam/features/domain/entities/payment_result.dart' as _i12;
+import 'package:beam/features/domain/entities/payment.dart' as _i11;
+import 'package:beam/features/domain/entities/payment_request.dart' as _i14;
+import 'package:beam/features/domain/entities/payment_result.dart' as _i13;
 import 'package:beam/features/domain/entities/steps/daily_step_count.dart'
     as _i5;
 import 'package:beam/features/domain/entities/user.dart' as _i2;
@@ -129,17 +130,18 @@ class MockPaymentsLocalDataSource extends _i1.Mock
   }
 
   @override
-  _i4.Stream<List<_i10.Payment>> getPayments() =>
+  _i4.Stream<_i10.TimestampedPayments> getPayments() =>
       (super.noSuchMethod(Invocation.method(#getPayments, []),
-              returnValue: Stream<List<_i10.Payment>>.empty())
-          as _i4.Stream<List<_i10.Payment>>);
+              returnValue: Stream<_i10.TimestampedPayments>.empty())
+          as _i4.Stream<_i10.TimestampedPayments>);
   @override
-  _i4.Future<void> setPayments(List<_i10.Payment>? payments) =>
-      (super.noSuchMethod(Invocation.method(#setPayments, [payments]),
+  _i4.Future<void> setPayments(_i10.TimestampedPayments? timestampedPayments) =>
+      (super.noSuchMethod(
+          Invocation.method(#setPayments, [timestampedPayments]),
           returnValue: Future<void>.value(null),
           returnValueForMissingStub: Future.value()) as _i4.Future<void>);
   @override
-  _i4.Future<void> addPayment(_i10.Payment? payment) =>
+  _i4.Future<void> addPayment(_i11.Payment? payment) =>
       (super.noSuchMethod(Invocation.method(#addPayment, [payment]),
           returnValue: Future<void>.value(null),
           returnValueForMissingStub: Future.value()) as _i4.Future<void>);
@@ -149,22 +151,22 @@ class MockPaymentsLocalDataSource extends _i1.Mock
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockPaymentsRemoteDataSource extends _i1.Mock
-    implements _i11.PaymentsRemoteDataSource {
+    implements _i12.PaymentsRemoteDataSource {
   MockPaymentsRemoteDataSource() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.Future<_i12.PaymentResult> makeDelayedPayment(
-          _i13.PaymentRequest? paymentRequest) =>
+  _i4.Future<_i13.PaymentResult> makeDelayedPayment(
+          _i14.PaymentRequest? paymentRequest) =>
       (super.noSuchMethod(
               Invocation.method(#makeDelayedPayment, [paymentRequest]),
               returnValue:
-                  Future<_i12.PaymentResult>.value(_i12.PaymentResult.SUCCESS))
-          as _i4.Future<_i12.PaymentResult>);
+                  Future<_i13.PaymentResult>.value(_i13.PaymentResult.SUCCESS))
+          as _i4.Future<_i13.PaymentResult>);
   @override
-  _i4.Stream<List<_i10.Payment>> getPayments(String? userId) =>
+  _i4.Future<List<_i11.Payment>> getPayments(String? userId) =>
       (super.noSuchMethod(Invocation.method(#getPayments, [userId]),
-              returnValue: Stream<List<_i10.Payment>>.empty())
-          as _i4.Stream<List<_i10.Payment>>);
+              returnValue: Future<List<_i11.Payment>>.value(<_i11.Payment>[]))
+          as _i4.Future<List<_i11.Payment>>);
 }

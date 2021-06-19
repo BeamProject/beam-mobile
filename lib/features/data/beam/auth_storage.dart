@@ -15,7 +15,7 @@ class AuthStorage {
     final all = await _storage.readAll();
     final authToken = all[AUTH_TOKEN_KEY];
     final refreshToken = all[REFRESH_TOKEN_KEY];
-    if (authToken == null || refreshToken == null) {
+    if (authToken == null) {
       return null;
     }
     final expirationInt = int.tryParse(all[TOKEN_EXPIRATION_KEY] ?? "");

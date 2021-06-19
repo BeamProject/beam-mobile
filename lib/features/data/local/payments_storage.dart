@@ -1,11 +1,12 @@
 import 'package:beam/features/data/datasources/payments_local_data_source.dart';
+import 'package:beam/features/data/payment_repository_impl.dart';
 import 'package:beam/features/domain/entities/payment.dart';
 import 'package:injectable/injectable.dart';
 
 @lazySingleton
 class PaymentsStorage implements PaymentsLocalDataSource {
   // TODO: Change to a DB
-  List<Payment> _dummyCacheFixMe = [
+  TimestampedPayments _dummyCacheFixMe = TimestampedPayments([
     Payment(
         id: "4",
         userId: "1",
@@ -54,16 +55,17 @@ class PaymentsStorage implements PaymentsLocalDataSource {
         currency: "USD",
         amount: 2,
         transactionDate: DateTime.utc(2021, 05, 15)),
-  ];
+  ], DateTime.utc(2021, 06, 19, 14).millisecondsSinceEpoch);
 
+  // This method might not be necessary if we have setPayments.
   @override
   Future<void> addPayment(Payment payment) async {
-    _dummyCacheFixMe.add(payment);
+    _dummyCacheFixMe.payments.add(payment);
   }
 
   @override
-  Stream<List<Payment>> getPayments() async* {
-    if (_dummyCacheFixMe.isEmpty) {
+  Stream<TimestampedPayments> getPayments() async* {
+    if (_dummyCacheFixMe.payments.isEmpty) {
       yield* Stream.empty();
     } else {
       yield _dummyCacheFixMe;
@@ -71,7 +73,7 @@ class PaymentsStorage implements PaymentsLocalDataSource {
   }
 
   @override
-  Future<void> setPayments(List<Payment> payments) async {
+  Future<void> setPayments(TimestampedPayments payments) async {
     _dummyCacheFixMe = payments;
   }
 }

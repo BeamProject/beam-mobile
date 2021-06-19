@@ -31,4 +31,15 @@ void main() {
 
     expect(authStorage.getCredentials(), completion(credentials));
   });
+
+  test("get credentials, refresh token is null, returns authToken", () async {
+    final credentials = Credentials(
+        authToken: "token",
+        refreshToken: null,
+        expiration: DateTime(2020, 01, 01));
+    await authStorage.updateCredentials(credentials);
+    expect(
+        authStorage.getCredentials(),
+        completion(credentials));
+  });
 }

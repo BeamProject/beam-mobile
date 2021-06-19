@@ -17,6 +17,13 @@ import 'package:rxdart/rxdart.dart';
 // TODO Consider changing this to a bloc
 @injectable
 class ProfileModel extends ChangeNotifier {
+  final ObserveUser _observeUser;
+  final ObserveStepCount _observeStepCount;
+  final PaymentsInteractor _paymentsInteractor;
+  final DonationGoalInteractor _donationGoalInteractor;
+  final GetDailyStepCountRange _getDailyStepCountRange;
+  final GetDailyStepCountGoal _getDailyStepCountGoal;
+
   User? _user;
   int _steps = 0;
   int _totalAmountOfPaymentsThisMonth = 0;
@@ -33,6 +40,16 @@ class ProfileModel extends ChangeNotifier {
   late final StreamSubscription<PaymentsProgressData>
       _paymentsProgressSubscription;
 
+  ProfileModel(
+      this._observeUser,
+      this._observeStepCount,
+      this._paymentsInteractor,
+      this._donationGoalInteractor,
+      this._getDailyStepCountRange,
+      this._getDailyStepCountGoal) {
+    refreshData();
+  }
+
   User? get user => _user;
 
   int get steps => _steps;
@@ -46,14 +63,8 @@ class ProfileModel extends ChangeNotifier {
 
   List<int> get weeklyStepCountList => _weeklyStepCountList;
 
-  ProfileModel(
-      ObserveUser observeUser,
-      ObserveStepCount observeStepCount,
-      PaymentsInteractor paymentsInteractor,
-      DonationGoalInteractor donationGoalInteractor,
-      GetDailyStepCountRange getDailyStepCountRange,
-      GetDailyStepCountGoal getDailyStepCountGoal) {
-    _userSubscription = observeUser().listen((user) {
+  void refreshData() {
+    _userSubscription = _observeUser().listen((user) {
       _user = user;
       notifyListeners();
     });
@@ -63,14 +74,14 @@ class ProfileModel extends ChangeNotifier {
       notifyListeners();
     });
 
-    _stepCounterSubscription = observeStepCount().listen((stepCount) async {
+    _stepCounterSubscription = _observeStepCount().listen((stepCount) async {
       _steps = stepCount?.steps ?? 0;
       final today = DateTime.now();
       final beginningOfToday = DateTime(today.year, today.month, today.day);
       final firstDayOfWeek = beginningOfToday
           .subtract(Duration(days: beginningOfToday.weekday - 1));
       final weeklyStepCountList =
-          await getDailyStepCountRange(firstDayOfWeek, today);
+          await _getDailyStepCountRange(firstDayOfWeek, today);
       _weeklyStepCountList = List.generate(
           7,
           (index) => weeklyStepCountList
@@ -89,9 +100,9 @@ class ProfileModel extends ChangeNotifier {
     // It's safe to pass 13 as a month value.
     final endOfThisMonth = DateTime(today.year, today.month + 1, 0);
     _paymentsProgressSubscription = Rx.combineLatest2(
-            paymentsInteractor.getPaymentsBetween(
+            _paymentsInteractor.getPaymentsBetween(
                 beginningOfThisMonth, endOfThisMonth),
-            donationGoalInteractor.observeDonationGoal(Period.MONTHLY),
+            _donationGoalInteractor.observeDonationGoal(Period.MONTHLY),
             (List<Payment> payments, DonationGoal? goal) =>
                 PaymentsProgressData(payments, goal))
         .listen((paymentsProgressData) async {
@@ -112,7 +123,7 @@ class ProfileModel extends ChangeNotifier {
       notifyListeners();
     });
 
-    getDailyStepCountGoal().then((value) {
+    _getDailyStepCountGoal().then((value) {
       _dailyStepCountGoal = value;
       notifyListeners();
     });

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:beam/features/data/datasources/payments_local_data_source.dart';
 import 'package:beam/features/data/datasources/payments_remote_data_source.dart';
 import 'package:beam/features/domain/entities/payment.dart';
@@ -9,6 +11,7 @@ import 'package:rxdart/rxdart.dart';
 
 @injectable
 class PaymentRepositoryImpl extends PaymentRepository {
+  static const PAYMENT_STALE_MS = 15 * 1000;
   final PaymentsRemoteDataSource _paymentRemoteDataSource;
   final PaymentsLocalDataSource _paymentLocalDataSource;
 
@@ -22,33 +25,46 @@ class PaymentRepositoryImpl extends PaymentRepository {
 
   @override
   Stream<List<Payment>> getPayments(String userId) {
-    final s = _getPaymentsFromDataSources(userId);
-    print("S is: $s");
-    return Stream.fromFuture(s);
+    return _getPaymentsFromDataSources(userId);
   }
 
-  @override 
+  @override
   Stream<List<Payment>> getPaymentsBetween(
-      String userId, DateTime from, DateTime to) async* {
-    final allPayments = await _getPaymentsFromDataSources(userId);
-    yield* Stream.value(allPayments
+      String userId, DateTime from, DateTime to) {
+    final allPaymentsStream = _getPaymentsFromDataSources(userId);
+    return allPaymentsStream.map((payments) => payments
         .where((payment) =>
             payment.transactionDate.toUtc().isAfter(from.toUtc()) &&
             payment.transactionDate.toUtc().isBefore(to.toUtc()))
         .toList());
   }
 
-  Future<List<Payment>> _getPaymentsFromDataSources(String userId) {
-    return ConcatStream([
+  Stream<List<Payment>> _getPaymentsFromDataSources(String userId) {
+    return Stream.fromFuture(ConcatStream([
       _paymentLocalDataSource.getPayments(),
-      _paymentRemoteDataSource
-          .getPayments(userId)
+      Stream.fromFuture(_paymentRemoteDataSource.getPayments(userId))
+          .map((payments) => TimestampedPayments(
+              payments, DateTime.now().millisecondsSinceEpoch))
           .doOnEach((paymentsNofitication) {
         if (paymentsNofitication.kind == Kind.OnData) {
-          print("Repo: Caching payments");
+          log("Repo: Caching payments: ${paymentsNofitication.requireData.payments}");
           _paymentLocalDataSource.setPayments(paymentsNofitication.requireData);
         }
       })
-    ]).first;
+    ])
+        .firstWhere((timestampedPayment) => timestampedPayment.isUpToDate())
+        .then((timestampedPayment) => timestampedPayment.payments));
+  }
+}
+
+class TimestampedPayments {
+  final List<Payment> payments;
+  final int timestamp;
+
+  TimestampedPayments(this.payments, this.timestamp);
+
+  bool isUpToDate() {
+    return DateTime.now().millisecondsSinceEpoch - timestamp <=
+        PaymentRepositoryImpl.PAYMENT_STALE_MS;
   }
 }
