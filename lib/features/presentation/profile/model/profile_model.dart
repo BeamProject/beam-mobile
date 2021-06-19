@@ -12,6 +12,7 @@ import 'package:beam/features/domain/usecases/payments_interactor.dart';
 import 'package:beam/features/domain/usecases/observe_step_count.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:injectable/injectable.dart';
+import 'package:rxdart/rxdart.dart';
 
 // TODO Consider changing this to a bloc
 @injectable
@@ -20,6 +21,7 @@ class ProfileModel extends ChangeNotifier {
   int _steps = 0;
   int _totalAmountOfPaymentsThisMonth = 0;
   int _monthlyDonationGoalPercentage = 0;
+  int _monthlyDonationGoal = 0;
   int _dailyStepCountGoal = 0;
 
   // _weeklyStepCountList has a fixed length of 7 as it represents daily step count in a week
@@ -28,7 +30,8 @@ class ProfileModel extends ChangeNotifier {
 
   late final StreamSubscription<User?> _userSubscription;
   late final StreamSubscription<DailyStepCount?> _stepCounterSubscription;
-  late final StreamSubscription<List<Payment>> _paymentsSubscription;
+  late final StreamSubscription<PaymentsProgressData>
+      _paymentsProgressSubscription;
 
   User? get user => _user;
 
@@ -37,6 +40,7 @@ class ProfileModel extends ChangeNotifier {
   int get totalAmountOfPaymentsThisMonth => _totalAmountOfPaymentsThisMonth;
 
   int get monthlyDonationGoalPercentage => _monthlyDonationGoalPercentage;
+  int get monthlyDonationGoal => _monthlyDonationGoal;
 
   int get dailyStepCountGoal => _dailyStepCountGoal;
 
@@ -84,24 +88,27 @@ class ProfileModel extends ChangeNotifier {
     final beginningOfThisMonth = DateTime(today.year, today.month, 1);
     // It's safe to pass 13 as a month value.
     final endOfThisMonth = DateTime(today.year, today.month + 1, 0);
-    _paymentsSubscription = paymentsInteractor
-        .getPaymentsBetween(beginningOfThisMonth, endOfThisMonth)
-        .listen((payments) async {
-      if (payments.isEmpty) {
-        return;
-      }
-      _totalAmountOfPaymentsThisMonth = payments
-          .map((e) => e.amount)
-          .reduce((value, amount) => value + amount);
-      final int? goalAmount =
-          (await donationGoalInteractor.getDonationGoal(Period.MONTHLY))
-              ?.amount;
+    _paymentsProgressSubscription = Rx.combineLatest2(
+            paymentsInteractor.getPaymentsBetween(
+                beginningOfThisMonth, endOfThisMonth),
+            donationGoalInteractor.observeDonationGoal(Period.MONTHLY),
+            (List<Payment> payments, DonationGoal? goal) =>
+                PaymentsProgressData(payments, goal))
+        .listen((paymentsProgressData) async {
+      final payments = paymentsProgressData.payments;
+      _totalAmountOfPaymentsThisMonth = payments.isNotEmpty
+          ? payments
+              .map((e) => e.amount)
+              .reduce((value, amount) => value + amount)
+          : 0;
+      final int? goalAmount = paymentsProgressData.donationGoal?.amount;
       _monthlyDonationGoalPercentage = goalAmount != null
           ? min(
               100,
               (_totalAmountOfPaymentsThisMonth.toDouble() / goalAmount * 100)
                   .toInt())
           : 0;
+      _monthlyDonationGoal = goalAmount != null ? goalAmount : 0;
       notifyListeners();
     });
 
@@ -115,7 +122,7 @@ class ProfileModel extends ChangeNotifier {
   void dispose() {
     _userSubscription.cancel();
     _stepCounterSubscription.cancel();
-    _paymentsSubscription.cancel();
+    _paymentsProgressSubscription.cancel();
     super.dispose();
   }
 }
@@ -133,4 +140,11 @@ class StepTrackingState {
   factory StepTrackingState.stopped() {
     return StepTrackingState(false, "Start tracking steps");
   }
+}
+
+class PaymentsProgressData {
+  final List<Payment> payments;
+  final DonationGoal? donationGoal;
+
+  PaymentsProgressData(this.payments, this.donationGoal);
 }

@@ -7,8 +7,8 @@ class DonationGoalInteractor {
 
   DonationGoalInteractor(this._profileRepository);
 
-  Future<DonationGoal?> getDonationGoal(Period period) {
-    return _profileRepository.getDonationGoal(period);
+  Stream<DonationGoal?> observeDonationGoal(Period period) {
+    return _profileRepository.observeDonationGoal(period);
   }
 
   Future<void> setDonationGoal(DonationGoal donationGoal) {
@@ -23,7 +23,4 @@ class DonationGoal {
   const DonationGoal({required this.amount, required this.period});
 }
 
-enum Period {
-  MONTHLY,
-  YEARLY
-}
+enum Period { MONTHLY, YEARLY }

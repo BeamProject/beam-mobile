@@ -25,8 +25,8 @@ class SettingsModel extends ChangeNotifier {
       notifyListeners();
     });
     _donationGoalInteractor
-        .getDonationGoal(Period.MONTHLY)
-        .then((donationGoal) {
+        .observeDonationGoal(Period.MONTHLY)
+        .listen((donationGoal) {
       _monthlyDonationGoal = donationGoal?.amount ?? 0;
       notifyListeners();
     });

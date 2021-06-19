@@ -233,6 +233,9 @@ class _ProfilePageState extends State<ProfilePage> {
                         Text("${profile.monthlyDonationGoalPercentage}% spent",
                             style: TextStyle(
                                 color: Color(0xFFBDBDBD), fontSize: 12)),
+                        Text("Goal: \$${profile.monthlyDonationGoal}",
+                            style: TextStyle(
+                                color: Color(0xFFBDBDBD), fontSize: 12)),
                       ])
                 ]);
               }))),

@@ -10,7 +10,7 @@ import 'package:injectable/injectable.dart' as _i2;
 
 import '../../features/data/beam/auth_storage.dart' as _i25;
 import '../../features/data/beam/auth_token_manager.dart' as _i26;
-import '../../features/data/beam/beam_payment_repository.dart' as _i47;
+import '../../features/data/beam/beam_payment_repository.dart' as _i46;
 import '../../features/data/beam/beam_service.dart' as _i3;
 import '../../features/data/beam/beam_service_auth_wrapper.dart' as _i29;
 import '../../features/data/beam/beam_user_repository.dart' as _i30;
@@ -22,7 +22,7 @@ import '../../features/data/datasources/payments_remote_data_source.dart'
     as _i9;
 import '../../features/data/datasources/profile_local_data_source.dart' as _i42;
 import '../../features/data/datasources/settings_local_data_source.dart'
-    as _i44;
+    as _i43;
 import '../../features/data/datasources/steps/step_counter_local_data_source.dart'
     as _i13;
 import '../../features/data/datasources/testing/datasources_module.dart'
@@ -42,13 +42,13 @@ import '../../features/data/local/testing/test_storage_module.dart' as _i58;
 import '../../features/data/local/user_storage.dart' as _i20;
 import '../../features/data/payment_repository_impl.dart' as _i39;
 import '../../features/data/pedometer/pedometer_module.dart' as _i65;
-import '../../features/data/pedometer/pedometer_service.dart' as _i48;
-import '../../features/data/pedometer/step_tracker.dart' as _i45;
-import '../../features/data/profile_repository_impl.dart' as _i43;
+import '../../features/data/pedometer/pedometer_service.dart' as _i47;
+import '../../features/data/pedometer/step_tracker.dart' as _i44;
+import '../../features/data/profile_repository_impl.dart' as _i49;
 import '../../features/data/step_counter_repository_impl.dart' as _i14;
 import '../../features/data/user_repository_impl.dart' as _i24;
 import '../../features/domain/repositories/payment_repository.dart' as _i5;
-import '../../features/domain/repositories/profile_repository.dart' as _i49;
+import '../../features/domain/repositories/profile_repository.dart' as _i48;
 import '../../features/domain/repositories/step_counter_service.dart' as _i50;
 import '../../features/domain/repositories/steps_repository.dart' as _i16;
 import '../../features/domain/repositories/testing/fake_user_repository.dart'
@@ -76,7 +76,7 @@ import '../../features/domain/usecases/step_counter_service_interactor.dart'
 import '../../features/domain/usecases/update_daily_step_count.dart' as _i17;
 import '../../features/domain/usecases/update_last_step_count_measurement.dart'
     as _i18;
-import '../../features/presentation/auth/auth_bloc.dart' as _i46;
+import '../../features/presentation/auth/auth_bloc.dart' as _i45;
 import '../../features/presentation/login/bloc/login_bloc.dart' as _i36;
 import '../../features/presentation/payments/model/payments_model.dart' as _i41;
 import '../../features/presentation/profile/model/profile_model.dart' as _i55;
@@ -183,50 +183,48 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
       () => _i41.PaymentsModel(get<_i40.PaymentsInteractor>()));
   gh.factory<_i42.ProfileLocalDataSource>(
       () => storageModule.profileLocalDataSource(get<_i11.ProfileStorage>()));
-  gh.factory<_i43.ProfileRepositoryImpl>(
-      () => _i43.ProfileRepositoryImpl(get<_i42.ProfileLocalDataSource>()));
-  gh.factory<_i44.SettingsLocalDataSource>(
+  gh.factory<_i43.SettingsLocalDataSource>(
       () => storageModule.settingsLocalDataSource(get<_i12.SettingsStorage>()));
   gh.factory<_i13.StepCounterLocalDataSource>(
       () => storageModule
           .stepCounterLocalDataSource(get<_i15.StepCounterStorage>()),
       registerFor: {_prod});
-  gh.lazySingleton<_i45.StepTracker>(
-      () => _i45.StepTracker(get<_i31.GetDailyStepCount>()));
+  gh.lazySingleton<_i44.StepTracker>(
+      () => _i44.StepTracker(get<_i31.GetDailyStepCount>()));
   gh.factory<_i21.UserRemoteDataSource>(
       () => beamModule.userRemoteDataSource(get<_i30.BeamUserRepository>()),
       registerFor: {_prod});
   gh.factory<_i22.UserRepository>(
       () => dataRepositoryModule.userRepository(get<_i24.UserRepositoryImpl>()),
       registerFor: {_prod});
-  gh.factory<_i46.AuthCubit>(() => _i46.AuthCubit(
+  gh.factory<_i45.AuthCubit>(() => _i45.AuthCubit(
       get<_i38.ObserveUser>(), get<_i35.LogOut>(), get<_i27.AutoLogIn>()));
-  gh.factory<_i47.BeamPaymentRepository>(
-      () => _i47.BeamPaymentRepository(get<_i29.BeamServiceAuthWrapper>()));
+  gh.factory<_i46.BeamPaymentRepository>(
+      () => _i46.BeamPaymentRepository(get<_i29.BeamServiceAuthWrapper>()));
   gh.factory<_i5.PaymentRepository>(
       () => dataRepositoryModule
           .paymentRepository(get<_i39.PaymentRepositoryImpl>()),
       registerFor: {_prod});
   gh.factory<_i9.PaymentsRemoteDataSource>(
       () =>
-          beamModule.paymentRemoteRepository(get<_i47.BeamPaymentRepository>()),
+          beamModule.paymentRemoteRepository(get<_i46.BeamPaymentRepository>()),
       registerFor: {_prod});
-  gh.lazySingleton<_i48.PedometerService>(() => _i48.PedometerService(
-      get<_i44.SettingsLocalDataSource>(),
+  gh.lazySingleton<_i47.PedometerService>(() => _i47.PedometerService(
+      get<_i43.SettingsLocalDataSource>(),
       get<_i18.UpdateLastStepCountMeasurement>()));
-  gh.factory<_i49.ProfileRepository>(
+  gh.factory<_i48.ProfileRepository>(
       () => dataRepositoryModule
-          .profileRepository(get<_i43.ProfileRepositoryImpl>()),
+          .profileRepository(get<_i49.ProfileRepositoryImpl>()),
       registerFor: {_prod});
   gh.factory<_i50.StepCounterService>(
-      () => pedometerModule.stepCounterService(get<_i48.PedometerService>()),
+      () => pedometerModule.stepCounterService(get<_i47.PedometerService>()),
       registerFor: {_prod});
   gh.factory<_i51.StepCounterServiceInteractor>(
       () => _i51.StepCounterServiceInteractor(get<_i50.StepCounterService>()));
   gh.factory<_i52.DonationGoalInteractor>(
-      () => _i52.DonationGoalInteractor(get<_i49.ProfileRepository>()));
+      () => _i52.DonationGoalInteractor(get<_i48.ProfileRepository>()));
   gh.factory<_i53.GetDailyStepCountGoal>(
-      () => _i53.GetDailyStepCountGoal(get<_i49.ProfileRepository>()));
+      () => _i53.GetDailyStepCountGoal(get<_i48.ProfileRepository>()));
   gh.factory<_i54.ObserveStepCount>(() => _i54.ObserveStepCount(
       get<_i50.StepCounterService>(), get<_i16.StepsRepository>()));
   gh.factory<_i55.ProfileModel>(() => _i55.ProfileModel(
@@ -264,6 +262,8 @@ _i1.GetIt $initGetIt(_i1.GetIt get,
   gh.singleton<_i8.MockUserRemoteDataSource>(
       dataSourcesModule.mockUserRemoteDataSource,
       registerFor: {_test});
+  gh.singleton<_i49.ProfileRepositoryImpl>(
+      _i49.ProfileRepositoryImpl(get<_i42.ProfileLocalDataSource>()));
   return get;
 }
 
