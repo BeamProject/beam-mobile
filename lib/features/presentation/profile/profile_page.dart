@@ -1,5 +1,6 @@
 import 'package:beam/common/di/config.dart';
 import 'package:beam/features/presentation/auth/auth_bloc.dart';
+import 'package:beam/features/presentation/payments/make_payment_page.dart';
 import 'package:beam/features/presentation/profile/goals_subpage.dart';
 import 'package:beam/features/presentation/profile/model/profile_model.dart';
 import 'package:beam/features/presentation/settings/settings_page.dart';
@@ -252,7 +253,9 @@ class _ProfilePageState extends State<ProfilePage> {
               child: MaterialButton(
                 minWidth: MediaQuery.of(context).size.width,
                 padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context, MakePaymentPage.route());
+                },
                 child: Text(AppLocalizations.of(context)!.makePayment,
                     textAlign: TextAlign.center,
                     style: style.copyWith(

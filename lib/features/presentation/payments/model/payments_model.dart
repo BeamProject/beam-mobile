@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:beam/features/domain/entities/payment_result.dart';
 import 'package:beam/features/domain/usecases/payments_interactor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:injectable/injectable.dart';
@@ -8,14 +9,18 @@ import '../../../domain/entities/payment.dart';
 
 @injectable
 class PaymentsModel extends ChangeNotifier {
-  final PaymentsInteractor paymentsInteractor;
+  final PaymentsInteractor _paymentsInteractor;
   List<Payment> _payments = [];
   late final StreamSubscription<List<Payment>> _paymentsSubscription;
 
+  PaymentStatus get paymentStatus => _paymentStatus;
+  PaymentStatus _paymentStatus = PaymentStatus.DEFAULT;
+
   List<Payment> get payments => _payments;
 
-  PaymentsModel(this.paymentsInteractor) {
-    _paymentsSubscription = paymentsInteractor.getPayments().listen((payments) {
+  PaymentsModel(this._paymentsInteractor) {
+    _paymentsSubscription =
+        _paymentsInteractor.getPayments().listen((payments) {
       _payments = payments;
       notifyListeners();
     });
@@ -24,10 +29,29 @@ class PaymentsModel extends ChangeNotifier {
       notifyListeners();
     });
   }
-  
+
+  Future<void> makePayment(int amount) async {
+    _paymentStatus = PaymentStatus.IN_PROGRESS;
+    notifyListeners();
+    final paymentResult = await _paymentsInteractor.makePayment(amount);
+    if (paymentResult == PaymentResult.SUCCESS) {
+      _paymentStatus = PaymentStatus.SUCCESS;
+    } else {
+      _paymentStatus = PaymentStatus.FAILURE;
+    }
+    notifyListeners();
+  }
+
   @override
   void dispose() {
     _paymentsSubscription.cancel();
     super.dispose();
   }
+}
+
+enum PaymentStatus {
+  DEFAULT,
+  SUCCESS,
+  FAILURE,
+  IN_PROGRESS,
 }

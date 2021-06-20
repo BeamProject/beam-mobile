@@ -1,3 +1,5 @@
+import 'package:beam/features/domain/entities/payment_request.dart';
+import 'package:beam/features/domain/entities/payment_result.dart';
 import 'package:injectable/injectable.dart';
 
 import '../entities/payment.dart';
@@ -20,6 +22,12 @@ class PaymentsInteractor {
   Stream<List<Payment>> getPaymentsBetween(DateTime from, DateTime to) async* {
     final user = await _getValidUserOrThrow();
     yield* _paymentRepository.getPaymentsBetween(user.id, from, to);
+  }
+
+  Future<PaymentResult> makePayment(int amount) async {
+    final user = await _getValidUserOrThrow();
+    return _paymentRepository
+        .makeDelayedPayment(PaymentRequest(userId: user.id, amount: amount));
   }
 
   Future<User> _getValidUserOrThrow() async {
