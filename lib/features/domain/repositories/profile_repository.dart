@@ -1,9 +1,11 @@
-import 'package:beam/features/domain/usecases/get_donation_goal.dart';
+import 'package:beam/features/domain/usecases/profile_interactor.dart';
 
 abstract class ProfileRepository {
   Stream<DonationGoal?> observeDonationGoal(Period period);
 
   Future<void> setDonationGoal(DonationGoal donationGoal);
 
-  Future<int> getDailyStepsGoal();
+  Stream<int?> observeDailyStepsGoal();
+
+  Future<void> setDailyStepsGoal(int steps);
 }

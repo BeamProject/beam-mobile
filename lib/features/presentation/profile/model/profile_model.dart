@@ -7,8 +7,7 @@ import 'package:beam/features/domain/entities/steps/daily_step_count.dart';
 import 'package:beam/features/domain/entities/user.dart';
 import 'package:beam/features/domain/usecases/get_current_user.dart';
 import 'package:beam/features/domain/usecases/get_daily_step_count_range.dart';
-import 'package:beam/features/domain/usecases/get_daily_step_count_goal.dart';
-import 'package:beam/features/domain/usecases/get_donation_goal.dart';
+import 'package:beam/features/domain/usecases/profile_interactor.dart';
 import 'package:beam/features/domain/usecases/payments_interactor.dart';
 import 'package:beam/features/domain/usecases/observe_step_count.dart';
 import 'package:flutter/cupertino.dart';
@@ -21,9 +20,8 @@ class ProfileModel extends ChangeNotifier {
   final ObserveUser _observeUser;
   final ObserveStepCount _observeStepCount;
   final PaymentsInteractor _paymentsInteractor;
-  final DonationGoalInteractor _donationGoalInteractor;
+  final ProfileInteractor _profileInteractor;
   final GetDailyStepCountRange _getDailyStepCountRange;
-  final GetDailyStepCountGoal _getDailyStepCountGoal;
 
   User? _user;
   int _steps = 0;
@@ -40,14 +38,14 @@ class ProfileModel extends ChangeNotifier {
   late final StreamSubscription<DailyStepCount?> _stepCounterSubscription;
   late final StreamSubscription<PaymentsProgressData>
       _paymentsProgressSubscription;
+  late final StreamSubscription<int?> _dailyStepsGoalSubscription;
 
   ProfileModel(
       this._observeUser,
       this._observeStepCount,
       this._paymentsInteractor,
-      this._donationGoalInteractor,
-      this._getDailyStepCountRange,
-      this._getDailyStepCountGoal) {
+      this._profileInteractor,
+      this._getDailyStepCountRange) {
     refreshData();
   }
 
@@ -103,7 +101,7 @@ class ProfileModel extends ChangeNotifier {
     _paymentsProgressSubscription = Rx.combineLatest2(
             _paymentsInteractor.getPaymentsBetween(
                 beginningOfThisMonth, endOfThisMonth),
-            _donationGoalInteractor.observeDonationGoal(Period.MONTHLY),
+            _profileInteractor.observeDonationGoal(Period.MONTHLY),
             (List<Payment> payments, DonationGoal? goal) =>
                 PaymentsProgressData(payments, goal))
         .listen((paymentsProgressData) async {
@@ -125,8 +123,9 @@ class ProfileModel extends ChangeNotifier {
       notifyListeners();
     });
 
-    _getDailyStepCountGoal().then((value) {
-      _dailyStepCountGoal = value;
+    _dailyStepsGoalSubscription =
+        _profileInteractor.observeDailyStepsGoal().listen((value) {
+      _dailyStepCountGoal = value ?? 0;
       notifyListeners();
     });
   }
@@ -135,6 +134,7 @@ class ProfileModel extends ChangeNotifier {
   void dispose() {
     _userSubscription.cancel();
     _stepCounterSubscription.cancel();
+    _dailyStepsGoalSubscription.cancel();
     _paymentsProgressSubscription.cancel();
     super.dispose();
   }

@@ -26,6 +26,7 @@ enum DialogResult { OK, CANCEL }
 
 class _SettingsPageState extends State<SettingsPage> {
   int? _dialogDonationGoalValue;
+  int? _dialogStepsGoalValue;
 
   @override
   Widget build(BuildContext context) {
@@ -49,12 +50,33 @@ class _SettingsPageState extends State<SettingsPage> {
                   trailing: Text("\$ ${settings.monthlyDonationGoal}"),
                   onTap: () async {
                     if (await _showNumberFieldDialog(
-                            "${settings.monthlyDonationGoal}") ==
+                            "\$",
+                            "${settings.monthlyDonationGoal}",
+                            'Set monthly donation goal',
+                            (value) =>
+                                _dialogDonationGoalValue = int.parse(value)) ==
                         DialogResult.OK) {
                       final dialogDonationGoalValue = _dialogDonationGoalValue;
                       if (dialogDonationGoalValue != null) {
                         settings.onMonthlyDonationGoalChanged(
                             dialogDonationGoalValue);
+                      }
+                    }
+                  }),
+              ListTile(
+                  title: const Text("Set steps goal"),
+                  trailing: Text("${settings.dailyStepsGoal}"),
+                  onTap: () async {
+                    if (await _showNumberFieldDialog(
+                            "",
+                            "${settings.dailyStepsGoal}",
+                            'Set daily steps goal',
+                            (value) =>
+                                _dialogStepsGoalValue = int.parse(value)) ==
+                        DialogResult.OK) {
+                      final dialogStepsGoalValue = _dialogStepsGoalValue;
+                      if (dialogStepsGoalValue != null) {
+                        settings.onStepsGoalChanged(dialogStepsGoalValue);
                       }
                     }
                   })
@@ -63,7 +85,8 @@ class _SettingsPageState extends State<SettingsPage> {
         }));
   }
 
-  Future<DialogResult?> _showNumberFieldDialog(String hintText) {
+  Future<DialogResult?> _showNumberFieldDialog(String prefixText,
+      String hintText, String labelText, Function(String) onChanged) {
     return showDialog(
         context: context,
         builder: (_) => AlertDialog(
@@ -72,11 +95,10 @@ class _SettingsPageState extends State<SettingsPage> {
                 autofocus: true,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                    prefixText: "\$",
-                    labelText: 'Set monthly donation goal',
+                    prefixText: prefixText,
+                    labelText: labelText,
                     hintText: hintText),
-                onChanged: (value) =>
-                    _dialogDonationGoalValue = int.parse(value),
+                onChanged: onChanged,
               ),
               actions: <Widget>[
                 TextButton(

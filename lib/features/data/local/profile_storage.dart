@@ -1,5 +1,5 @@
 import 'package:beam/features/data/datasources/profile_local_data_source.dart';
-import 'package:beam/features/domain/usecases/get_donation_goal.dart';
+import 'package:beam/features/domain/usecases/profile_interactor.dart';
 import 'package:injectable/injectable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,6 +16,11 @@ class ProfileStorage extends ProfileLocalDataSource {
   @override
   Future<int?> getDailyStepsGoal() async {
     return (await _sharedPreferences).getInt(KEY_DAILY_STEPS_GOAL);
+  }
+
+  @override
+  Future<void> setDailyStepsGoal(int steps) async {
+    (await _sharedPreferences).setInt(KEY_DAILY_STEPS_GOAL, steps);
   }
 
   @override

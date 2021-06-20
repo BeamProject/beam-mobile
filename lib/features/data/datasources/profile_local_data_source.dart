@@ -1,4 +1,4 @@
-import 'package:beam/features/domain/usecases/get_donation_goal.dart';
+import 'package:beam/features/domain/usecases/profile_interactor.dart';
 
 abstract class ProfileLocalDataSource {
   Future<DonationGoal?> getDonationGoal(Period period);
@@ -6,4 +6,6 @@ abstract class ProfileLocalDataSource {
   Future<void> setDonationGoal(DonationGoal donationGoal);
 
   Future<int?> getDailyStepsGoal();
+
+  Future<void> setDailyStepsGoal(int steps);
 }
