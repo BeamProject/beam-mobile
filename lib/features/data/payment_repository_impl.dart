@@ -6,6 +6,7 @@ import 'package:beam/features/domain/entities/payment.dart';
 import 'package:beam/features/domain/entities/payment_request.dart';
 import 'package:beam/features/domain/entities/payment_result.dart';
 import 'package:beam/features/domain/repositories/payment_repository.dart';
+import 'package:equatable/equatable.dart';
 import 'package:injectable/injectable.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -75,7 +76,7 @@ class TimestampedPaymentsCache {
   }
 }
 
-class TimestampedPayments {
+class TimestampedPayments extends Equatable {
   final List<Payment> payments;
   final int timestamp;
 
@@ -85,4 +86,7 @@ class TimestampedPayments {
     return DateTime.now().millisecondsSinceEpoch - timestamp <=
         PaymentRepositoryImpl.PAYMENT_STALE_MS;
   }
+
+  @override
+  List<Object?> get props => [payments, timestamp];
 }

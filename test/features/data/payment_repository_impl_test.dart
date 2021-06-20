@@ -120,6 +120,53 @@ void main() {
         emits(freshPayments.payments));
   });
 
+  test('get payments, disk cache stale, fetch from network, update disk cache',
+      () async {
+    final paymentRepositoryImpl = getIt<PaymentRepositoryImpl>();
+    final payments = TimestampedPayments(
+        [
+          Payment(
+              id: "5",
+              userId: "1",
+              currency: "USD",
+              amount: 2,
+              transactionDate: DateTime.utc(2021, 06, 15)),
+        ],
+        DateTime.now()
+            .subtract(
+                Duration(milliseconds: PaymentRepositoryImpl.PAYMENT_STALE_MS))
+            .subtract(Duration(minutes: 1))
+            .millisecondsSinceEpoch);
+    final freshPayments = TimestampedPayments([
+      Payment(
+          id: "4",
+          userId: "1",
+          currency: "USD",
+          amount: 6,
+          transactionDate: DateTime.utc(2021, 06, 13)),
+      Payment(
+          id: "5",
+          userId: "1",
+          currency: "USD",
+          amount: 2,
+          transactionDate: DateTime.utc(2021, 06, 15)),
+    ], DateTime.now().millisecondsSinceEpoch);
+    when(mockPaymentsLocalDataSource.getPayments())
+        .thenAnswer((_) => Future.value(payments));
+    when(mockPaymentRemoteRepository.getPayments(any))
+        .thenAnswer((_) => Future.value(freshPayments.payments));
+
+    await expectLater(paymentRepositoryImpl.getPayments("test_user_id"),
+        emits(freshPayments.payments));
+
+    expect(
+        verify(mockPaymentsLocalDataSource.setPayments(captureAny))
+            .captured
+            .single
+            .payments,
+        freshPayments.payments);
+  });
+
   test('get payments, disk cache stale, network fails, fall back to disk',
       () async {
     final paymentRepositoryImpl = getIt<PaymentRepositoryImpl>();
