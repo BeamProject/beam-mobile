@@ -3,11 +3,14 @@ import 'package:beam/features/presentation/auth/auth_bloc.dart';
 import 'package:beam/features/presentation/profile/goals_subpage.dart';
 import 'package:beam/features/presentation/profile/model/profile_model.dart';
 import 'package:beam/features/presentation/settings/settings_page.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:rive/rive.dart';
+
+TextStyle style = TextStyle(fontSize: 20.0);
 
 class ProfilePage extends StatefulWidget {
   static Route route() {
@@ -240,6 +243,21 @@ class _ProfilePageState extends State<ProfilePage> {
                 ]);
               }))),
       Padding(padding: EdgeInsets.all(20)),
+      Container(
+          margin: const EdgeInsets.only(left: 15.0, right: 15.0, bottom: 15.0),
+          child: Material(
+              elevation: 5.0,
+              borderRadius: BorderRadius.circular(30.0),
+              color: Theme.of(context).primaryColor,
+              child: MaterialButton(
+                minWidth: MediaQuery.of(context).size.width,
+                padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                onPressed: () {},
+                child: Text(AppLocalizations.of(context)!.makePayment,
+                    textAlign: TextAlign.center,
+                    style: style.copyWith(
+                        color: Colors.white, fontWeight: FontWeight.bold)),
+              )))
     ]);
   }
 }

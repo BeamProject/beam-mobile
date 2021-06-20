@@ -66,5 +66,11 @@
     "description": "Error message when the app fails to authenticate the user",
     "type": "text",
     "placeholders": {}
+  },
+  "makePayment": "Make payment",
+  "@makePayment": {
+    "description": "Text for buttons to make a payment",
+    "type": "Make payment",
+    "placeholders": {}
   }
 }
