@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:beam/features/data/beam/beam_service_auth_wrapper.dart';
 import 'package:beam/features/data/beam/model/payment_mapper.dart';
 import 'package:beam/features/data/beam/model/payment_result.dart' as beam;
 import 'package:beam/features/data/beam/model/payment.dart' as beam;
 import 'package:beam/features/data/datasources/payments_remote_data_source.dart';
+import 'package:beam/features/data/fetch_data_exception.dart';
 import 'package:beam/features/domain/entities/payment.dart';
 import 'package:beam/features/domain/entities/payment_request.dart';
 import 'package:beam/features/domain/entities/payment_result.dart';
@@ -43,8 +45,13 @@ class BeamPaymentRepository implements PaymentsRemoteDataSource {
 
   @override
   Future<List<Payment>> getPayments(String userId) async {
-    final response =
-        await _beamServiceAuthWrapper.get(GET_PAYMENTS_API + "/" + userId);
+    var response;
+    try {
+      response =
+          await _beamServiceAuthWrapper.get(GET_PAYMENTS_API + "/" + userId);
+    } on FetchDataException {
+      return Future.error("Couldn't fetch payments");
+    }
 
     if (_isResponseSuccessful(response)) {
       final jsonList = json.decode(response.body) as List<dynamic>;
@@ -57,7 +64,7 @@ class BeamPaymentRepository implements PaymentsRemoteDataSource {
 
       return payments;
     } else {
-      throw Exception("Couldn't fetch payments");
+      return Future.error("Couldn't fetch payments");
     }
   }
 

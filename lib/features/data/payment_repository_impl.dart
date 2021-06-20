@@ -11,12 +11,14 @@ import 'package:rxdart/rxdart.dart';
 
 @injectable
 class PaymentRepositoryImpl extends PaymentRepository {
-  static const PAYMENT_STALE_MS = 15 * 1000;
+  static const PAYMENT_STALE_MS = 10 * 60 * 1000; // 10 min
   final PaymentsRemoteDataSource _paymentRemoteDataSource;
   final PaymentsLocalDataSource _paymentLocalDataSource;
+  final TimestampedPaymentsCache _diskCache;
 
   PaymentRepositoryImpl(
-      this._paymentRemoteDataSource, this._paymentLocalDataSource);
+      this._paymentRemoteDataSource, this._paymentLocalDataSource)
+      : _diskCache = TimestampedPaymentsCache(_paymentLocalDataSource);
 
   @override
   Future<PaymentResult> makeDelayedPayment(PaymentRequest paymentRequest) {
@@ -41,8 +43,8 @@ class PaymentRepositoryImpl extends PaymentRepository {
 
   Stream<List<Payment>> _getPaymentsFromDataSources(String userId) {
     return Stream.fromFuture(ConcatStream([
-      _paymentLocalDataSource.getPayments(),
-      Stream.fromFuture(_paymentRemoteDataSource.getPayments(userId))
+      _diskCache.getFromCache(false),
+      FromCallableStream(() => _paymentRemoteDataSource.getPayments(userId))
           .map((payments) => TimestampedPayments(
               payments, DateTime.now().millisecondsSinceEpoch))
           .doOnEach((paymentsNofitication) {
@@ -50,10 +52,26 @@ class PaymentRepositoryImpl extends PaymentRepository {
           log("Repo: Caching payments: ${paymentsNofitication.requireData.payments}");
           _paymentLocalDataSource.setPayments(paymentsNofitication.requireData);
         }
-      })
-    ])
-        .firstWhere((timestampedPayment) => timestampedPayment.isUpToDate())
-        .then((timestampedPayment) => timestampedPayment.payments));
+      }).onErrorResume((error, trace) => _diskCache
+              .getFromCache(true)
+              .take(1)
+              .switchIfEmpty(Stream.error(error)))
+    ]).first.then((timestampedPayment) => timestampedPayment.payments));
+  }
+}
+
+class TimestampedPaymentsCache {
+  final PaymentsLocalDataSource _paymentsLocalDataSource;
+
+  TimestampedPaymentsCache(this._paymentsLocalDataSource);
+
+  Stream<TimestampedPayments> getFromCache(bool ignoreStaleValue) async* {
+    final timestampedPayments = await _paymentsLocalDataSource.getPayments();
+    if (timestampedPayments.isUpToDate() || ignoreStaleValue) {
+      yield* Stream.fromIterable([timestampedPayments]);
+    } else {
+      yield* Stream.empty();
+    }
   }
 }
 

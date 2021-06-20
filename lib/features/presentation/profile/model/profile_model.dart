@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer' as dev;
 import 'dart:math';
 
 import 'package:beam/features/domain/entities/payment.dart';
@@ -107,6 +108,7 @@ class ProfileModel extends ChangeNotifier {
                 PaymentsProgressData(payments, goal))
         .listen((paymentsProgressData) async {
       final payments = paymentsProgressData.payments;
+      dev.log("Payments: $payments");
       _totalAmountOfPaymentsThisMonth = payments.isNotEmpty
           ? payments
               .map((e) => e.amount)

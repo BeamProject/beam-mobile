@@ -2,25 +2,25 @@
 // in beam/features/data/datasources/testing/datasources_module.dart.
 // Do not manually edit this file.
 
-import 'dart:async' as _i4;
+import 'dart:async' as _i5;
 
 import 'package:beam/features/data/datasources/payments_local_data_source.dart'
-    as _i9;
+    as _i10;
 import 'package:beam/features/data/datasources/payments_remote_data_source.dart'
     as _i12;
 import 'package:beam/features/data/datasources/steps/step_counter_local_data_source.dart'
-    as _i3;
+    as _i4;
 import 'package:beam/features/data/datasources/user_local_data_source.dart'
-    as _i8;
+    as _i9;
 import 'package:beam/features/data/datasources/user_remote_data_source.dart'
-    as _i6;
-import 'package:beam/features/data/payment_repository_impl.dart' as _i10;
-import 'package:beam/features/domain/entities/login_result.dart' as _i7;
+    as _i7;
+import 'package:beam/features/data/payment_repository_impl.dart' as _i3;
+import 'package:beam/features/domain/entities/login_result.dart' as _i8;
 import 'package:beam/features/domain/entities/payment.dart' as _i11;
 import 'package:beam/features/domain/entities/payment_request.dart' as _i14;
 import 'package:beam/features/domain/entities/payment_result.dart' as _i13;
 import 'package:beam/features/domain/entities/steps/daily_step_count.dart'
-    as _i5;
+    as _i6;
 import 'package:beam/features/domain/entities/user.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
 
@@ -33,118 +33,122 @@ import 'package:mockito/mockito.dart' as _i1;
 
 class _FakeUser extends _i1.Fake implements _i2.User {}
 
+class _FakeTimestampedPayments extends _i1.Fake
+    implements _i3.TimestampedPayments {}
+
 /// A class which mocks [StepCounterLocalDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockStepCounterLocalDataSource extends _i1.Mock
-    implements _i3.StepCounterLocalDataSource {
+    implements _i4.StepCounterLocalDataSource {
   MockStepCounterLocalDataSource() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.Future<List<_i5.DailyStepCount>> getDailyStepCounts(DateTime? day) =>
+  _i5.Future<List<_i6.DailyStepCount>> getDailyStepCounts(DateTime? day) =>
       (super.noSuchMethod(Invocation.method(#getDailyStepCounts, [day]),
-          returnValue: Future<List<_i5.DailyStepCount>>.value(
-              <_i5.DailyStepCount>[])) as _i4.Future<List<_i5.DailyStepCount>>);
+          returnValue: Future<List<_i6.DailyStepCount>>.value(
+              <_i6.DailyStepCount>[])) as _i5.Future<List<_i6.DailyStepCount>>);
   @override
-  _i4.Future<List<_i5.DailyStepCount>> getDailyStepCountRange(
+  _i5.Future<List<_i6.DailyStepCount>> getDailyStepCountRange(
           DateTime? from, DateTime? to) =>
       (super.noSuchMethod(
           Invocation.method(#getDailyStepCountRange, [from, to]),
-          returnValue: Future<List<_i5.DailyStepCount>>.value(
-              <_i5.DailyStepCount>[])) as _i4.Future<List<_i5.DailyStepCount>>);
+          returnValue: Future<List<_i6.DailyStepCount>>.value(
+              <_i6.DailyStepCount>[])) as _i5.Future<List<_i6.DailyStepCount>>);
   @override
-  _i4.Future<void> updateDailyStepCount(_i5.DailyStepCount? stepCount) =>
+  _i5.Future<void> updateDailyStepCount(_i6.DailyStepCount? stepCount) =>
       (super.noSuchMethod(Invocation.method(#updateDailyStepCount, [stepCount]),
           returnValue: Future<void>.value(null),
-          returnValueForMissingStub: Future.value()) as _i4.Future<void>);
+          returnValueForMissingStub: Future.value()) as _i5.Future<void>);
   @override
-  _i4.Future<void> updateLastMeasurementTimestamp(int? timestampMsSinceEpoch) =>
+  _i5.Future<void> updateLastMeasurementTimestamp(int? timestampMsSinceEpoch) =>
       (super.noSuchMethod(
           Invocation.method(
               #updateLastMeasurementTimestamp, [timestampMsSinceEpoch]),
           returnValue: Future<void>.value(null),
-          returnValueForMissingStub: Future.value()) as _i4.Future<void>);
+          returnValueForMissingStub: Future.value()) as _i5.Future<void>);
   @override
-  _i4.Future<int?> getLastMeasurementTimestamp() =>
+  _i5.Future<int?> getLastMeasurementTimestamp() =>
       (super.noSuchMethod(Invocation.method(#getLastMeasurementTimestamp, []),
-          returnValue: Future<int?>.value(0)) as _i4.Future<int?>);
+          returnValue: Future<int?>.value(0)) as _i5.Future<int?>);
 }
 
 /// A class which mocks [UserRemoteDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockUserRemoteDataSource extends _i1.Mock
-    implements _i6.UserRemoteDataSource {
+    implements _i7.UserRemoteDataSource {
   MockUserRemoteDataSource() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.Future<_i7.LoginResult> logIn(String? username, String? password) =>
+  _i5.Future<_i8.LoginResult> logIn(String? username, String? password) =>
       (super.noSuchMethod(Invocation.method(#logIn, [username, password]),
               returnValue:
-                  Future<_i7.LoginResult>.value(_i7.LoginResult.SUCCESS))
-          as _i4.Future<_i7.LoginResult>);
+                  Future<_i8.LoginResult>.value(_i8.LoginResult.SUCCESS))
+          as _i5.Future<_i8.LoginResult>);
   @override
-  _i4.Future<_i2.User?> getUser() =>
+  _i5.Future<_i2.User?> getUser() =>
       (super.noSuchMethod(Invocation.method(#getUser, []),
               returnValue: Future<_i2.User?>.value(_FakeUser()))
-          as _i4.Future<_i2.User?>);
+          as _i5.Future<_i2.User?>);
 }
 
 /// A class which mocks [UserLocalDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockUserLocalDataSource extends _i1.Mock
-    implements _i8.UserLocalDataSource {
+    implements _i9.UserLocalDataSource {
   MockUserLocalDataSource() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.Future<_i2.User?> getUser() =>
+  _i5.Future<_i2.User?> getUser() =>
       (super.noSuchMethod(Invocation.method(#getUser, []),
               returnValue: Future<_i2.User?>.value(_FakeUser()))
-          as _i4.Future<_i2.User?>);
+          as _i5.Future<_i2.User?>);
   @override
-  _i4.Future<void> updateUser(_i2.User? user) =>
+  _i5.Future<void> updateUser(_i2.User? user) =>
       (super.noSuchMethod(Invocation.method(#updateUser, [user]),
           returnValue: Future<void>.value(null),
-          returnValueForMissingStub: Future.value()) as _i4.Future<void>);
+          returnValueForMissingStub: Future.value()) as _i5.Future<void>);
   @override
-  _i4.Future<void> removeCurrentUser() =>
+  _i5.Future<void> removeCurrentUser() =>
       (super.noSuchMethod(Invocation.method(#removeCurrentUser, []),
           returnValue: Future<void>.value(null),
-          returnValueForMissingStub: Future.value()) as _i4.Future<void>);
+          returnValueForMissingStub: Future.value()) as _i5.Future<void>);
 }
 
 /// A class which mocks [PaymentsLocalDataSource].
 ///
 /// See the documentation for Mockito's code generation for more information.
 class MockPaymentsLocalDataSource extends _i1.Mock
-    implements _i9.PaymentsLocalDataSource {
+    implements _i10.PaymentsLocalDataSource {
   MockPaymentsLocalDataSource() {
     _i1.throwOnMissingStub(this);
   }
 
   @override
-  _i4.Stream<_i10.TimestampedPayments> getPayments() =>
-      (super.noSuchMethod(Invocation.method(#getPayments, []),
-              returnValue: Stream<_i10.TimestampedPayments>.empty())
-          as _i4.Stream<_i10.TimestampedPayments>);
+  _i5.Future<_i3.TimestampedPayments> getPayments() => (super.noSuchMethod(
+          Invocation.method(#getPayments, []),
+          returnValue:
+              Future<_i3.TimestampedPayments>.value(_FakeTimestampedPayments()))
+      as _i5.Future<_i3.TimestampedPayments>);
   @override
-  _i4.Future<void> setPayments(_i10.TimestampedPayments? timestampedPayments) =>
+  _i5.Future<void> setPayments(_i3.TimestampedPayments? timestampedPayments) =>
       (super.noSuchMethod(
           Invocation.method(#setPayments, [timestampedPayments]),
           returnValue: Future<void>.value(null),
-          returnValueForMissingStub: Future.value()) as _i4.Future<void>);
+          returnValueForMissingStub: Future.value()) as _i5.Future<void>);
   @override
-  _i4.Future<void> addPayment(_i11.Payment? payment) =>
+  _i5.Future<void> addPayment(_i11.Payment? payment) =>
       (super.noSuchMethod(Invocation.method(#addPayment, [payment]),
           returnValue: Future<void>.value(null),
-          returnValueForMissingStub: Future.value()) as _i4.Future<void>);
+          returnValueForMissingStub: Future.value()) as _i5.Future<void>);
 }
 
 /// A class which mocks [PaymentsRemoteDataSource].
@@ -157,16 +161,16 @@ class MockPaymentsRemoteDataSource extends _i1.Mock
   }
 
   @override
-  _i4.Future<_i13.PaymentResult> makeDelayedPayment(
+  _i5.Future<_i13.PaymentResult> makeDelayedPayment(
           _i14.PaymentRequest? paymentRequest) =>
       (super.noSuchMethod(
               Invocation.method(#makeDelayedPayment, [paymentRequest]),
               returnValue:
                   Future<_i13.PaymentResult>.value(_i13.PaymentResult.SUCCESS))
-          as _i4.Future<_i13.PaymentResult>);
+          as _i5.Future<_i13.PaymentResult>);
   @override
-  _i4.Future<List<_i11.Payment>> getPayments(String? userId) =>
+  _i5.Future<List<_i11.Payment>> getPayments(String? userId) =>
       (super.noSuchMethod(Invocation.method(#getPayments, [userId]),
               returnValue: Future<List<_i11.Payment>>.value(<_i11.Payment>[]))
-          as _i4.Future<List<_i11.Payment>>);
+          as _i5.Future<List<_i11.Payment>>);
 }

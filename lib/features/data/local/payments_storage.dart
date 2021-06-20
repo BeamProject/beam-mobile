@@ -55,7 +55,7 @@ class PaymentsStorage implements PaymentsLocalDataSource {
         currency: "USD",
         amount: 2,
         transactionDate: DateTime.utc(2021, 05, 15)),
-  ], DateTime.utc(2021, 06, 19, 14).millisecondsSinceEpoch);
+  ], DateTime.utc(2021, 06, 20, 17, 25).millisecondsSinceEpoch);
 
   // This method might not be necessary if we have setPayments.
   @override
@@ -64,12 +64,8 @@ class PaymentsStorage implements PaymentsLocalDataSource {
   }
 
   @override
-  Stream<TimestampedPayments> getPayments() async* {
-    if (_dummyCacheFixMe.payments.isEmpty) {
-      yield* Stream.empty();
-    } else {
-      yield _dummyCacheFixMe;
-    }
+  Future<TimestampedPayments> getPayments() {
+    return Future.value(_dummyCacheFixMe);
   }
 
   @override
