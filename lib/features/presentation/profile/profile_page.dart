@@ -93,12 +93,20 @@ class _ProfilePageState extends State<ProfilePage> {
                                           context, SettingsPage.route());
                                     },
                                     child: Container(
-                                      padding: EdgeInsets.all(12.0),
-                                      child: Text(
-                                        'Settings',
-                                        textAlign: TextAlign.left,
-                                      ),
-                                    ),
+                                        alignment: Alignment.centerLeft,
+                                        padding: EdgeInsets.only(left: 12.0),
+                                        child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: <Widget>[
+                                              Icon(
+                                                Icons.settings,
+                                                size: 20,
+                                              ),
+                                              Text(
+                                                'Settings',
+                                              ),
+                                            ])),
                                   ),
                                 ),
                                 Expanded(
@@ -107,7 +115,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     "Profile",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                        fontSize: 26,
+                                        fontSize: 32,
                                         fontWeight: FontWeight.bold),
                                   ),
                                 ),
@@ -118,12 +126,20 @@ class _ProfilePageState extends State<ProfilePage> {
                                     onTap: () =>
                                         context.read<AuthCubit>().onLogout(),
                                     child: Container(
-                                      padding: EdgeInsets.all(12.0),
-                                      child: Text(
-                                        'Logout',
-                                        textAlign: TextAlign.right,
-                                      ),
-                                    ),
+                                        alignment: Alignment.centerRight,
+                                        padding: EdgeInsets.only(right: 12.0),
+                                        child: Column(
+                                            crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                            children: <Widget>[
+                                              Icon(
+                                                Icons.logout,
+                                                size: 20,
+                                              ),
+                                              Text(
+                                                'Logout',
+                                              ),
+                                            ])),
                                   ),
                                 ),
                               ],
