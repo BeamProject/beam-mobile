@@ -16,6 +16,12 @@ class PaymentsModel extends ChangeNotifier {
   PaymentStatus get paymentStatus => _paymentStatus;
   PaymentStatus _paymentStatus = PaymentStatus.DEFAULT;
 
+  int get paymentAmount => _paymentAmount;
+  int _paymentAmount = 0;
+
+  bool get isTextFieldEmpty => _isTextFieldEmpty;
+  bool _isTextFieldEmpty = true;
+
   List<Payment> get payments => _payments;
 
   PaymentsModel(this._paymentsInteractor) {
@@ -38,6 +44,16 @@ class PaymentsModel extends ChangeNotifier {
       _paymentStatus = PaymentStatus.SUCCESS;
     } else {
       _paymentStatus = PaymentStatus.FAILURE;
+    }
+    notifyListeners();
+  }
+
+  void onTextFieldChanged(String value) {
+    if (value != "") {
+      _paymentAmount = int.parse(value);
+      _isTextFieldEmpty = false;
+    } else {
+      _isTextFieldEmpty = true;
     }
     notifyListeners();
   }

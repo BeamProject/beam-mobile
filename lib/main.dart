@@ -51,6 +51,7 @@ class _AppScreenState extends State<AppScreen> {
         theme: ThemeData(
           primarySwatch: Colors.green,
           backgroundColor: Colors.white,
+          hintColor: Colors.grey,
           disabledColor: Colors.grey,
           visualDensity: VisualDensity.adaptivePlatformDensity,
           fontFamily: 'Inter',

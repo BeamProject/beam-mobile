@@ -25,7 +25,6 @@ class MakePaymentPage extends StatefulWidget {
 }
 
 class _MakePaymentPageState extends State<MakePaymentPage> {
-  int _paymentAmount = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -39,25 +38,39 @@ class _MakePaymentPageState extends State<MakePaymentPage> {
               child: Column(
                 children: [
                   Container(
-                      margin: const EdgeInsets.only(top: 32),
-                      child: Text(
-                        "Make a donation",
-                        style: TextStyle(
-                            color: Theme.of(context).primaryColor,
-                            fontSize: 40),
-                      )),
+                      margin: const EdgeInsets.only(left: 15.0, right: 15.0),
+                      child: Container(
+                          margin: const EdgeInsets.only(top: 25),
+                          child: TextField(
+                              readOnly:
+                                  model.paymentStatus == PaymentStatus.DEFAULT
+                                      ? false
+                                      : true,
+                              autofocus: true,
+                              keyboardType: TextInputType.number,
+                              style: TextStyle(fontSize: 48),
+                              decoration: InputDecoration(
+                                  prefixText: "\$",
+                                  hintText: "0",
+                                  labelText: "Make a donation",
+                                  labelStyle: TextStyle(
+                                      fontSize: 32,
+                                      color: Theme.of(context).hintColor)),
+                              onChanged: (value) {
+                                model.onTextFieldChanged(value);
+                              }))),
                   Expanded(
                       child: Container(
-                          margin:
-                              const EdgeInsets.only(left: 15.0, right: 15.0),
-                          child: getTextWidget(model))),
+                    child: getPaymentStatusWidget(model),
+                    alignment: Alignment.center,
+                  )),
                   Container(
                       margin: const EdgeInsets.only(
                           left: 15.0, right: 15.0, bottom: 15.0),
                       child: Material(
                           elevation: 5.0,
                           borderRadius: BorderRadius.circular(30.0),
-                          color: model.paymentStatus == PaymentStatus.DEFAULT
+                          color: model.paymentStatus == PaymentStatus.DEFAULT && !model.isTextFieldEmpty
                               ? Theme.of(context).primaryColor
                               : Theme.of(context).disabledColor,
                           child: MaterialButton(
@@ -65,8 +78,8 @@ class _MakePaymentPageState extends State<MakePaymentPage> {
                             padding:
                                 EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
                             onPressed:
-                                model.paymentStatus == PaymentStatus.DEFAULT
-                                    ? () => model.makePayment(_paymentAmount)
+                                model.paymentStatus == PaymentStatus.DEFAULT && !model.isTextFieldEmpty
+                                    ? () => model.makePayment(model.paymentAmount)
                                     : null,
                             child: Text(
                                 AppLocalizations.of(context)!.makePayment,
@@ -82,34 +95,63 @@ class _MakePaymentPageState extends State<MakePaymentPage> {
         )));
   }
 
-  Widget getTextWidget(PaymentsModel model) {
+  Widget getPaymentStatusWidget(PaymentsModel model) {
     switch (model.paymentStatus) {
       case PaymentStatus.DEFAULT:
-        return Container(
-            margin: const EdgeInsets.only(top: 25),
-            child: TextField(
-                autofocus: true,
-                keyboardType: TextInputType.number,
-                style: TextStyle(fontSize: 53),
-                decoration: InputDecoration(prefixText: "\$", hintText: "0"),
-                onChanged: (value) {
-                  _paymentAmount = int.parse(value);
-                }));
+        return Container();
       case PaymentStatus.SUCCESS:
         return Center(
-            child: Text("Success",
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+              Container(
+                width: double.infinity,
+                height: 100,
+                decoration: new BoxDecoration(
+                  image: new DecorationImage(
+                    image: new AssetImage("images/tick.png"),
+                    fit: BoxFit.fitHeight,
+                  ),
+                ),
+              ),
+              Padding(padding: EdgeInsets.all(12)),
+              Text(
+                "Payment successful",
                 style: TextStyle(
-                    color: Theme.of(context).primaryColor, fontSize: 50)));
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).primaryColor),
+                textAlign: TextAlign.center,
+              )
+            ]));
       case PaymentStatus.FAILURE:
         return Center(
-            child: Text(
-          "Payment failed, something went wrong",
-          style: TextStyle(fontSize: 50),
-          textAlign: TextAlign.center,
-        ));
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+              Container(
+                width: double.infinity,
+                height: 100,
+                decoration: new BoxDecoration(
+                  image: new DecorationImage(
+                    image: new AssetImage("images/cross.png"),
+                    fit: BoxFit.fitHeight,
+                  ),
+                ),
+              ),
+              Padding(padding: EdgeInsets.all(12)),
+              Text(
+                "Something went wrong",
+                style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black),
+                textAlign: TextAlign.center,
+              )
+            ]));
       case PaymentStatus.IN_PROGRESS:
-        return Center(
-            child: Text("In progress", style: TextStyle(fontSize: 50)));
+        return CircularProgressIndicator(
+            value: null, semanticsLabel: 'Payment in progress');
     }
   }
 }
